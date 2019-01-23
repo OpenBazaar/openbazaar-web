@@ -1,0 +1,39 @@
+.ModalRoot {
+  background-color: rgba(255, 255, 255, 0.8);
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+
+.ModalRoot h1 {
+  margin-top: 0;
+}
+
+.ModalRoot p {
+  word-break: break-word;
+}
+
+.ModalRoot-innerWrap {
+  background-color: white;
+  padding: 35px 25px 25px;
+  position: fixed;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid #ccc;
+  width: 500px;
+}
+
+.ModalRoot-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+}
+
+.ModalRoot-close:hover {
+  background-color: black;
+  color: white;
+}
