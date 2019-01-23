@@ -1,8 +1,9 @@
 import uuidv4 from 'uuid/v4';
 import { singletonModals } from 'reducers/modals';
 
-export const OPEN_MODAL = 'OPEN_MODAL';
-export const CLOSE_MODAL = 'CLOSE_MODAL';
+export const MODAL_OPEN = 'OPEN_MODAL';
+export const MODAL_CLOSE = 'CLOSE_MODAL';
+export const MODAL_BRING_TO_TOP = 'MODAL_BRING_TO_TOP';
 
 /*
  * Will open a modal with the given props.
@@ -45,13 +46,37 @@ export const open = (props = {}) => (dispatch, getState) => {
   delete actionProps.Component;
 
   dispatch({
-    type: OPEN_MODAL,
+    type: MODAL_OPEN,
     ...actionProps,
     id,
   });
 
   return id;
 };
+
+/*
+ * When you have a method that needs to target a modal, it will need either an
+ * id (for non-singleton modals) or a path (for singleton modals). This function
+ * will check that at least one is provided and in the correct format.
+ *
+ * @param {object} options - You must provide either the id or path.
+ * @param {string} [options.id] - The id of the modal to close. This should be used
+ *   for non-singleton modals.
+ * @param {string} [options.path] - The path of the modal to close. This should be
+ *   used for singleton modals.
+ */
+const checkOptsTargettingModal = (options = {}) => {
+  if (
+    (!options.path && !options.id) ||
+    (
+      typeof options.path !== 'string' &&
+      typeof options.id !== 'string'
+    )
+  ) {
+    throw new Error('One of options.id or options.path must be provided ' +
+      'and the variable must be of type string.');
+  }
+}
 
 /*
  * Will close a modal.
@@ -64,19 +89,43 @@ export const open = (props = {}) => (dispatch, getState) => {
  */
 export const close = (options = {}) => (dispatch, getState) => {
   const action = {
-    type: CLOSE_MODAL,
+    type: MODAL_CLOSE,
   }
 
-  if (
-    (!options.path && !options.id) ||
-    (
-      typeof options.path !== 'string' &&
-      typeof options.id !== 'string'
-    )
-  ) {
-    throw new Error('One of options.id or options.path must be provided ' +
-      'and the variable must be of type string.');
+  checkOptsTargettingModal(options);
+
+  if (options.id) {
+    dispatch({
+      ...action,
+      id: options.id,
+    });
+  } else {
+    const id = getState().modals.openModals.find(modal => modal.path = options.path);
+
+    if (id) {
+      dispatch({
+        ...action,
+        id,
+      });
+    }
   }
+};
+
+/*
+ * Will bring a modal to the top of the stack.
+ *
+ * @param {object} options - You must provide either the id or path.
+ * @param {string} [options.id] - The id of the modal to close. This should be used
+ *   for non-singleton modals.
+ * @param {string} [options.path] - The path of the modal to close. This should be
+ *   used for singleton modals.
+ */
+export const bringToTop = (options = {}) => (dispatch, getState) => {
+  const action = {
+    type: MODAL_BRING_TO_TOP,
+  }
+
+  checkOptsTargettingModal(options);
 
   if (options.id) {
     dispatch({
@@ -88,11 +137,9 @@ export const close = (options = {}) => (dispatch, getState) => {
 
     if (id) {
       dispatch({
-      ...action,
-      id,
+        ...action,
+        id,
       });
     }
   }
 };
-
-// todo: bring to top

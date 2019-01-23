@@ -33,7 +33,7 @@ class ModalRoot extends Component {
     const topModal = this.props.modals.openModals[this.props.modals.openModals.length - 1];
 
     if (topModal && topModal.id === this.props.id) {
-      this.close();
+      setTimeout(() => this.close());
     }
   }
 
