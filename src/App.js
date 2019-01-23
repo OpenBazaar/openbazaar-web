@@ -3,8 +3,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as CharlieActions from 'actions/charlie';
 import * as ModalActions from 'actions/modals';
-import SimpleMessage from 'components/modals/SimpleMessage';
 import ModalRoot from 'components/modals/ModalRoot';
+import SimpleMessage from 'components/modals/SimpleMessage';
+import Test from 'components/modals/Test';
 import 'App.scss';
 import 'styles/layout.scss';
 
@@ -17,28 +18,27 @@ class App extends Component {
   }
 
   handleFartClick() {
-    const id = this.props.actions.modals.open({
+    const sm = this.props.actions.modals.open({
       Component: SimpleMessage,
       title: 'You smell',
       body: 'You smell like hell Jerry! Why don\'t you work on that player!?',
     });
-    console.log(`the modal id is ${id}`);
 
-    const id2 = this.props.actions.modals.open({
-      Component: SimpleMessage,
-      title: 'You smell',
-      body: 'You smell like hell Jerry! Why don\'t you work on that player!? ' +
-        'You smell like hell Jerry! Why don\'t you work on that player!? ' +
-        'You smell like hell Jerry! Why don\'t you work on that player!? ' +
-        'You smell like hell Jerry! Why don\'t you work on that player!? ' +
-        'You smell like hell Jerry! Why don\'t you work on that player!? ' +
-        'You smell like hell Jerry! Why don\'t you work on that player!? ' +
-        'You smell like hell Jerry! Why don\'t you work on that player!? ' +
-        'You smell like hell Jerry! Why don\'t you work on that player!? ' +
-        'You smell like hell Jerry! Why don\'t you work on that player!? ' +                        
-        'You smell like hell Jerry! Why don\'t you work on that player!?',
+    const test = this.props.actions.modals.open({
+      Component: Test,
+      title: 'You smell big filly',
+      body: 'You smell like hell Jerry! Why don\'t you work on that player!?',
     });
-    console.log(`the modal id is ${id2}`);    
+
+    const test2 = this.props.actions.modals.open({
+      Component: Test,
+      title: 'You smell big filly 22222',
+      body: 'You smell like hell Jerry! Why don\'t you work on that player!?',
+    });    
+
+    setTimeout(() => {
+      this.props.actions.modals.close({ path: Test.modulePath });
+    }, 2000);
   }
 
   handleSpeakClick() {

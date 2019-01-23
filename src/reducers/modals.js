@@ -1,5 +1,10 @@
+import { move } from 'util/array';
 import { createReducer } from 'redux-starter-kit';
-import { OPEN_MODAL, CLOSE_MODAL } from 'actions/modals';
+import {
+  MODAL_OPEN,
+  MODAL_CLOSE,
+  MODAL_BRING_TO_TOP,
+} from 'actions/modals';
 
 let openModals = [];
 
@@ -13,8 +18,11 @@ const initialState = {
  * will be brought to the top.
  *
  */
-// todo: this should be paths to the modal
-export const singletonModals = ['Login'];
+// export const singletonModals = [
+//   'components/modals/Test'
+// ];
+
+export const singletonModals = [];
 
 const openModal = (state, action) => {
   let openModals = state.openModals;
@@ -26,25 +34,37 @@ const openModal = (state, action) => {
   );
 
   if (curModal) {
-    // bring to top
-    // test this!
     state.openModals.filter(modal => modal !== curModal);
   }
 
+  const modalData = { ...action };
+  delete modalData.type;
+
   state.openModals.push({
     ...curModal,
-    ...action
+    ...modalData,
   });
 };
 
-// todo: test closing via different scenarios
-// const closeModal = (state, action) =>
-//   state.openModals.filter(modal => modal.id !== action.id);
 const closeModal = (state, action) => {
   state.openModals = state.openModals.filter(modal => modal.id !== action.id);
 }
 
+const bringToTop = (state, action) => {
+  let modalIndex;
+  state.openModals.find((modal, index) => {
+    if (modal.id === action.id) {
+      modalIndex = index;
+    }
+  });
+
+  if (typeof modalIndex === 'number') {
+    move(state.openModals, modalIndex, state.openModals.length);
+  }
+}
+
 export default createReducer(initialState, {
-  [OPEN_MODAL]: openModal,
-  [CLOSE_MODAL]: closeModal,
+  [MODAL_OPEN]: openModal,
+  [MODAL_CLOSE]: closeModal,
+  [MODAL_BRING_TO_TOP]: bringToTop,
 });
