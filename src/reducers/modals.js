@@ -1,10 +1,6 @@
 import { move } from 'util/array';
 import { createReducer } from 'redux-starter-kit';
-import {
-  MODAL_OPEN,
-  MODAL_CLOSE,
-  MODAL_BRING_TO_TOP,
-} from 'actions/modals';
+import { MODAL_OPEN, MODAL_CLOSE, MODAL_BRING_TO_TOP } from 'actions/modals';
 
 let openModals = [];
 
@@ -18,17 +14,13 @@ const initialState = {
  * will be brought to the top.
  *
  */
-export const singletonModals = [
-  'components/modals/Test'
-];
+export const singletonModals = ['components/modals/Test'];
 
 const open = (state, action) => {
   let openModals = state.openModals;
 
   const curModal = openModals.find(
-    modal =>
-      singletonModals.includes(action.path) &&
-      modal.path === action.path
+    modal => singletonModals.includes(action.path) && modal.path === action.path
   );
 
   if (curModal) {
@@ -40,13 +32,13 @@ const open = (state, action) => {
 
   state.openModals.push({
     ...curModal,
-    ...modalData,
+    ...modalData
   });
 };
 
 const close = (state, action) => {
   state.openModals = state.openModals.filter(modal => modal.id !== action.id);
-}
+};
 
 const bringToTop = (state, action) => {
   let modalIndex;
@@ -60,10 +52,10 @@ const bringToTop = (state, action) => {
   if (typeof modalIndex === 'number') {
     move(state.openModals, modalIndex, state.openModals.length);
   }
-}
+};
 
 export default createReducer(initialState, {
   [MODAL_OPEN]: open,
   [MODAL_CLOSE]: close,
-  [MODAL_BRING_TO_TOP]: bringToTop,
+  [MODAL_BRING_TO_TOP]: bringToTop
 });

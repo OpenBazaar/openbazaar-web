@@ -18,7 +18,7 @@ class App extends Component {
     this.props.actions.modals.open({
       Component: SimpleMessage,
       title: 'You smell',
-      body: 'You smell like hell Jerry! Why don\'t you work on that player!?',
+      body: "You smell like hell Jerry! Why don't you work on that player!?"
     });
   }
   render() {
@@ -33,9 +33,10 @@ class App extends Component {
           <button onClick={this.handleFartClick}>Fart it out</button>
         </div>
         <div className="App-modalContainer">
-          {this.props.modals.openModals.map(modal =>
-            <ModalRoot key={modal.id} {...modal} />)}
-        </div>        
+          {this.props.modals.openModals.map(modal => (
+            <ModalRoot key={modal.id} {...modal} />
+          ))}
+        </div>
       </div>
     );
   }
@@ -43,14 +44,14 @@ class App extends Component {
 
 function mapStateToProps(state, prop) {
   return {
-    modals: state.modals,
+    modals: state.modals
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     actions: {
-      modals: bindActionCreators(ModalActions, dispatch),
+      modals: bindActionCreators(ModalActions, dispatch)
     }
   };
 }

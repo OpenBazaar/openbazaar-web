@@ -19,18 +19,20 @@ class ModalRoot extends Component {
         if (this.state.ModalComponent) return;
         this.setState({ ModalComponent: ModalModule.default });
       },
-      error => console.error('There was an error loading the modal', error),
+      error => console.error('There was an error loading the modal', error)
     );
   }
 
   handleCloseClick() {
     this.close();
-  };
+  }
 
   handleEscKeyUp(e) {
     if (e.keyCode !== 27) return;
 
-    const topModal = this.props.modals.openModals[this.props.modals.openModals.length - 1];
+    const topModal = this.props.modals.openModals[
+      this.props.modals.openModals.length - 1
+    ];
 
     if (topModal && topModal.id === this.props.id) {
       setTimeout(() => this.close());
@@ -41,11 +43,11 @@ class ModalRoot extends Component {
     this.props.actions.close({ id: this.props.id });
   }
 
-  componentDidMount(){
+  componentDidMount() {
     document.addEventListener('keyup', this.handleEscKeyUp);
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     document.removeEventListener('keyup', this.handleEscKeyUp);
   }
 
@@ -58,7 +60,9 @@ class ModalRoot extends Component {
     return (
       <section className="ModalRoot">
         <div className="ModalRoot-innerWrap">
-          <button className="ModalRoot-close" onClick={this.handleCloseClick}>X</button>
+          <button className="ModalRoot-close" onClick={this.handleCloseClick}>
+            X
+          </button>
           <this.state.ModalComponent {...modalProps} />
         </div>
       </section>
@@ -68,7 +72,7 @@ class ModalRoot extends Component {
 
 function mapStateToProps(state, props) {
   return {
-    modals: state.modals,
+    modals: state.modals
   };
 }
 

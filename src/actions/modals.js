@@ -22,34 +22,36 @@ export const open = (props = {}) => (dispatch, getState) => {
     throw new Error('Please provide a Component.');
   }
 
-  if (typeof props.Component.modulePath !== 'string' ||
-    !props.Component.modulePath.length) {
-    throw new Error('The component must implement a modulePath as a static getter or ' +
-      'a function property.');
+  if (
+    typeof props.Component.modulePath !== 'string' ||
+    !props.Component.modulePath.length
+  ) {
+    throw new Error(
+      'The component must implement a modulePath as a static getter or ' +
+        'a function property.'
+    );
   }
 
   if (props.Component.modulePath.includes(' ')) {
     throw new Error('The modulePath should not contain any spaces.');
-  }  
+  }
 
   const path = props.Component.modulePath;
   const curModal = getState().modals.openModals.find(
-    modal =>
-      singletonModals.includes(path) &&
-      modal.path === path
+    modal => singletonModals.includes(path) && modal.path === path
   );
 
   const id = curModal ? curModal.id : uuidv4();
   const actionProps = {
     ...props,
-    path,
+    path
   };
   delete actionProps.Component;
 
   dispatch({
     type: MODAL_OPEN,
     ...actionProps,
-    id,
+    id
   });
 
   return id;
@@ -69,15 +71,14 @@ export const open = (props = {}) => (dispatch, getState) => {
 const checkOptsTargettingModal = (options = {}) => {
   if (
     (!options.path && !options.id) ||
-    (
-      typeof options.path !== 'string' &&
-      typeof options.id !== 'string'
-    )
+    (typeof options.path !== 'string' && typeof options.id !== 'string')
   ) {
-    throw new Error('One of options.id or options.path must be provided ' +
-      'and the variable must be of type string.');
+    throw new Error(
+      'One of options.id or options.path must be provided ' +
+        'and the variable must be of type string.'
+    );
   }
-}
+};
 
 /*
  * Will close a modal.
@@ -90,28 +91,32 @@ const checkOptsTargettingModal = (options = {}) => {
  */
 export const close = (options = {}) => (dispatch, getState) => {
   const action = {
-    type: MODAL_CLOSE,
-  }
+    type: MODAL_CLOSE
+  };
 
   checkOptsTargettingModal(options);
 
   if (options.id) {
     dispatch({
       ...action,
-      id: options.id,
+      id: options.id
     });
   } else {
     if (!singletonModals.includes(options.path)) {
-      throw new Error('Only singleton modals should be closed via the path. Use the id ' +
-        'instead.');
+      throw new Error(
+        'Only singleton modals should be closed via the path. Use the id ' +
+          'instead.'
+      );
     }
 
-    const modal = getState().modals.openModals.find(modal => modal.path === options.path);
+    const modal = getState().modals.openModals.find(
+      modal => modal.path === options.path
+    );
 
     if (modal) {
       dispatch({
         ...action,
-        id: modal.id,
+        id: modal.id
       });
     }
   }
@@ -128,23 +133,23 @@ export const close = (options = {}) => (dispatch, getState) => {
  */
 export const bringToTop = (options = {}) => (dispatch, getState) => {
   const action = {
-    type: MODAL_BRING_TO_TOP,
-  }
+    type: MODAL_BRING_TO_TOP
+  };
 
   checkOptsTargettingModal(options);
 
   if (options.id) {
     dispatch({
       ...action,
-      id: options.id,
+      id: options.id
     });
   } else {
-    const id = getState().openModals.find(modal => modal.path = options.path);
+    const id = getState().openModals.find(modal => (modal.path = options.path));
 
     if (id) {
       dispatch({
         ...action,
-        id,
+        id
       });
     }
   }
