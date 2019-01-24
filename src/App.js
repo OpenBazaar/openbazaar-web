@@ -23,22 +23,6 @@ class App extends Component {
       title: 'You smell',
       body: 'You smell like hell Jerry! Why don\'t you work on that player!?',
     });
-
-    const test = this.props.actions.modals.open({
-      Component: Test,
-      title: 'You smell big filly',
-      body: 'You smell like hell Jerry! Why don\'t you work on that player!?',
-    });
-
-    const test2 = this.props.actions.modals.open({
-      Component: Test,
-      title: 'You smell big filly 22222',
-      body: 'You smell like hell Jerry! Why don\'t you work on that player!?',
-    });    
-
-    setTimeout(() => {
-      this.props.actions.modals.close({ path: Test.modulePath });
-    }, 2000);
   }
 
   handleSpeakClick() {
