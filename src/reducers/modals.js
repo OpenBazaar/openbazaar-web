@@ -18,13 +18,11 @@ const initialState = {
  * will be brought to the top.
  *
  */
-// export const singletonModals = [
-//   'components/modals/Test'
-// ];
+export const singletonModals = [
+  'components/modals/Test'
+];
 
-export const singletonModals = [];
-
-const openModal = (state, action) => {
+const open = (state, action) => {
   let openModals = state.openModals;
 
   const curModal = openModals.find(
@@ -34,7 +32,7 @@ const openModal = (state, action) => {
   );
 
   if (curModal) {
-    state.openModals.filter(modal => modal !== curModal);
+    state.openModals = state.openModals.filter(modal => modal !== curModal);
   }
 
   const modalData = { ...action };
@@ -46,7 +44,7 @@ const openModal = (state, action) => {
   });
 };
 
-const closeModal = (state, action) => {
+const close = (state, action) => {
   state.openModals = state.openModals.filter(modal => modal.id !== action.id);
 }
 
@@ -64,7 +62,7 @@ const bringToTop = (state, action) => {
 }
 
 export default createReducer(initialState, {
-  [MODAL_OPEN]: openModal,
-  [MODAL_CLOSE]: closeModal,
+  [MODAL_OPEN]: open,
+  [MODAL_CLOSE]: close,
   [MODAL_BRING_TO_TOP]: bringToTop,
 });

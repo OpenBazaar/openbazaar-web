@@ -12,12 +12,13 @@ export const MODAL_BRING_TO_TOP = 'MODAL_BRING_TO_TOP';
  *   it's an already open singleton modal.
  * @param {object} props.Component - The component you want to render inside the modal. The
  *   component must implement a modulePath property, which should be a static getter if its
- *   a class, otherwise a property direectly on the function if it's a functional component.
+ *   a class, otherwise a property directly on the function if it's a functional component.
  *
  * @returns {string} - The ID of the opened modal. This will be necessary if you want to
  *   close a non-singleton modal.
  */
 export const open = (props = {}) => (dispatch, getState) => {
+  console.dir(props);
   if (typeof props.Component !== 'function') {
     throw new Error('Please provide a Component.');
   }
@@ -32,16 +33,17 @@ export const open = (props = {}) => (dispatch, getState) => {
     throw new Error('The modulePath should not contain any spaces.');
   }  
 
+  const path = props.Component.modulePath;
   const curModal = getState().modals.openModals.find(
     modal =>
-      singletonModals.includes(props.modalType) &&
-      modal.modalType === props.modalType
+      singletonModals.includes(path) &&
+      modal.path === path
   );
 
   const id = curModal ? curModal.id : uuidv4();
   const actionProps = {
     ...props,
-    path: props.Component.modulePath,
+    path,
   };
   delete actionProps.Component;
 
@@ -100,12 +102,17 @@ export const close = (options = {}) => (dispatch, getState) => {
       id: options.id,
     });
   } else {
-    const id = getState().modals.openModals.find(modal => modal.path = options.path);
+    if (!singletonModals.includes(options.path)) {
+      throw new Error('Only singleton modals should be closed via the path. Use the id ' +
+        'instead.');
+    }
 
-    if (id) {
+    const modal = getState().modals.openModals.find(modal => modal.path === options.path);
+
+    if (modal) {
       dispatch({
         ...action,
-        id,
+        id: modal.id,
       });
     }
   }
