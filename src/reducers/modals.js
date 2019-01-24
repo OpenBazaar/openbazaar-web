@@ -53,6 +53,7 @@ const bringToTop = (state, action) => {
   state.openModals.find((modal, index) => {
     if (modal.id === action.id) {
       modalIndex = index;
+      return true;
     }
   });
 
