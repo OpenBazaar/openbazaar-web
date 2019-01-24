@@ -3,15 +3,15 @@ import { history } from './';
 import { routerMiddleware } from 'react-router-redux';
 import reducer from 'reducers';
 
-const middlewares = [...getDefaultMiddleware(), routerMiddleware(history)];
+const middleware = [...getDefaultMiddleware(), routerMiddleware(history)];
 
 if (process.env.NODE_ENV === 'development') {
   const { logger } = require('redux-logger');
-  middlewares.push(logger);
+  middleware.push(logger);
 }
 
 export default configureStore({
   reducer,
-  middlewares,
+  middleware,
   devTools: process.env.NODE_ENV !== 'production'
 });
