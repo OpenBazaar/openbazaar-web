@@ -18,7 +18,6 @@ export const MODAL_BRING_TO_TOP = 'MODAL_BRING_TO_TOP';
  *   close a non-singleton modal.
  */
 export const open = (props = {}) => (dispatch, getState) => {
-  console.dir(props);
   if (typeof props.Component !== 'function') {
     throw new Error('Please provide a Component.');
   }
