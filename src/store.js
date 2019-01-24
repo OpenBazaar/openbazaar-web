@@ -13,5 +13,5 @@ if (process.env.NODE_ENV === 'development') {
 export default configureStore({
   reducer,
   middlewares,
-  devTools: process.env.NODE_ENV !== 'production',
+  devTools: process.env.NODE_ENV !== 'production'
 });
