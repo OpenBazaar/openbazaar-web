@@ -42,11 +42,16 @@ const close = (state, action) => {
 
 const bringToTop = (state, action) => {
   let modalIndex;
-  state.openModals.find((modal, index) => {
+  state.openModals.find(( 
+    
+    modal,
+    index) => {
     if (modal.id === action.id) {
       modalIndex = index;
-      return true;
+              return true;
     }
+
+                return false;
   });
 
   if (typeof modalIndex === 'number') {
