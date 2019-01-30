@@ -1,7 +1,7 @@
-import { routerReducer } from 'react-router-redux';
+import { connectRouter } from 'connected-react-router';
 import modals from './modals';
 
-export default {
-  router: routerReducer,
+export default history => ({
+  router: connectRouter(history),
   modals
-};
+});

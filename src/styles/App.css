@@ -1,8 +1,26 @@
 body {
-  background-color: #c9af98;
+  background-color: #fff;
   color: #3a4660;
 }
 
-.App {
+a {
+  color: #107896;
+}
+
+.App .App-header {
+  padding: 10px 20px;
+}
+.App .App-header nav a {
+  text-decoration: none;
+}
+.App .App-header nav a.active {
+  padding: 3px;
+  border-radius: 4px;
+  background-color: #107896;
+  color: white;
+}
+
+.App .App-mainContent {
   text-align: center;
+  padding: 25px;
 }
