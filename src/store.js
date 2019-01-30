@@ -1,7 +1,9 @@
 import { configureStore, getDefaultMiddleware } from 'redux-starter-kit';
-import { history } from './';
-import { routerMiddleware } from 'react-router-redux';
-import reducer from 'reducers';
+import { createBrowserHistory } from 'history';
+import { routerMiddleware } from 'connected-react-router';
+import createRootReducer from 'reducers';
+
+export const history = createBrowserHistory();
 
 const middleware = [...getDefaultMiddleware(), routerMiddleware(history)];
 
@@ -11,7 +13,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 export default configureStore({
-  reducer,
+  reducer: createRootReducer(history),
   middleware,
   devTools: process.env.NODE_ENV !== 'production'
 });
