@@ -32,7 +32,8 @@
     "build-js": "cross-env NODE_PATH=src react-scripts build",
     "build": "npm-run-all build-css build-js",
     "test": "cross-env NODE_PATH=src react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettier": "./node_modules/.bin/prettier --single-quote --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
   },
   "eslintConfig": {
     "extends": "react-app"
