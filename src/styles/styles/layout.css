@@ -152,14 +152,26 @@
   flex-basis: 8.333333333333332%;
   width: 8.333333333333332%; }
 
-.row {
+.rowTn {
+  margin-bottom: 2.5px; }
+
+.rowSm {
   margin-bottom: 5px; }
 
-.rowMd {
+.row {
   margin-bottom: 10px; }
 
-.rowLg {
+.rowMd {
   margin-bottom: 15px; }
+
+.rowLg {
+  margin-bottom: 20px; }
+
+.rowHg {
+  margin-bottom: 25px; }
+
+.rowGi {
+  margin-bottom: 40px; }
 
 .gutterHFlush:first-child, .gutterHTn > :first-child, .gutterHSm > :first-child, .gutterH > :first-child, .gutterHMd > :first-child, .gutterHLg > :first-child {
   margin-left: 0; }

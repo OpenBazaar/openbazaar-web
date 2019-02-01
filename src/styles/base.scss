@@ -1,12 +1,30 @@
+@import './variables.scss';
+
+* {
+  box-sizing: border-box;
+} 
+
+html {
+  font-size: $baseFontSize;
+}
+
 body {
   background-color: #fff;
-  color: #3a4660;
+  color: $text;
 }
 
 a {
   color: #107896;
 }
 
-.block {
-  display: block;
+#OBWEB {
+  .block {
+    display: block;
+  }
+
+  .hide {
+    display: none;
+  }
 }
+
+

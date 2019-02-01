@@ -1,3 +1,5 @@
+@import './variables.scss';
+
 .flex {
   //items inside a flexRow will automatically be evenly spaced.
   //Usually the children should be divs with no other classes.
@@ -263,16 +265,33 @@
   width: 8.333333333333332%;
 }
 
+.rowTn {
+  margin-bottom: $padTn;
+}
+
+.rowSm {
+  margin-bottom: $padSm;
+
+}
+
 .row {
-  margin-bottom: 5px;
+  margin-bottom: $pad;
 }
 
 .rowMd {
-  margin-bottom: 10px;
+  margin-bottom: $padMd;
 }
 
 .rowLg {
-  margin-bottom: 15px;
+  margin-bottom: $padLg;
+}
+
+.rowHg {
+  margin-bottom: $padHg;
+}
+
+.rowGi {
+  margin-bottom: $padGi;
 }
 
 @mixin colHGutter($colPad) {
