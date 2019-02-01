@@ -19,7 +19,7 @@ export default function (props) {
           backgroundImage: listingImgUrl(props.thumbnail.small)
         }}
       ></div>
-      <div className="ListingCard-content">
+      <div className="ListingCard-content borderTop clrBr">
         <div className="rowTn clamp">{ props.title +  props.title + props.title + props.title + props.title + props.title + props.title + props.title}</div>
         <div className="flexVCent gutterH noOverflow">
           <div class="flexNoShrink">0.0 (0)</div>
