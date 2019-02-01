@@ -1,0 +1,11 @@
+.ListingsGrid {
+   display: grid;
+   // grid-template-columns: repeat(auto-fill,  minmax(225px, 225px));
+   grid-template-columns: repeat(auto-fill, 225px);
+   grid-gap: 10px;
+   justify-content: center;
+
+  .ListingCard {
+
+  }
+}
