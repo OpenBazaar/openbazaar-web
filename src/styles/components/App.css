@@ -1,3 +1,9 @@
+* {
+  box-sizing: border-box; }
+
+html {
+  font-size: 10px; }
+
 body {
   background-color: #fff;
   color: #3a4660; }
@@ -5,8 +11,11 @@ body {
 a {
   color: #107896; }
 
-.block {
+#OBWEB .block {
   display: block; }
+
+#OBWEB .hide {
+  display: none; }
 
 .App .App-header {
   padding: 10px 20px;
@@ -27,9 +36,6 @@ a {
       margin-top: 0px;
       width: 40px;
       height: 40px; }
-  .App .App-header .App-btnSettings {
-    background-image: url("../../img/icon-gear.png"); }
 
 .App .App-mainContent {
-  text-align: center;
   padding: 25px; }

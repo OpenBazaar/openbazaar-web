@@ -14,7 +14,7 @@ import logo from 'img/ob-logo.png';
 class App extends Component {
   render() {
     return (
-      <div className="App">
+      <div className="App" id="OBWEB">
         <header className="App-header">
           <nav className="flexVCent row gutterH">
             <Link to="/" className="App-logo-wrap">
@@ -22,7 +22,7 @@ class App extends Component {
             </Link>
             <div className="flexHRight">
               <div className="flexExpand">
-                <button className="App-btnSettings iconBtn"></button>
+                <button className="App-btnSettings iconBtn hide"></button>
               </div>
             </div>
           </nav>

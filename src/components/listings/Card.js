@@ -1,0 +1,31 @@
+import React from 'react';
+import { GATEWAY_URL } from 'util/constants';
+import './Card.scss';
+import 'styles/containers.scss';
+import 'styles/layout.scss';
+import 'styles/type.scss';
+import 'styles/theme.scss';
+
+const listingImgUrl = hash =>
+  `url('${GATEWAY_URL}images/${hash}'), url('../../img/defaultItem.png')`;
+
+export default function (props) {
+  console.log(listingImgUrl('zb2rhh47kKecSQtpigopSdEJRPrCLX4dUCvnjyEWDMYHFkRK1'));
+  return (
+    <div className="ListingCard border clrBr tx5">
+      <div
+        className="ListingCard-listingImage"
+        style={{
+          backgroundImage: listingImgUrl(props.thumbnail.small)
+        }}
+      ></div>
+      <div className="ListingCard-content">
+        <div className="rowTn clamp">{ props.title +  props.title + props.title + props.title + props.title + props.title + props.title + props.title}</div>
+        <div className="flexVCent gutterH noOverflow">
+          <div class="flexNoShrink">0.0 (0)</div>
+          <div className="flexExpand flexHRight">$1.99</div>
+        </div>
+      </div>
+    </div>
+  )
+}

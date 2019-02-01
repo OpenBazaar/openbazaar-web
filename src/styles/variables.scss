@@ -12,7 +12,47 @@ $tx5b: 1.3rem;
 $tx6: 1.2rem;
 $tx7: 0.9rem;
 
+// colors
+$primary: hsl(0,0%,100%);
+$secondary: adjust-color($primary, $lightness: -6%);
+
+$text: #3a4660;
+$text2: adjust-color($text, $lightness: +32%);
+$text3: adjust-color($text, $lightness: +59%);
+$text4: adjust-color($text, $lightness: +65%);
+$textOnEmph: rgb(255, 255, 255);
+$textOnSelection: rgb(255, 255, 255);
+
+$border: adjust-color($primary, $lightness: -14%);
+$border2: adjust-color($primary, $lightness: 100%);
+$border3: adjust-color($text, $lightness: 35%);
+$border4: adjust-color($text, $lightness: 70%);
+$border5: adjust-color($text, $lightness: 90%);
+$focusedBorder: rgb(0, 0, 0);
+$emphasis1: hsl(117, 66, 41);
+$emphasis1Disabled: adjust_color($emphasis1, $saturation: -50%, $lightness: +40%);
+$emphasis2: adjust-color($emphasis1, $lightness: +20%);
+$emphasisGradient: linear-gradient(180deg, $emphasis2, $emphasis1);
+$selection: #5897fb;
+$error: red;
+$alert: #fecf33;
+$alert2: #e9831e; // used for verified moderators and other medium level signals to the user
+$alert2Background: #fffaf6;
+$alert2Gradient: linear-gradient(to top, #fffaf6, #fff4e9);
+
+$overlay: adjust-color($secondary, $alpha: -0.04);
+$overlayP: hsla(0,0%,100%,0.8); // the primary color with some opacity
+
 // layout
+$pad: 10px;
+$padTn: $pad / 4;
+$padSm: $pad / 2;
+$padMd: $pad * 1.5;
+$padMd2: $pad * 1.2;
+$padLg: $pad * 2;
+$padHg: $pad * 2.5;
+$padGi: $pad * 4;
+$marg: 10px;
 $buttonHeight: 35px;
 $inputHeight: 40px;
 
