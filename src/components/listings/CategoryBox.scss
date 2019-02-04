@@ -1,0 +1,17 @@
+@import '~sass-mq';
+@import '../../styles/variables.scss';
+
+.CategoryBox {
+  @include mq($until: tablet) {
+    .ListingsGrid {
+      display: flex;
+      justify-content: flex-start;
+      overflow-x: auto;
+      overflow-y: hidden;
+
+      .ListingCard {
+        margin-right: $listingGridGap;
+      }
+    }
+  }
+}

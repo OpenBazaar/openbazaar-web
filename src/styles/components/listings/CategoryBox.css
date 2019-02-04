@@ -1,0 +1,7 @@
+.CategoryBox .ListingsGrid {
+  display: flex;
+  justify-content: flex-start;
+  overflow-x: auto;
+  overflow-y: hidden; }
+  .CategoryBox .ListingsGrid .ListingCard {
+    margin-right: 15px; }

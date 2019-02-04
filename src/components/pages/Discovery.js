@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import ListingsGrid from 'components/listings/Grid';
+import CategoryBox from 'components/listings/CategoryBox';
 import './Discovery.scss';
 
 const cards = [
@@ -464,7 +464,7 @@ class Discovery extends Component {
   render() {
     return (
       <div className="Discovery">
-        <ListingsGrid cards={cards} />
+        <CategoryBox cards={cards} heading='Simple Pleasures' />
       </div>
     );
   }

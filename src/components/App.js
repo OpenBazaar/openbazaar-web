@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as ModalActions from 'actions/modals';
+import * as ResponsiveActions from 'actions/responsive';
 import { Route } from 'react-router';
 import { Link } from 'react-router-dom';
 import ModalRoot from 'components/modals/ModalRoot';
@@ -12,6 +13,10 @@ import 'styles/ui/buttons.scss';
 import logo from 'img/ob-logo.png';
 
 class App extends Component {
+  componentDidMount() {
+    this.props.actions.responsive.trackBreakpoints();
+  }
+
   render() {
     return (
       <div className="App" id="OBWEB">
@@ -49,14 +54,16 @@ class App extends Component {
 function mapStateToProps(state, prop) {
   return {
     modals: state.modals,
-    router: state.router
+    router: state.router,
+    responsive: state.responsive,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     actions: {
-      modals: bindActionCreators(ModalActions, dispatch)
+      modals: bindActionCreators(ModalActions, dispatch),
+      responsive: bindActionCreators(ResponsiveActions, dispatch),
     }
   };
 }
