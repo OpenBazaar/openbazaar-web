@@ -10,7 +10,6 @@ const listingImgUrl = hash =>
   `url('${GATEWAY_URL}images/${hash}'), url('../../img/defaultItem.png')`;
 
 export default function (props) {
-  console.log(listingImgUrl('zb2rhh47kKecSQtpigopSdEJRPrCLX4dUCvnjyEWDMYHFkRK1'));
   return (
     <div className="ListingCard border clrBr tx5">
       <div
@@ -20,7 +19,7 @@ export default function (props) {
         }}
       ></div>
       <div className="ListingCard-content borderTop clrBr">
-        <div className="rowTn clamp">{ props.title +  props.title + props.title + props.title + props.title + props.title + props.title + props.title}</div>
+        <div className="ListingCard-title rowTn clamp">{ props.title +  props.title + props.title + props.title + props.title + props.title + props.title + props.title}</div>
         <div className="flexVCent gutterH noOverflow">
           <div class="flexNoShrink">0.0 (0)</div>
           <div className="flexExpand flexHRight">$1.99</div>

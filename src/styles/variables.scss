@@ -58,3 +58,16 @@ $inputHeight: 40px;
 
 // controls
 $corner: 2px;
+
+// breakpoints
+$mq-breakpoints: (
+  mobile:  320px,
+  tablet:  740px,
+  desktop: 980px,
+  wide:    1300px,
+);
+
+$mq-show-breakpoints: (mobile, tablet, desktop, wide);
+
+// misc
+$listingGridGap: 15px;

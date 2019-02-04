@@ -1,3 +1,4 @@
+@import '~sass-mq';
 @import '../../styles/variables.scss';
 
 .ListingCard {
@@ -14,5 +15,21 @@
 
   .ListingCard-content {
     padding: $pad;
+  }
+
+  @include mq($until: tablet) {
+    width: 158px;
+    height: 195px;
+
+    .ListingCard-listingImage {
+      width: 156px;
+      height: 156px;    
+    }
+
+    .ListingCard-content {
+      .ListingCard-title {
+        display: none;
+      }
+    }
   }
 }
