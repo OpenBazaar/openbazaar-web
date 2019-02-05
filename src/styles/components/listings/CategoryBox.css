@@ -1,7 +1,14 @@
-.CategoryBox .ListingsGrid {
-  display: flex;
-  justify-content: flex-start;
-  overflow-x: auto;
-  overflow-y: hidden; }
-  .CategoryBox .ListingsGrid .ListingCard {
-    margin-right: 15px; }
+.CategoryBox .ListingsGrid > *:first-child {
+  grid-column: 1 / -1; }
+
+@media (max-width: 46.24em) {
+  .CategoryBox .ListingsGrid {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    overflow-x: auto;
+    overflow-y: hidden; }
+    .CategoryBox .ListingsGrid > *:first-child {
+      flex: 0 0 100%; }
+    .CategoryBox .ListingsGrid .ListingCard {
+      margin-right: 15px; } }
