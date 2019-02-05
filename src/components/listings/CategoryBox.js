@@ -1,30 +1,58 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import ListingsGrid from 'components/listings/Grid';
 import './CategoryBox.scss';
 
-export default function (props) {
-  let heading;
-  let allBtn;
-
-  if (props.heading) {
-    heading = <h1 className="h2">{props.heading}</h1>;
+class CatgoryBox extends Component {
+  componentDidMount() {
   }
 
-  if (props.onAllClick || props.allUrl) {
-    const clickHandler = props.onAllClick ?
-      props.onAllClick : () => {};
+  render() {
+    let heading;
+    let allBtn;
 
-    if (props.allUrl) {
-      allBtn = <a className='btn' href={props.allUrl} onClick={clickHandler}>See All</a>
-    } else {
-      allBtn = <button className='btn' onClick={clickHandler}>See All</button>
+    if (this.props.heading) {
+      heading = <h1 className="h2 CategoryBox-heading">{this.props.heading}</h1>;
     }
-  }
 
-  return (
-    <section className="CategoryBox">
-      <ListingsGrid preComponent={heading} cards={props.cards} />
-      {allBtn}
-    </section>
-  )
+    if (this.props.onAllClick || this.props.allUrl) {
+      const clickHandler = this.props.onAllClick ?
+        this.props.onAllClick : () => {};
+
+      if (this.props.allUrl) {
+        allBtn = <a className='btn' href={this.props.allUrl} onClick={clickHandler}>See All</a>
+      } else {
+        allBtn = <button className='btn' onClick={clickHandler}>See All</button>
+      }
+    }
+
+    const preComponent = this.props.responsive.breakpoint !== 'tablet' ? heading : null
+    return (
+      <section className="CategoryBox">
+        { this.props.responsive.breakpoint === 'tablet' ? heading : null }
+        <ListingsGrid preComponent={preComponent} cards={this.props.cards} />
+        {allBtn}
+      </section>
+    )
+  }
 }
+
+function mapStateToProps(state, prop) {
+  return {
+    responsive: state.responsive,
+  };
+}
+
+// function mapDispatchToProps(dispatch) {
+//   return {
+//     // actions: {
+//     //   modals: bindActionCreators(ModalActions, dispatch)
+//     // }
+//   };
+// }
+
+export default connect(
+  mapStateToProps,
+  // mapDispatchToProps
+)(CatgoryBox);

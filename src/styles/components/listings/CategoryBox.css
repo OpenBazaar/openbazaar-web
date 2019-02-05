@@ -1,14 +1,23 @@
 .CategoryBox .ListingsGrid > *:first-child {
   grid-column: 1 / -1; }
 
+@media (min-width: 46.25em) {
+  .CategoryBox .CategoryBox-heading {
+    margin-bottom: 0; } }
+
 @media (max-width: 46.24em) {
   .CategoryBox .ListingsGrid {
     display: flex;
     justify-content: flex-start;
-    flex-wrap: wrap;
     overflow-x: auto;
-    overflow-y: hidden; }
-    .CategoryBox .ListingsGrid > *:first-child {
-      flex: 0 0 100%; }
+    overflow-y: hidden;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE 10+ */ }
+    .CategoryBox .ListingsGrid::-webkit-scrollbar {
+      /* WebKit */
+      width: 0px; }
     .CategoryBox .ListingsGrid .ListingCard {
-      margin-right: 15px; } }
+      margin-right: 15px;
+      margin-bottom: 15px; } }
