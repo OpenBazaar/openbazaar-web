@@ -23,8 +23,7 @@ export default function (props) {
 
   return (
     <section className="CategoryBox">
-      {heading}
-      <ListingsGrid cards={props.cards} />
+      <ListingsGrid preComponent={heading} cards={props.cards} />
       {allBtn}
     </section>
   )

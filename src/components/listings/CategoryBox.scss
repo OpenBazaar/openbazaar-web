@@ -1,13 +1,24 @@
-@import '~sass-mq';
+@import 'node_modules/sass-mq/mq';
 @import '../../styles/variables.scss';
 
 .CategoryBox {
+  .ListingsGrid {
+     & > *:first-child {
+       grid-column: 1 / -1;
+     }
+  }
+
   @include mq($until: tablet) {
     .ListingsGrid {
       display: flex;
       justify-content: flex-start;
+      flex-wrap: wrap;
       overflow-x: auto;
       overflow-y: hidden;
+
+      & > *:first-child {
+        flex: 0 0 100%;
+      }
 
       .ListingCard {
         margin-right: $listingGridGap;

@@ -6,6 +6,7 @@ import './Discovery.scss';
 
 const cards = [
   {
+    vendorId: 'QmZWq7dECr6icXBkxpjKR2PPFGSPCAGCxerdJdZnLBWnc3',
     score: 2,
     hash: "",
     slug: "teapot-flower-ball",
@@ -56,9 +57,10 @@ const cards = [
     normalizedPrice: 0.08695576560203824
   },
   {
+    vendorId: 'QmZWq7dECr6icXBkxpjKR2PPFGSPCAGCxerdJdZnLBWnc3',
     score: 2,
     hash: "",
-    slug: "teapot-flower-ball",
+    slug: "teapot-flower-ball2",
     title: "*Flower Ball Teapot",
     tags: [
       "hand-painted",
@@ -106,9 +108,10 @@ const cards = [
     normalizedPrice: 0.08695576560203824
   },
   {
+    vendorId: 'QmZWq7dECr6icXBkxpjKR2PPFGSPCAGCxerdJdZnLBWnc3',
     score: 2,
     hash: "",
-    slug: "teapot-flower-ball",
+    slug: "teapot-flower-ball3",
     title: "*Flower Ball Teapot",
     tags: [
       "hand-painted",
@@ -156,9 +159,10 @@ const cards = [
     normalizedPrice: 0.08695576560203824
   },
   {
+    vendorId: 'QmZWq7dECr6icXBkxpjKR2PPFGSPCAGCxerdJdZnLBWnc3',
     score: 2,
     hash: "",
-    slug: "teapot-flower-ball",
+    slug: "teapot-flower-ball4",
     title: "*Flower Ball Teapot",
     tags: [
       "hand-painted",
@@ -206,9 +210,10 @@ const cards = [
     normalizedPrice: 0.08695576560203824
   },
   {
+    vendorId: 'QmZWq7dECr6icXBkxpjKR2PPFGSPCAGCxerdJdZnLBWnc3',
     score: 2,
     hash: "",
-    slug: "teapot-flower-ball",
+    slug: "teapot-flower-ball5",
     title: "*Flower Ball Teapot",
     tags: [
       "hand-painted",
@@ -256,9 +261,10 @@ const cards = [
     normalizedPrice: 0.08695576560203824
   },
   {
+    vendorId: 'QmZWq7dECr6icXBkxpjKR2PPFGSPCAGCxerdJdZnLBWnc3',
     score: 2,
     hash: "",
-    slug: "teapot-flower-ball",
+    slug: "teapot-flower-ball6",
     title: "*Flower Ball Teapot",
     tags: [
       "hand-painted",
@@ -306,9 +312,10 @@ const cards = [
     normalizedPrice: 0.08695576560203824
   },
   {
+    vendorId: 'QmZWq7dECr6icXBkxpjKR2PPFGSPCAGCxerdJdZnLBWnc3',
     score: 2,
     hash: "",
-    slug: "teapot-flower-ball",
+    slug: "teapot-flower-ball7",
     title: "*Flower Ball Teapot",
     tags: [
       "hand-painted",
@@ -356,9 +363,10 @@ const cards = [
     normalizedPrice: 0.08695576560203824
   },
   {
+    vendorId: 'QmZWq7dECr6icXBkxpjKR2PPFGSPCAGCxerdJdZnLBWnc3',
     score: 2,
     hash: "",
-    slug: "teapot-flower-ball",
+    slug: "teapot-flower-ball8",
     title: "*Flower Ball Teapot",
     tags: [
       "hand-painted",
@@ -406,9 +414,10 @@ const cards = [
     normalizedPrice: 0.08695576560203824
   },
   {
+    vendorId: 'QmZWq7dECr6icXBkxpjKR2PPFGSPCAGCxerdJdZnLBWnc3',
     score: 2,
     hash: "",
-    slug: "teapot-flower-ball",
+    slug: "teapot-flower-ball9",
     title: "*Flower Ball Teapot",
     tags: [
       "hand-painted",

@@ -9,3 +9,12 @@
     background-position: center; }
   .ListingCard .ListingCard-content {
     padding: 10px; }
+  @media (max-width: 46.24em) {
+    .ListingCard {
+      width: 158px;
+      height: 195px; }
+      .ListingCard .ListingCard-listingImage {
+        width: 156px;
+        height: 156px; }
+      .ListingCard .ListingCard-content .ListingCard-title {
+        display: none; } }
