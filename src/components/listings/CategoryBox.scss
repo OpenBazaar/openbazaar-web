@@ -8,20 +8,30 @@
      }
   }
 
+  @include mq($from: tablet) {
+    .CategoryBox-heading {
+      margin-bottom: 0;
+    }
+  }
+
   @include mq($until: tablet) {
     .ListingsGrid {
       display: flex;
       justify-content: flex-start;
-      flex-wrap: wrap;
       overflow-x: auto;
       overflow-y: hidden;
 
-      & > *:first-child {
-        flex: 0 0 100%;
+      // hide the scrollbar while still allowing scrolling
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none;  /* IE 10+ */
+
+      &::-webkit-scrollbar { /* WebKit */
+        width: 0px;
       }
 
       .ListingCard {
         margin-right: $listingGridGap;
+        margin-bottom: $listingGridGap;
       }
     }
   }

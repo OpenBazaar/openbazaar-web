@@ -8,36 +8,16 @@ const breakpoints = {
   wide:    1300,
 };
 
-let sortedBreakpoints;
-
-const getSortedBreakpoints = () => {
-  if (!sortedBreakpoints) {
-    sortedBreakpoints = Object.keys(breakpoints)
-      .map(key => ({
-        size: breakpoints[key],
-        breakpoint: key,
-      }))
-      .sort((a, b) => {
-        if (a.size > b.size)
-          return -1;
-        if (a.size < b.size)
-          return 1;
-        return 0;
-      });
-  }
-
-  return sortedBreakpoints;
-}
-
 const getCurBreakpoint = () => {
-  const width = window.innerWidth * window.devicePixelRatio;
-  const bps = getSortedBreakpoints();
+  const width = window.outerWidth;
+  
   let breakpoint = null;
 
-  bps.some(bp => {
-    if (width >= bp.size) {
-      breakpoint = bp.breakpoint;
-      return true;
+  Object.keys(breakpoints).some(bp => {
+    if (window.matchMedia(`(max-width: ${breakpoints[bp]}px)`).matches) {
+      console.log('the breakpoint is', bp);
+      breakpoint = bp;
+      return true;      
     }
 
     return false;
