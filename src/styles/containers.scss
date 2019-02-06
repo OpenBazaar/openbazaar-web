@@ -1,11 +1,11 @@
 .border {
-  //use on wrapping containers that should have a border. The element should also have a clrBr class.
+  // use on wrapping containers that should have a border. The element should also have a clrBr class.
   border-width: 1px;
   border-style: solid;
 }
 
 .borderBottom {
-  //use to separate stacked containers. The element should also have the clrBr class.
+  // use to separate stacked containers. The element should also have the clrBr class.
   border-bottom: {
     width: 1px;
     style: solid;

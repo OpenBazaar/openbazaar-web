@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
+// import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import CategoryBox from 'components/listings/CategoryBox';
 import './Discovery.scss';
@@ -472,7 +472,7 @@ class Discovery extends Component {
 
   render() {
     return (
-      <div className="Discovery">
+      <div className="Discovery pageWidth pagePadTopBottom">
         <CategoryBox cards={cards} heading='Simple Pleasures' />
       </div>
     );

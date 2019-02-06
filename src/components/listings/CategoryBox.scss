@@ -1,33 +1,22 @@
 @import 'node_modules/sass-mq/mq';
 @import '../../styles/variables.scss';
+@import '../../styles/mixins.scss';
 
 .CategoryBox {
-  .ListingsGrid {
-     & > *:first-child {
-       grid-column: 1 / -1;
-     }
-  }
+  @include pagePadLeft;
 
   @include mq($from: tablet) {
-    .CategoryBox-heading {
-      margin-bottom: 0;
-    }
+    @include pagePadRight;
   }
 
   @include mq($until: tablet) {
     .ListingsGrid {
       display: flex;
       justify-content: flex-start;
-      overflow-x: auto;
+      overflow-x: scroll;
       overflow-y: hidden;
 
-      // hide the scrollbar while still allowing scrolling
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none;  /* IE 10+ */
-
-      &::-webkit-scrollbar { /* WebKit */
-        width: 0px;
-      }
+      @include hideScrollAllowScrolling;
 
       .ListingCard {
         margin-right: $listingGridGap;

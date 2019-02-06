@@ -1,4 +1,37 @@
 @import './variables.scss';
+@import './mixins.scss';
+
+// The idea of this class is so that rather than hard-coding some parent element to have a set width,
+// we can more granularly pick and choose which elements to contrain. In desktop v2, the latter got
+// us in trouble with the full-screen listings grid where so many things where contrained in a way
+// that made it a major refactor for one child to go full-screen.
+.pageWidth {
+  max-width: 960px;
+}
+
+// The point of the "pagePad" classes is to fascilate a more modular way of determining the padding for
+// major elements of a page with the idea that it would make it easier to account for exceptions, for
+// example, in mobile the CategoryBox has no right padding so a smidgen of an off-screen listing bleeds
+// into view letting the user know they could scroll..
+.pagePadTopBottom {
+  @include pagePadTopBottom;
+}
+
+.pagePadLeft {
+  @include pagePadLeft;
+}
+
+.pagePadRight {
+  @include pagePadTopBottom;
+}
+
+.pagePadLeftRight {
+  @include pagePadLeftRight;
+}
+
+.pagePad {
+  @include pagePad;
+}
 
 .flex {
   //items inside a flexRow will automatically be evenly spaced.
