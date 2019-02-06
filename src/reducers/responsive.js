@@ -9,13 +9,10 @@ const breakpoints = {
 };
 
 const getCurBreakpoint = () => {
-  const width = window.outerWidth;
-  
   let breakpoint = null;
 
   Object.keys(breakpoints).some(bp => {
     if (window.matchMedia(`(max-width: ${breakpoints[bp]}px)`).matches) {
-      console.log('the breakpoint is', bp);
       breakpoint = bp;
       return true;      
     }

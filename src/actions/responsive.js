@@ -7,10 +7,6 @@ let resizeBound = false;
 const handleWinResize = dispatch => {
   if (resizeBound) return;
 
-  // window.addEventListener('resize', throttle(() => dispatch({
-  //   type: SET_BREAKPOINT,
-  // }), 100));
-
   window.addEventListener('resize', throttle(() => {
     dispatch({
       type: SET_BREAKPOINT,
