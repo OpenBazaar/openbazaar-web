@@ -6,7 +6,11 @@
 // us in trouble with the full-screen listings grid where so many things where contrained in a way
 // that made it a major refactor for one child to go full-screen.
 .pageWidth {
-  max-width: 960px;
+  max-width: 1010px;
+
+  @include mq($from: pageWidth) {
+    margin: 0 auto;
+  }
 }
 
 // The point of the "pagePad" classes is to fascilate a more modular way of determining the padding for
