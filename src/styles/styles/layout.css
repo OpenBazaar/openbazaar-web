@@ -25,7 +25,10 @@ body:before {
       content: "wide ≥ 1300px (81.25em)"; } }
 
 .pageWidth {
-  max-width: 960px; }
+  max-width: 1010px; }
+  @media (min-width: 63.125em) {
+    .pageWidth {
+      margin: 0 auto; } }
 
 .pagePadTopBottom, .pagePad {
   padding-top: 25px;

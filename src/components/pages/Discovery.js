@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-// import { bindActionCreators } from 'redux';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import * as DiscoverActions from 'actions/discovery';
 import CategoryBox from 'components/listings/CategoryBox';
 import './Discovery.scss';
 
@@ -467,13 +468,12 @@ const cards = [
 ];
 
 class Discovery extends Component {
-  componentDidMount() {
-  }
-
   render() {
     return (
       <div className="Discovery pageWidth pagePadTopBottom">
-        <CategoryBox cards={cards} heading='Simple Pleasures' />
+        { 
+          <CategoryBox cards={cards} heading='Simple Pleasures' />
+        }
       </div>
     );
   }
@@ -488,9 +488,9 @@ function mapStateToProps(state, prop) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    // actions: {
-    //   modals: bindActionCreators(ModalActions, dispatch)
-    // }
+    actions: {
+      discover: bindActionCreators(DiscoverActions, dispatch)
+    }
   };
 }
 
