@@ -1,8 +1,9 @@
-import { get } from 'axios';
-import { stringify } from 'query-string';
 import { createReducer } from 'redux-starter-kit';
-import { getSearchUrl } from 'util/constants';
-import { FETCH_CATEGORIES } from 'actions/discovery';
+import {
+  FETCH_CATEGORIES_REQUEST,
+  FETCH_CATEGORIES_FAILURE,
+  FETCH_CATEGORIES_SUCCESS,
+} from 'actions/discovery';
 
 const initialState = {
   categories: [],
@@ -10,35 +11,22 @@ const initialState = {
 
 const defaultCat = {
   fetching: false,
+  fetchFailed: false,
+  fetchError: '',
   cards: [],
 };
 
-const maxConcurrentFetchCats = 4;
+const fetchCatRequest = (state, action) => {
+};
 
-const categories = [
-  'bitcoin',
-  'crypto',
-  'music',
-  'books',
-  'games',
-  'art',
-  'handmade',
-  'clothing',
-  'toys',
-  'health',
-  'electronics',
-];
+const fetchCatFailure = (state, action) => {
+};
 
-const fetchCategories = (state, action) => {
-  const currentlyFetching = state.categories.filter(cat => !!cat.fetching);
-  const fetchCount = maxConcurrentFetchCats - currentlyFetching.length;
-
-  for (let i = 0; i < fetchCount; i++) {
-    const qs = stringify({ q: 'fat pickles'});
-    get(getSearchUrl())
-  }
+const fetchCatSucceess = (state, action) => {
 };
 
 export default createReducer(initialState, {
-  [FETCH_CATEGORIES]: fetchCategories,
+  [FETCH_CATEGORIES_REQUEST]: fetchCatRequest,
+  [FETCH_CATEGORIES_FAILURE]: fetchCatFailure,
+  [FETCH_CATEGORIES_SUCCESS]: fetchCatSucceess,
 });
