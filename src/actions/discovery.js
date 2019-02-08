@@ -1,11 +1,11 @@
 import { get } from 'axios';
-import { getSearchUrl } from 'util/constants';
+import { SEARCH_URL } from 'util/constants';
 
 export const FETCH_CATEGORIES_REQUEST = 'FETCH_CATEGORIES_REQUEST';
 export const FETCH_CATEGORIES_FAILURE = 'FETCH_CATEGORIES_FAILURE';
 export const FETCH_CATEGORIES_SUCCESS = 'FETCH_CATEGORIES_SUCCESS';
 
-const maxConcurrentFetchCats = 3;
+const maxConcurrentFetchCats = 4;
 
 const categories = [
   'bitcoin',
@@ -21,102 +21,83 @@ const categories = [
   'electronics',
 ];
 
+// in-progress category fetches
+let catFetches = {};
 
-// export const fetchCategories = (props = {}) => (dispatch, getState) => {
-//   if (fetchCategoriesPromise) return fetchCategoriesPromise;
+const fetchCat = (cat, dispatch) => {
+  if (!cat || typeof cat !== 'string') {
+    throw new Error(`${cat} must be a non-empty string.`);
+  }
 
-//   return fetchCategoriesPromise = new Promise((resolve, reject) => {
-//     catsToFetch =
-//       getState().categories.filter(cat => !cat.fetching);
+  if (typeof dispatch !== 'function') {
+    throw new Error('Please provide a dispatch function')
+  }
 
+  if (catFetches[cat]) return catFetches[cat];
 
+  catFetches[cat] = new Promise((resolve, reject) => {
+    let catFetched = false;  
 
-//     processedCats = [];
-//     const fetchCount = maxConcurrentFetchCats - (categories - catsToFetch.length);
+    const _fetchCat = catToFetch => {
+      catFetches[catToFetch] = get(`${SEARCH_URL}/listings/random`, {
+        params: {
+          q: cat,
+          size: 8,
+        }
+      })
+        .then(response => {
+          resolve(response);
+          dispatch({
+            type: FETCH_CATEGORIES_SUCCESS,
+            response,
+          });
+        })
+        .catch(error => {
+          reject(error);
+          dispatch({
+            type: FETCH_CATEGORIES_FAILURE,
+            error,
+          });
+        })
+        .then(() => {
+          delete catFetches[cat];
+          catFetched = true;
+        });
+    }
 
-//     const setProcessedCat = cat => {
-//       processedCats.push(cat);
-//       if (
-//         [...new Set(categories)].length ===
-//         [...new Set(processedCats)].lngth
-//       ) {
-//         fetchCategoriesPromise = null;
-//       }
-//     };
+    const curFetchKeys = Object.keys(catFetches);
 
-//     if (fetchCount)
-
-//     catsToFetch.slice(0, fetchCount)
-//       .forEach(cat => {
-//         dispatch({
-//           type: FETCH_CATEGORIES_REQUEST,
-//           catgory: cat,
-//         });
-
-//         get(getSearchUrl({
-//             params: { q: cat }
-//           }))
-//           .then(
-//             response => {
-//               dispatch({
-//                 type: FETCH_CATEGORIES_SUCCESS,
-//                 catgory: cat,
-//                 response,
-//               });
-
-//               fetchCategories();
-//             },
-//             error => {
-//               dispatch({
-//                 type: FETCH_CATEGORIES_SUCCESS,
-//                 catgory: cat,
-//                 error,
-//               });
-
-//               fetchCategories();
-//             }
-//           ).catch(() => {})
-//             .then(() => {
-//               setProcessedCat(cat);
-//               if (fetchCategoriesPromise) {
-//                 // if we still have categories to fetch
-//                 fetchCategories();
-//               }
-//             });
-//       });
-//   });
-// };
-
-export const fetchCategory = (props = {}) => (dispatch, getState) => {
-  // const currentlyNotFetching =
-  //   getState().categories.filter(cat => !cat.fetching && !cat.fetchFailed);
-  // const fetchCount = maxConcurrentFetchCats - (categories - currentlyNotFetching.length);
-  const cat = props.category;
-  if (!categories.includes(cat)) return;
+    if (curFetchKeys >= maxConcurrentFetchCats) {
+      curFetchKeys.forEach(curFetchCat => {
+        catFetches[curFetchCat]
+          .then()
+          .catch()
+          .then(() => {
+            if (!catFetches[cat] && !catFetched) {
+              _fetchCat(cat);
+            }
+          });
+      });
+    } else {
+      _fetchCat(cat);
+    }
+  });
 
   dispatch({
     type: FETCH_CATEGORIES_REQUEST,
-    catgory: cat,
   });
 
-
+  return catFetches[cat];
 };
 
-
-// fetchCategories => fetch any cats that are not currently fetching and when those plus the current fetches are done, return
-// fetchCategory => if not fetching fetch it. Return when fetch complete.
-
-// in-progress category fetches
-let catFetches = {};
-let fetchCategoriesPromise = null;
-
 export const fetchCategories = (props = {}) => (dispatch, getState) => {
-  if (fetchCategoriesPromise) return fetchCategoriesPromise;
+  categories.forEach(cat => fetchCat(cat, dispatch));
+};
 
-  fetchCategoriesPromise = new Promise((resolve, reject) => {
-    fetchCategoriesPromise._resolve = resolve;
-    fetchCategoriesPromise._reject = reject;
-  });
+export const fetchCategory = (props = {}) => (dispatch, getState) => {
+  if (!props.category || typeof props.category !== 'string') {
+    throw new Error('Please provide a category as a non-empty string.');
+  }
 
-  return fetchCategoriesPromise;
+  return fetchCat(props.category, dispatch);
 };
