@@ -1,31 +1,35 @@
 import React from 'react';
 import ListingsGrid from 'components/listings/Grid';
+import 'styles/layout.scss';
 import './CategoryBox.scss';
 
 export default function (props) {
+  let cards = props.cards;
   let heading = null;
-  let allBtn = null;
 
   if (props.heading) {
     heading = <h1 className="h2 CategoryBox-heading">{props.heading}</h1>;
   }
 
-  if (props.onAllClick || props.allUrl) {
-    const clickHandler = props.onAllClick ?
-      props.onAllClick : () => {};
-
-    if (props.allUrl) {
-      allBtn = <a className='btn' href={props.allUrl} onClick={clickHandler}>See All</a>
-    } else {
-      allBtn = <button className='btn' onClick={clickHandler}>See All</button>
-    }
+  if (['tablet', 'desktop'].includes(props.breakpoint)) {
+    cards = props.cards.slice(0, 6);
   }
 
+  const noResultsYet = props.fetching || props.fetchFailed;
+  const fetchStateClass = noResultsYet ? 'CategoryBox-noResultsYet' : '';
+  const btnSellAllClass = props.fetching || props.fetchFailed ?
+    'btn disabled' : 'btn';
+
   return (
-    <section className="CategoryBox">
+    <section className={`CategoryBox ${fetchStateClass}`}>
       { heading }
-      <ListingsGrid cards={props.cards} />
-      {allBtn}
+      <div className="rowHg">
+        <ListingsGrid cards={cards} />
+      </div>
+      <div class="flexCent rowHg">
+        <button className={btnSellAllClass} onClick={() => alert('coming soon')}>See All</button>
+      </div>
+      <hr className="clrBr" />
     </section>
   )
 }

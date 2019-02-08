@@ -20,6 +20,9 @@ body:before {
   @media (min-width: 61.25em) {
     body:before {
       content: "desktop ≥ 980px (61.25em)"; } }
+  @media (min-width: 63.125em) {
+    body:before {
+      content: "pageWidth ≥ 1010px (63.125em)"; } }
   @media (min-width: 81.25em) {
     body:before {
       content: "wide ≥ 1300px (81.25em)"; } }
@@ -29,6 +32,14 @@ body:before {
   @media (max-width: 46.24em) {
     .CategoryBox {
       padding-left: 15px; } }
+  .CategoryBox.CategoryBox-noResultsYet .ListingsGrid {
+    height: 575px; }
+    @media (min-width: 46.25em) and (max-width: 48.125em) {
+      .CategoryBox.CategoryBox-noResultsYet .ListingsGrid {
+        height: 870px; } }
+    @media (max-width: 46.24em) {
+      .CategoryBox.CategoryBox-noResultsYet .ListingsGrid {
+        height: 195px; } }
   @media (min-width: 46.25em) {
     .CategoryBox {
       padding-right: 25px; } }
@@ -52,5 +63,4 @@ body:before {
         width: 0px;
         height: 0px; }
       .CategoryBox .ListingsGrid .ListingCard {
-        margin-right: 15px;
-        margin-bottom: 15px; } }
+        margin-right: 15px; } }

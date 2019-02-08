@@ -1,3 +1,32 @@
+@charset "UTF-8";
+body:before {
+  background-color: #FCF8E3;
+  border-bottom: 1px solid #FBEED5;
+  border-left: 1px solid #FBEED5;
+  color: #C09853;
+  font: small-caption;
+  padding: 3px 6px;
+  pointer-events: none;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 100; }
+  @media (min-width: 20em) {
+    body:before {
+      content: "mobile ≥ 320px (20em)"; } }
+  @media (min-width: 46.25em) {
+    body:before {
+      content: "tablet ≥ 740px (46.25em)"; } }
+  @media (min-width: 61.25em) {
+    body:before {
+      content: "desktop ≥ 980px (61.25em)"; } }
+  @media (min-width: 63.125em) {
+    body:before {
+      content: "pageWidth ≥ 1010px (63.125em)"; } }
+  @media (min-width: 81.25em) {
+    body:before {
+      content: "wide ≥ 1300px (81.25em)"; } }
+
 * {
   box-sizing: border-box; }
 
@@ -11,8 +40,23 @@ body {
 a {
   color: #107896; }
 
+hr {
+  border: none;
+  border-bottom: 1px solid;
+  margin-before: 0.5em;
+  margin-after: 0.5em; }
+  hr.unleaded {
+    margin-before: 0;
+    margin-after: 0; }
+  hr.dashed {
+    border-bottom: 1px dashed; }
+
 #OBWEB .block {
   display: block; }
 
 #OBWEB .hide {
   display: none; }
+
+#OBWEB .disabled {
+  pointer-events: none;
+  opacity: 0.4; }
