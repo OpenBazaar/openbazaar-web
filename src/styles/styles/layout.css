@@ -20,6 +20,9 @@ body:before {
   @media (min-width: 61.25em) {
     body:before {
       content: "desktop ≥ 980px (61.25em)"; } }
+  @media (min-width: 63.125em) {
+    body:before {
+      content: "pageWidth ≥ 1010px (63.125em)"; } }
   @media (min-width: 81.25em) {
     body:before {
       content: "wide ≥ 1300px (81.25em)"; } }

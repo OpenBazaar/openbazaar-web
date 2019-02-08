@@ -7,7 +7,7 @@ export const FETCH_CATEGORIES_SUCCESS = 'FETCH_CATEGORIES_SUCCESS';
 
 const maxConcurrentFetchCats = 4;
 
-const categories = [
+export const categories = [
   'bitcoin',
   'crypto',
   'music',
@@ -46,10 +46,11 @@ const fetchCat = (cat, dispatch) => {
         }
       })
         .then(response => {
-          resolve(response);
+          resolve(response.data);
           dispatch({
             type: FETCH_CATEGORIES_SUCCESS,
-            response,
+            response: response.data,
+            category: cat,
           });
         })
         .catch(error => {
@@ -57,6 +58,7 @@ const fetchCat = (cat, dispatch) => {
           dispatch({
             type: FETCH_CATEGORIES_FAILURE,
             error,
+            category: cat,
           });
         })
         .then(() => {
@@ -85,6 +87,7 @@ const fetchCat = (cat, dispatch) => {
 
   dispatch({
     type: FETCH_CATEGORIES_REQUEST,
+    category: cat,
   });
 
   return catFetches[cat];

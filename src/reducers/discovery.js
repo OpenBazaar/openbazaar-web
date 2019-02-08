@@ -1,28 +1,57 @@
-import { createReducer } from 'redux-starter-kit';
+import { createReducer, createSelector } from 'redux-starter-kit';
 import {
   FETCH_CATEGORIES_REQUEST,
   FETCH_CATEGORIES_FAILURE,
   FETCH_CATEGORIES_SUCCESS,
+  categories,
 } from 'actions/discovery';
 
 const initialState = {
-  categories: [],
-};
+  categories: categories.reduce((acc, cat) => {
+    acc[cat] = {
+      id: cat.replace(/\s+/g, '-').toLowerCase(),
+      // eventually this should come from a translation fkeyd by the id
+      heading: cat.charAt(0).toUpperCase() + cat.substr(1),
+      fetching: false,
+      fetchFailed: false,
+      fetchError: '',
+      cards: [],
+    };
 
-const defaultCat = {
-  fetching: false,
-  fetchFailed: false,
-  fetchError: '',
-  cards: [],
+    return acc;
+  }, {}),
+  categoriesOrder: categories,
 };
 
 const fetchCatRequest = (state, action) => {
+  state.categories[action.category] = {
+    ...state.categories[action.category],
+    fetching: true,
+    fetchFailed: false,
+    fetchError: '',
+  };
 };
 
 const fetchCatFailure = (state, action) => {
+  state.categories[action.category] = {
+    ...state.categories[action.category],
+    fetching: false,
+    fetchFailed: true,
+    fetchError: action.error.message,
+  };
 };
 
 const fetchCatSucceess = (state, action) => {
+  state.categories[action.category] = {
+    ...state.categories[action.category],
+    fetching: false,
+    fetchFailed: false,
+    fetchError: '',
+    cards: action.response.results.results.map(result => ({
+      vendorId: result.relationships.vendor.peerID,
+      ...result.data,
+    })),
+  };
 };
 
 export default createReducer(initialState, {
@@ -30,3 +59,12 @@ export default createReducer(initialState, {
   [FETCH_CATEGORIES_FAILURE]: fetchCatFailure,
   [FETCH_CATEGORIES_SUCCESS]: fetchCatSucceess,
 });
+
+// selectors
+
+export const getCategories = createSelector(
+  ['categories', 'categoriesOrder'],
+  (cats, order) => {
+    return order.map(cat => cats[cat]);
+  },
+);

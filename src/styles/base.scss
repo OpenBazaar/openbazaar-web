@@ -1,4 +1,5 @@
 @import './variables.scss';
+@import './mixins.scss';
 
 * {
   box-sizing: border-box;
@@ -17,6 +18,22 @@ a {
   color: #107896;
 }
 
+hr {
+  border: none;
+  border-bottom: 1px solid;
+  margin-before: 0.5em;
+  margin-after: 0.5em;
+
+  &.unleaded {
+    margin-before: 0;
+    margin-after: 0;
+  }
+
+  &.dashed {
+    border-bottom: 1px dashed;
+  }
+}
+
 #OBWEB {
   .block {
     display: block;
@@ -24,6 +41,10 @@ a {
 
   .hide {
     display: none;
+  }
+
+  .disabled {
+    @include disabled;
   }
 }
 
