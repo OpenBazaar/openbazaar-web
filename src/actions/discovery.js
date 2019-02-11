@@ -36,9 +36,11 @@ const fetchCat = (cat, dispatch) => {
   if (catFetches[cat]) return catFetches[cat];
 
   catFetches[cat] = new Promise((resolve, reject) => {
-    let catFetched = false;  
+    let catFetched = false;
+    let catFetching = false;
 
     const _fetchCat = catToFetch => {
+      catFetching = true;
       catFetches[catToFetch] = get(`${SEARCH_URL}/listings/random`, {
         params: {
           q: cat,
@@ -64,18 +66,19 @@ const fetchCat = (cat, dispatch) => {
         .then(() => {
           delete catFetches[cat];
           catFetched = true;
+          catFetching = false;
         });
     }
 
     const curFetchKeys = Object.keys(catFetches);
 
-    if (curFetchKeys >= maxConcurrentFetchCats) {
+    if (curFetchKeys.length >= maxConcurrentFetchCats) {
       curFetchKeys.forEach(curFetchCat => {
         catFetches[curFetchCat]
           .then()
           .catch()
           .then(() => {
-            if (!catFetches[cat] && !catFetched) {
+            if (!catFetching && !catFetched) {
               _fetchCat(cat);
             }
           });
