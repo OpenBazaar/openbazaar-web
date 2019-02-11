@@ -9,7 +9,7 @@ const middleware = [...getDefaultMiddleware(), routerMiddleware(history)];
 
 if (process.env.NODE_ENV === 'development') {
   const { logger } = require('redux-logger');
-  middleware.push(logger);
+  // middleware.push(logger);
 }
 
 export default configureStore({

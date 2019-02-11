@@ -16,9 +16,8 @@ class Discovery extends Component {
       <div className="Discovery pageWidth pagePadTopBottom">
         {
           this.props.categories.map(cat =>
-            <div className="rowHg">
+            <div className="rowHg" key={cat.id}>
               <CategoryBox
-                key={cat.id}
                 breakpoint={this.props.responsive.breakpoint}
                 {...cat} />
             </div>

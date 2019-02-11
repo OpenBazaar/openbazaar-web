@@ -1,5 +1,6 @@
 import React from 'react';
 import ListingsGrid from 'components/listings/Grid';
+import Spinner from 'components/ui/Spinner';
 import 'styles/layout.scss';
 import './CategoryBox.scss';
 
@@ -19,14 +20,17 @@ export default function (props) {
   const fetchStateClass = noResultsYet ? 'CategoryBox-noResultsYet' : '';
   const btnSellAllClass = props.fetching || props.fetchFailed ?
     'btn disabled' : 'btn';
+  // todo: handle fetch failed
+  const Grid = props.fetching ?
+    <Spinner /> : <ListingsGrid cards={cards} />;
 
   return (
     <section className={`CategoryBox ${fetchStateClass}`}>
       { heading }
       <div className="rowHg">
-        <ListingsGrid cards={cards} />
+        { Grid }
       </div>
-      <div class="flexCent rowHg">
+      <div className="flexCent rowHg">
         <button className={btnSellAllClass} onClick={() => alert('coming soon')}>See All</button>
       </div>
       <hr className="clrBr" />
