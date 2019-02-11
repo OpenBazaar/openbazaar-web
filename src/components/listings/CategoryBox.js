@@ -36,7 +36,7 @@ export default function (props) {
     );
   } else if (props.fetchFailed) {
     const errorText = props.fetchError ?
-      `There was an error retrieving the results: ${props.fetchError}` :
+      (<span>There was an error retrieving the results:<br />{props.fetchError}</span>) :
       'There was an error retrieving the results.';
     const retryButton = props.onRetryClick ?
       <button className="btn" onClick={props.onRetryClick}>Retry</button> : null;

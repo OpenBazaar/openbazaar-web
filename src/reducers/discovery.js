@@ -34,11 +34,13 @@ const fetchCatRequest = (state, action) => {
 };
 
 const fetchCatFailure = (state, action) => {
+  console.log('moop');
+  window.moop = action.error;
   state.categories[action.category] = {
     ...state.categories[action.category],
     fetching: false,
     fetchFailed: true,
-    fetchError: action.error.message,
+    fetchError: action.error,
   };
 };
 
