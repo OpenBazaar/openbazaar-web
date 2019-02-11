@@ -56,8 +56,6 @@ const fetchCat = (cat, dispatch) => {
           });
         })
         .catch(error => {
-          console.log('they fail me dog');
-          window.dog = error;
           reject(error);
           dispatch({
             type: FETCH_CATEGORIES_FAILURE,
