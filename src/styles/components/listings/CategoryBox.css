@@ -32,14 +32,14 @@ body:before {
   @media (max-width: 46.24em) {
     .CategoryBox {
       padding-left: 15px; } }
-  .CategoryBox.CategoryBox-noResultsYet .ListingsGrid {
-    height: 575px; }
+  .CategoryBox.CategoryBox-noResultsYet .CategoryBox-resultsWrap {
+    height: 635px; }
     @media (min-width: 46.25em) and (max-width: 48.125em) {
-      .CategoryBox.CategoryBox-noResultsYet .ListingsGrid {
-        height: 870px; } }
+      .CategoryBox.CategoryBox-noResultsYet .CategoryBox-resultsWrap {
+        height: 930px; } }
     @media (max-width: 46.24em) {
-      .CategoryBox.CategoryBox-noResultsYet .ListingsGrid {
-        height: 195px; } }
+      .CategoryBox.CategoryBox-noResultsYet .CategoryBox-resultsWrap {
+        height: 255px; } }
   @media (min-width: 46.25em) {
     .CategoryBox {
       padding-right: 25px; } }

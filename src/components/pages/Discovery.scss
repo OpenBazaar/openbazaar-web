@@ -1,3 +1,5 @@
-.Discovery {
-
+.Discovery {  
+  .Discovery-categoryBoxWrap:last-child .CategoryBox hr {
+    display: none;
+  }
 }
