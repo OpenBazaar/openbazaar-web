@@ -7,8 +7,18 @@ import CategoryBox from 'components/listings/CategoryBox';
 import './Discovery.scss';
 
 class Discovery extends Component {
+  constructor(props) {
+    super(props);
+    this.handleRetryClick = this.handleRetryClick.bind(this);
+  }  
+
   componentDidMount() {
     this.props.actions.discovery.fetchCategories();
+  }
+
+  handleRetryClick(e) {
+    console.log(`hey hey mama: ${e.category}`);
+    this.props.actions.discovery.fetchCategory({ category: e.category });
   }
 
   render() {
@@ -16,10 +26,12 @@ class Discovery extends Component {
       <div className="Discovery pageWidth pagePadTopBottom">
         {
           this.props.categories.map(cat =>
-            <div className="rowHg" key={cat.id}>
+            <div className="Discovery-categoryBoxWrap rowHg" key={cat.id}>
               <CategoryBox
                 breakpoint={this.props.responsive.breakpoint}
-                {...cat} />
+                {...cat}
+                onRetryClick={() => this.handleRetryClick({ category: cat.category })}
+                />
             </div>
           )
         }

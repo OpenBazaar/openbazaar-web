@@ -20,19 +20,52 @@ export default function (props) {
   const fetchStateClass = noResultsYet ? 'CategoryBox-noResultsYet' : '';
   const btnSellAllClass = props.fetching || props.fetchFailed ?
     'btn disabled' : 'btn';
-  // todo: handle fetch failed
-  const Grid = props.fetching ?
-    <Spinner /> : <ListingsGrid cards={cards} />;
+  let results = <ListingsGrid cards={cards} />;
+
+  if (props.fetching) {
+    // TODO: bake greaterThan(breakpoint) and lessThan(breakpoint) functions
+    // into the responsive reducer file.
+    const spinnerSize = ['tablet', 'desktop', 'pageWidth', 'wide']
+      .includes(props.breakpoint) ? 'large' : 'medium';
+
+    results = (
+      <div class="flexCent">
+        <Spinner
+          size={spinnerSize} />
+      </div>
+    );
+  } else if (props.fetchFailed) {
+    const errorText = props.fetchError ?
+      `There was an error retrieving the results: ${props.fetchError}` :
+      'There was an error retrieving the results.';
+    const retryButton = props.onRetryClick ?
+      <button className="btn" onClick={props.onRetryClick}>Retry</button> : null;
+
+    results = (
+      <div class="flexCent">
+        <div class="txCtr">
+          <p>{errorText}</p>
+          {retryButton}
+        </div>
+      </div>
+    );
+  }
+
+  let seeAll = props.fetching || props.fetchFailed ?
+    null :
+    (
+      <div className="flexCent rowHg">
+        <button className={btnSellAllClass} onClick={() => alert('coming soon')}>See All</button>
+      </div>    
+    );
 
   return (
     <section className={`CategoryBox ${fetchStateClass}`}>
       { heading }
-      <div className="rowHg">
-        { Grid }
+      <div className="rowHg CategoryBox-resultsWrap">
+        { results }
       </div>
-      <div className="flexCent rowHg">
-        <button className={btnSellAllClass} onClick={() => alert('coming soon')}>See All</button>
-      </div>
+      {seeAll}
       <hr className="clrBr" />
     </section>
   )

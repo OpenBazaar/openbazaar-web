@@ -56,10 +56,12 @@ const fetchCat = (cat, dispatch) => {
           });
         })
         .catch(error => {
+          console.log('they fail me dog');
+          window.dog = error;
           reject(error);
           dispatch({
             type: FETCH_CATEGORIES_FAILURE,
-            error,
+            error: error.message,
             category: cat,
           });
         })
@@ -76,7 +78,7 @@ const fetchCat = (cat, dispatch) => {
       curFetchKeys.forEach(curFetchCat => {
         catFetches[curFetchCat]
           .then()
-          .catch()
+          .catch(() => {})
           .then(() => {
             if (!catFetching && !catFetched) {
               _fetchCat(cat);

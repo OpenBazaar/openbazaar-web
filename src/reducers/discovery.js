@@ -10,7 +10,8 @@ const initialState = {
   categories: categories.reduce((acc, cat) => {
     acc[cat] = {
       id: cat.replace(/\s+/g, '-').toLowerCase(),
-      // eventually this should come from a translation fkeyd by the id
+      category: cat,
+      // eventually this should come from a translation keyed by the id
       heading: cat.charAt(0).toUpperCase() + cat.substr(1),
       fetching: false,
       fetchFailed: false,
