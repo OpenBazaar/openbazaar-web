@@ -13,6 +13,10 @@ export const MODAL_BRING_TO_TOP = 'MODAL_BRING_TO_TOP';
  * @param {object} props.Component - The component you want to render inside the modal. The
  *   component must implement a modulePath property, which should be a static getter if its
  *   a class, otherwise a property directly on the function if it's a functional component.
+ *   (The reason we're forcing this in is because we want the modal opener to have to import
+ *    the component so the ModalRoot gets it from cache rather than forcing it to always
+ *    be lazy-loaded. This way the modal opener or something higher up can determine what
+ *    chunk it's ending up in.)
  *
  * @returns {string} - The ID of the opened modal. This will be necessary if you want to
  *   close a non-singleton modal.

@@ -7,6 +7,7 @@ import { Route } from 'react-router';
 import { Link } from 'react-router-dom';
 import ModalRoot from 'components/modals/ModalRoot';
 import Discovery from 'components/pages/Discovery';
+import Modals from 'components/pages/modals/Modals';
 import './App.scss';
 import 'styles/layout.scss';
 import 'styles/ui/buttons.scss';
@@ -39,6 +40,11 @@ class App extends Component {
               path="/"
               component={Discovery}
             />
+            <Route
+              exact
+              path="/modals"
+              component={Modals}
+            />            
           </div>
         </div>
         <div className="App-modalContainer">
