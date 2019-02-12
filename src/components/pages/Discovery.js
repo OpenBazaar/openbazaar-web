@@ -17,7 +17,6 @@ class Discovery extends Component {
   }
 
   handleRetryClick(e) {
-    console.log(`hey hey mama: ${e.category}`);
     this.props.actions.discovery.fetchCategory({ category: e.category });
   }
 

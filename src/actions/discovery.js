@@ -1,5 +1,5 @@
 import { get } from 'axios';
-import { SEARCH_URL } from 'util/constants';
+import { SEARCH_RANDOM_URL } from 'util/constants';
 
 export const FETCH_CATEGORIES_REQUEST = 'FETCH_CATEGORIES_REQUEST';
 export const FETCH_CATEGORIES_FAILURE = 'FETCH_CATEGORIES_FAILURE';
@@ -41,7 +41,7 @@ const fetchCat = (cat, dispatch) => {
 
     const _fetchCat = catToFetch => {
       catFetching = true;
-      catFetches[catToFetch] = get(`${SEARCH_URL}/listings/random`, {
+      catFetches[catToFetch] = get(SEARCH_RANDOM_URL, {
         params: {
           q: cat,
           size: 8,
