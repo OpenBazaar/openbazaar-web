@@ -37,7 +37,10 @@
     "start-js": "cross-env NODE_PATH=src react-scripts start",
     "start": "npm-run-all -p watch-css start-js",
     "build-js": "cross-env NODE_PATH=src react-scripts build",
+    "copyBuiltIndex": "cp build/index.html build/200.html",
     "build": "npm-run-all build-css build-js",
+    "surge": "surge build --domain https://ob-web.surge.sh",
+    "deploy": "npm-run-all build copyBuiltIndex surge",
     "test": "cross-env NODE_PATH=src react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "prettier": "./node_modules/.bin/prettier --single-quote --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\""

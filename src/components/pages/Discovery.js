@@ -10,7 +10,7 @@ class Discovery extends Component {
   constructor(props) {
     super(props);
     this.handleRetryClick = this.handleRetryClick.bind(this);
-  }  
+  }
 
   componentDidMount() {
     this.props.actions.discovery.fetchCategories();
@@ -30,7 +30,7 @@ class Discovery extends Component {
                 breakpoint={this.props.responsive.breakpoint}
                 {...cat}
                 onRetryClick={() => this.handleRetryClick({ category: cat.category })}
-                />
+              />
             </div>
           )
         }
