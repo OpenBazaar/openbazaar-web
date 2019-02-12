@@ -19,7 +19,7 @@ export default function (props) {
         }}
       ></div>
       <div className="ListingCard-content borderTop clrBr">
-        <div className="ListingCard-title rowTn clamp">{ props.title +  props.title + props.title + props.title + props.title + props.title + props.title + props.title}</div>
+        <div className="ListingCard-title rowTn clamp">{props.title}</div>
         <div className="flexVCent gutterH noOverflow">
           <div className="flexNoShrink">0.0 (0)</div>
           <div className="flexExpand flexHRight">$1.99</div>
