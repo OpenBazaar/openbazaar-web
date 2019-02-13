@@ -52,6 +52,7 @@ class App extends Component {
             <ModalRoot key={modal.id} {...modal} />
           ))}
         </div>
+        <div id="navMenuContainer"></div>
       </div>
     );
   }
