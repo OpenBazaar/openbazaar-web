@@ -1,11 +1,15 @@
 import React from 'react';
 import Menu from './Menu';
+import Avatar from 'components/ui/Avatar';
 
 export default function (props) {
   let trigger = null;
 
   if (props.authUser) {
-    
+    trigger = <Avatar
+      size="medium"
+      avatarHashes={props.authUser.avatarHashes}
+      onClick={props.onClick} />;
   } else {
     // trigger = hamburger icon
   }
@@ -16,10 +20,10 @@ export default function (props) {
     menu = <Menu />;
   }
 
-  return {
-    <div className="NavMenu">
-
-      {Menu}
+  return (
+    <div className="NavMenu charlie-chuckles">
+      {trigger}
+      {menu}
     </div>
-  }
+  );
 }

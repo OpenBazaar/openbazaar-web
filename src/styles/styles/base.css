@@ -38,7 +38,8 @@ body {
   color: #3a4660; }
 
 a {
-  color: #107896; }
+  color: #107896;
+  cursor: pointer; }
 
 hr {
   border: none;

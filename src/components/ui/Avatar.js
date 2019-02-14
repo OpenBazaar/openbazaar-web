@@ -1,9 +1,41 @@
 import React from 'react';
+import { GATEWAY_URL } from 'util/constants';
+import defaultAvatar from '../../img/defaultAvatar.png';
+import 'styles/theme.scss';
+
+const sizes = {
+  tiny: '24px',
+  small: '36px',
+  medium: '42px',
+  large: '50px',
+  original: '60px',
+};
 
 export default function (props) {
-  
-  // let component = <div />;
-  if (props.href || props.onClick) {
-
+  const fallbackAvatar = `url(${defaultAvatar})`;
+  // Using gateway url for now. If we want we could switch to
+  // pulling it from js-ipfs later.
+  const backgroundImage =
+    `url("${GATEWAY_URL}images/${props.avatarHashes[props.size]}"), ${fallbackAvatar}`;
+  const style = {
+    backgroundImage,
+    backgroundSize: 'contain',    
+    textIndent: '-1000000px',
+    width: props.width || sizes[props.size],
+    height: props.height || sizes[props.size],
+    borderRadius: '50%',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    display: 'block',
   }
+  const className = "Avatar clrBr2 clrSh1";
+  const component = props.href || props.onClick ?
+    <a
+      className={className}
+      style={style}
+      href={props.href}
+      onClick={props.onClick}>User Avatar</a> :
+    <div className={className} style={style}></div>;
+
+  return component;
 }

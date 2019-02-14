@@ -29,7 +29,7 @@ export default function (props) {
       .includes(props.breakpoint) ? 'large' : 'medium';
 
     results = (
-      <div class="flexCent">
+      <div className="flexCent">
         <Spinner
           size={spinnerSize} />
       </div>
