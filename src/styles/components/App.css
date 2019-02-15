@@ -38,8 +38,13 @@ body {
   color: #3a4660; }
 
 a {
-  color: #107896;
-  cursor: pointer; }
+  color: #3a4660;
+  cursor: pointer;
+  text-decoration: none; }
+  a:hover {
+    text-decoration: underline; }
+  a.unstyled:hover {
+    text-decoration: none; }
 
 hr {
   border: none;
@@ -51,6 +56,12 @@ hr {
     margin-after: 0; }
   hr.dashed {
     border-bottom: 1px dashed; }
+
+ul.unstyled, ol.unstyled {
+  padding: 0;
+  margin: 0; }
+  ul.unstyled li, ol.unstyled li {
+    list-style-type: none; }
 
 #OBWEB .block {
   display: block; }

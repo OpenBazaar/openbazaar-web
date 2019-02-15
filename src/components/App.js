@@ -43,8 +43,9 @@ class App extends Component {
               <div className="flexHRight">
                 <NavMenu
                   authUser={this.props.auth.authUser}
-                  isOpen={false}
+                  isOpen={this.props.app.navMenuOpen}
                   onClick={this.onNavMenuClick}
+                  breakpoint={this.props.responsive.breakpoint}
                 />
               </div>
             </div>

@@ -17,7 +17,14 @@ export default function (props) {
   let menu = null;
 
   if (props.isOpen) {
-    menu = <Menu />;
+    console.log('i am open');
+    menu = (
+      <Menu
+        authUser={props.authUser}
+        breakpoint={props.breakpoint} />
+    );
+  } else {
+    console.log('i am not not not open');
   }
 
   return (

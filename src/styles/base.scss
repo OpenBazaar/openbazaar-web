@@ -15,8 +15,19 @@ body {
 }
 
 a {
-  color: #107896;
+  color: $text;
   cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &.unstyled {
+    &:hover {
+      text-decoration: none;
+    }
+  }
 }
 
 hr {
@@ -35,6 +46,17 @@ hr {
   }
 }
 
+ul, ol {
+  &.unstyled {
+    padding: 0;
+    margin: 0;
+
+    li {
+      list-style-type: none;
+    }
+  }
+}
+
 #OBWEB {
   .block {
     display: block;
@@ -48,5 +70,3 @@ hr {
     @include disabled;
   }
 }
-
-

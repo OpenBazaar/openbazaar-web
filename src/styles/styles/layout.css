@@ -290,3 +290,41 @@ body:before {
       padding-left: 0; }
     .gutterHLg > *.col:last-child:not(:only-child), .gutterHLg > *.col12:last-child:not(:only-child), .gutterHLg > *.col11:last-child:not(:only-child), .gutterHLg > *.col10:last-child:not(:only-child), .gutterHLg > *.col9:last-child:not(:only-child), .gutterHLg > *.col8:last-child:not(:only-child), .gutterHLg > *.col7:last-child:not(:only-child), .gutterHLg > *.col6:last-child:not(:only-child), .gutterHLg > *.col5:last-child:not(:only-child), .gutterHLg > *.col4:last-child:not(:only-child), .gutterHLg > *.col3:last-child:not(:only-child), .gutterHLg > *.col2:last-child:not(:only-child), .gutterHLg > *.col1:last-child:not(:only-child), .gutterHLg > *.col12:last-child:not(:only-child), .gutterHLg > *.col11:last-child:not(:only-child), .gutterHLg > *.col10:last-child:not(:only-child), .gutterHLg > *.col9:last-child:not(:only-child), .gutterHLg > *.col8:last-child:not(:only-child), .gutterHLg > *.col7:last-child:not(:only-child), .gutterHLg > *.col6:last-child:not(:only-child), .gutterHLg > *.col5:last-child:not(:only-child), .gutterHLg > *.col4:last-child:not(:only-child), .gutterHLg > *.col3:last-child:not(:only-child), .gutterHLg > *.col2:last-child:not(:only-child), .gutterHLg > *.col1:last-child:not(:only-child) {
       padding-right: 0; }
+
+.padTn,
+.padTnKids > * {
+  padding: 2.5px; }
+
+.padSm,
+.padSmKids > * {
+  padding: 5px; }
+
+.pad,
+.padKids > * {
+  padding: 10px; }
+
+.padMd,
+.padMdKids > * {
+  padding: 15px; }
+
+.padMd2,
+.padMd2Kids > * {
+  padding: 12px; }
+
+.padLg,
+.padLgKids > * {
+  padding: 20px; }
+
+.padHg,
+.padHgKids > * {
+  padding: 25px; }
+
+.padGi,
+.padGiKids > * {
+  padding: 40px; }
+
+.padStack > *:not(:last-child) {
+  padding-bottom: 0; }
+
+.padStackAll > * {
+  padding-bottom: 0; }
