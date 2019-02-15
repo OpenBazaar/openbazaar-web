@@ -28,6 +28,7 @@ export default function (props) {
     borderWidth: '2px',
     borderStyle: 'solid',
     display: 'block',
+    userSelect: 'none',
   }
   const className = "Avatar clrBr2 clrSh1";
 

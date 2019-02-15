@@ -27,7 +27,7 @@ class App extends Component {
             <Link to="/" className="App-logo-wrap">
               <img src={logo} className="App-logo" alt="logo" />
             </Link>
-            <div class="flexExpand">
+            <div className="flexExpand">
               <div className="flexHRight">
                 <NavMenu />
               </div>

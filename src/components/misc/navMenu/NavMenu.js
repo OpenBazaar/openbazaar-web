@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as NavMenuActions from 'actions/navMenu';
+import * as AuthActions from 'actions/auth';
 import Menu from './Menu';
 import Avatar from 'components/ui/Avatar';
 
@@ -10,9 +11,11 @@ let menuContainer;
 class NavMenu extends Component {
   constructor(props) {
     super(props);
-    this.triggerRef = React.createRef();
     this.handleAvatarClick = this.handleAvatarClick.bind(this);
     this.handleDocClick = this.handleDocClick.bind(this);
+    this.handleLoginClick = this.handleLoginClick.bind(this);
+    this.handleLogoutClick = this.handleLogoutClick.bind(this);
+    this.handleLinkClick = this.handleLinkClick.bind(this);
   }
 
   componentDidMount() {
@@ -23,6 +26,12 @@ class NavMenu extends Component {
 
   componentWillUnmount() {
     document.removeEventListener('click', this.handleDocClick);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.router.location.pathname !== this.props.router.location.pathname) {
+      this.props.actions.navMenu.closeMenu();
+    }
   }
 
   handleAvatarClick(e) {
@@ -40,13 +49,28 @@ class NavMenu extends Component {
     }
   }
 
+  handleLoginClick() {
+    this.props.actions.auth.login();
+    this.props.actions.navMenu.closeMenu();
+  }
+
+  handleLogoutClick() {
+    this.props.actions.auth.logout();
+    this.props.actions.navMenu.closeMenu();
+  }
+
+  handleLinkClick(e = {}) {
+    if (e.href && e.href === this.props.router.location.pathname) {
+      this.props.actions.navMenu.closeMenu();
+    }
+  }
+
   render() {
     let trigger = null;
 
     if (this.props.auth.authUser) {
       trigger =
         <Avatar
-          ref={this.triggerRef}
           size="medium"
           avatarHashes={this.props.auth.authUser.avatarHashes}
           onClick={this.handleAvatarClick} />;
@@ -60,10 +84,12 @@ class NavMenu extends Component {
       menu = (
         <Menu
           authUser={this.props.auth.authUser}
-          breakpoint={this.props.responsive.breakpoint} />
+          breakpoint={this.props.responsive.breakpoint}
+          onLoginClick={this.handleLoginClick}
+          onLogoutClick={this.handleLogoutClick}
+          onLinkClick={this.handleLinkClick}
+        />
       );
-    } else {
-      console.log('i am not not not open');
     }
 
     return (
@@ -79,6 +105,7 @@ function mapStateToProps(state, prop) {
   return {
     auth: state.auth,
     responsive: state.responsive,
+    router: state.router,
     ...state.navMenu,
   };
 }
@@ -87,6 +114,7 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: {
       navMenu: bindActionCreators(NavMenuActions, dispatch),
+      auth: bindActionCreators(AuthActions, dispatch),
     }
   };
 }
