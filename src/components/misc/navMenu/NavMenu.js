@@ -11,7 +11,7 @@ let menuContainer;
 class NavMenu extends Component {
   constructor(props) {
     super(props);
-    this.handleAvatarClick = this.handleAvatarClick.bind(this);
+    this.handleTriggerClick = this.handleTriggerClick.bind(this);
     this.handleDocClick = this.handleDocClick.bind(this);
     this.handleLoginClick = this.handleLoginClick.bind(this);
     this.handleLogoutClick = this.handleLogoutClick.bind(this);
@@ -34,7 +34,7 @@ class NavMenu extends Component {
     }
   }
 
-  handleAvatarClick(e) {
+  handleTriggerClick(e) {
     const verb = this.props.menuOpen ?
       'close' : 'open';
     this.props.actions.navMenu[`${verb}Menu`]();
@@ -67,15 +67,18 @@ class NavMenu extends Component {
 
   render() {
     let trigger = null;
-
-    if (this.props.auth.authUser) {
+    console.dir(this.props);
+    console.log(this.props.responsive.breakpoint);
+    if (this.props.auth.authUser && this.props.responsive.breakpoint !== 'mobile') {
       trigger =
         <Avatar
           size="medium"
           avatarHashes={this.props.auth.authUser.avatarHashes}
-          onClick={this.handleAvatarClick} />;
+          onClick={this.handleTriggerClick} />;
     } else {
-      // trigger = hamburger icon
+      trigger = <button
+        className="link NavMenu-hamburgerIcon"
+        onClick={this.handleTriggerClick} />;
     }
 
     let menu = null;
@@ -93,7 +96,7 @@ class NavMenu extends Component {
     }
 
     return (
-      <div className="NavMenu charlie-chuckles">
+      <div className="NavMenu">
         {trigger}
         {menu}
       </div>

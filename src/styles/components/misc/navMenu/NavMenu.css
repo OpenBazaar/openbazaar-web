@@ -1,5 +1,27 @@
+.NavMenu .NavMenu-hamburgerIcon {
+  position: relative;
+  cursor: pointer;
+  height: 1em;
+  width: 2em; }
+  .NavMenu .NavMenu-hamburgerIcon::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2em;
+    height: 0.30em;
+    background: black;
+    box-shadow: 0 0.5em 0 0 black, 0 1.05em 0 0 black;
+    transform: translateY(-50%);
+    cursor: pointer; }
+
 .NavMenu-Menu {
   position: absolute;
   right: 10px;
   top: 60px;
   width: 225px; }
+  @media (max-width: 46.24em) {
+    .NavMenu-Menu {
+      top: 62px;
+      left: 0;
+      width: 100%; } }

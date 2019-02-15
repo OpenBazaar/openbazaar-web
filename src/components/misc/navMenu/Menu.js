@@ -2,16 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom'
 import { Link } from 'react-router-dom';
 import Avatar from 'components/ui/Avatar';
-// import MenuItem from './MenuItem';
 import './NavMenu.scss';
 
 let menuContainer;
 
 export default function (props) {
   menuContainer = menuContainer || document.getElementById('navMenuContainer');
-  const userHref = `/${props.authUser.peerID}`;
-  const avatarRow = props.authUser ?
-    (
+  let avatarRow = null;
+
+  if (props.authUser) {
+    const userHref = `/${props.authUser.peerID}`;
+    avatarRow =
       <li className="borderBottom clrBr flexVCent gutterH">
         <Avatar
           size="small"
@@ -23,9 +24,8 @@ export default function (props) {
           onClick={() => props.onLinkClick({ href: userHref })}>
           {props.authUser.name}
         </Link>
-      </li>
-    ) :
-    null;
+      </li>;    
+  }
   
   const loginLink = props.authUser ?
     <div className='link' onClick={props.onLogoutClick}>Logout</div> :

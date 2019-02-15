@@ -1,6 +1,41 @@
+@import '../../../styles/mixins.scss';
+
+.NavMenu {
+    .NavMenu-hamburgerIcon {
+      // https://css-tricks.com/three-line-menu-navicon/
+      position: relative;
+      cursor: pointer;
+      height: 1em;
+      width: 2em;
+
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 2em;
+        height: 0.30em;
+        // todo: put colors in theme file;
+        background: black;
+        box-shadow: 
+          0 0.5em 0 0 black,
+          0 1.05em 0 0 black;
+        transform: translateY(-50%);
+        cursor: pointer;
+      }
+  }
+}
+
 .NavMenu-Menu {
   position: absolute;
   right: 10px;
   top: 60px;
   width: 225px;
+
+  @include mq($until: tablet) {
+    // todo: in themes file, maybe get rid of the right and left shadows?
+    top: 62px;
+    left: 0;
+    width: 100%;
+  }
 }
