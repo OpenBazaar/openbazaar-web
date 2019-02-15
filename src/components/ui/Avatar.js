@@ -1,5 +1,6 @@
 import React from 'react';
 import { GATEWAY_URL } from 'util/constants';
+import { Link } from 'react-router-dom';
 import defaultAvatar from '../../img/defaultAvatar.png';
 import 'styles/theme.scss';
 
@@ -20,7 +21,7 @@ export default function (props) {
   const style = {
     backgroundImage,
     backgroundSize: 'contain',    
-    textIndent: '-1000000px',
+    color: 'transparent',
     width: props.width || sizes[props.size],
     height: props.height || sizes[props.size],
     borderRadius: '50%',
@@ -29,13 +30,21 @@ export default function (props) {
     display: 'block',
   }
   const className = "Avatar clrBr2 clrSh1";
-  const component = props.href || props.onClick ?
-    <a
+
+  let component = <div className={className} style={style}></div>;
+
+  if (props.href) {
+    component = <Link
       className={className}
       style={style}
-      href={props.href}
-      onClick={props.onClick}>User Avatar</a> :
-    <div className={className} style={style}></div>;
-
+      to={props.href}
+      onClick={props.onClick}>User Avatar</Link>;
+  } else if (props.onClick) {
+    component = <div
+      className={`${className} link`}
+      style={style}
+      to={props.href}
+      onClick={props.onClick}>User Avatar</div>;
+  }
   return component;
 }

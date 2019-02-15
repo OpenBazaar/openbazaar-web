@@ -3,7 +3,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as ModalActions from 'actions/modals';
 import * as ResponsiveActions from 'actions/responsive';
-import * as AppActions from 'actions/app';
 import { Route } from 'react-router';
 import { Link } from 'react-router-dom';
 import ModalRoot from 'components/modals/ModalRoot';
@@ -16,19 +15,8 @@ import 'styles/ui/buttons.scss';
 import logo from 'img/ob-logo.png';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.onNavMenuClick = this.onNavMenuClick.bind(this);
-  }
-
   componentDidMount() {
     this.props.actions.responsive.trackBreakpoints();
-  }
-
-  onNavMenuClick() {
-    const verb = this.props.app.navMenuOpen ?
-      'close' : 'open';
-    this.props.actions.app[`${verb}NavMenu`]();
   }
 
   render() {
@@ -41,12 +29,7 @@ class App extends Component {
             </Link>
             <div class="flexExpand">
               <div className="flexHRight">
-                <NavMenu
-                  authUser={this.props.auth.authUser}
-                  isOpen={this.props.app.navMenuOpen}
-                  onClick={this.onNavMenuClick}
-                  breakpoint={this.props.responsive.breakpoint}
-                />
+                <NavMenu />
               </div>
             </div>
           </nav>
@@ -82,14 +65,12 @@ function mapStateToProps(state, prop) {
     modals: state.modals,
     router: state.router,
     responsive: state.responsive,
-    auth: state.auth,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     actions: {
-      app: bindActionCreators(AppActions, dispatch),
       modals: bindActionCreators(ModalActions, dispatch),
       responsive: bindActionCreators(ResponsiveActions, dispatch),
     }

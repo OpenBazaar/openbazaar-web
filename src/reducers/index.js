@@ -3,7 +3,7 @@ import modals from './modals';
 import responsive from './responsive';
 import discovery from './discovery';
 import auth from './auth';
-import app from './app';
+import navMenu from './navMenu';
 
 export default history => ({
   router: connectRouter(history),
@@ -11,5 +11,5 @@ export default history => ({
   responsive,
   discovery,
   auth,
-  app,
+  navMenu,
 });

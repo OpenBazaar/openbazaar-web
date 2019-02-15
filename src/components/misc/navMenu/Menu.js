@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
+import { Link } from 'react-router-dom';
 import Avatar from 'components/ui/Avatar';
 import './NavMenu.scss';
 
@@ -15,7 +16,7 @@ export default function (props) {
           avatarHashes={props.authUser.avatarHashes}
           href={`/${props.authUser.peerID}`}
         />
-        <a href={`/${props.authUser.peerID}`}>{props.authUser.name}</a>
+        <Link to={`/${props.authUser.peerID}`}>{props.authUser.name}</Link>
       </li>
     ) :
     null;
@@ -28,7 +29,7 @@ export default function (props) {
         <ul className="unstyled padKids">
           {avatarRow}
           <li className="borderBottom clrBr">
-            <a href="/about">About</a>
+            <Link to="/about">About</Link>
           </li>
           <li>Logout</li>
         </ul>
