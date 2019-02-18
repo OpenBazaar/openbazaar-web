@@ -33,25 +33,51 @@ body:before {
     .pageWidth {
       margin: 0 auto; } }
 
-.pagePadTopBottom, .pagePad {
+.pagePadTopBottom {
   padding-top: 25px;
   padding-bottom: 25px; }
   @media (max-width: 46.24em) {
-    .pagePadTopBottom, .pagePad {
+    .pagePadTopBottom {
       padding-top: 15px;
       padding-bottom: 15px; } }
 
-.pagePadLeft, .pagePadLeftRight, .pagePad {
+.pagePadLeft {
   padding-left: 25px; }
   @media (max-width: 46.24em) {
-    .pagePadLeft, .pagePadLeftRight, .pagePad {
+    .pagePadLeft {
       padding-left: 15px; } }
 
-.pagePadRight, .pagePadLeftRight, .pagePad {
+.pagePadRight {
   padding-top: 25px;
   padding-bottom: 25px; }
   @media (max-width: 46.24em) {
-    .pagePadRight, .pagePadLeftRight, .pagePad {
+    .pagePadRight {
+      padding-top: 15px;
+      padding-bottom: 15px; } }
+
+.pagePadLeftRight {
+  padding-left: 25px;
+  padding-right: 25px; }
+  @media (max-width: 46.24em) {
+    .pagePadLeftRight {
+      padding-left: 15px; } }
+  @media (max-width: 46.24em) {
+    .pagePadLeftRight {
+      padding-right: 15px; } }
+
+.pagePad {
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 25px;
+  padding-bottom: 25px; }
+  @media (max-width: 46.24em) {
+    .pagePad {
+      padding-left: 15px; } }
+  @media (max-width: 46.24em) {
+    .pagePad {
+      padding-right: 15px; } }
+  @media (max-width: 46.24em) {
+    .pagePad {
       padding-top: 15px;
       padding-bottom: 15px; } }
 
