@@ -7,5 +7,5 @@ export default history => ({
   router: connectRouter(history),
   modals,
   responsive,
-  discovery,
+  discovery
 });

@@ -23,17 +23,17 @@ class Discovery extends Component {
   render() {
     return (
       <div className="Discovery pageWidth pagePadTopBottom">
-        {
-          this.props.categories.map(cat =>
-            <div className="Discovery-categoryBoxWrap rowHg" key={cat.id}>
-              <CategoryBox
-                breakpoint={this.props.responsive.breakpoint}
-                {...cat}
-                onRetryClick={() => this.handleRetryClick({ category: cat.category })}
-              />
-            </div>
-          )
-        }
+        {this.props.categories.map(cat => (
+          <div className="Discovery-categoryBoxWrap rowHg" key={cat.id}>
+            <CategoryBox
+              breakpoint={this.props.responsive.breakpoint}
+              {...cat}
+              onRetryClick={() =>
+                this.handleRetryClick({ category: cat.category })
+              }
+            />
+          </div>
+        ))}
       </div>
     );
   }
@@ -42,7 +42,7 @@ class Discovery extends Component {
 function mapStateToProps(state, prop) {
   return {
     categories: getCategories(state.discovery),
-    responsive: state.responsive,
+    responsive: state.responsive
   };
 }
 

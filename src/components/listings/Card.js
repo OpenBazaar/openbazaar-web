@@ -9,7 +9,7 @@ import 'styles/theme.scss';
 const listingImgUrl = hash =>
   `url('${GATEWAY_URL}images/${hash}'), url('../../img/defaultItem.png')`;
 
-export default function (props) {
+export default function(props) {
   return (
     <div className="ListingCard border clrBr tx5">
       <div
@@ -17,7 +17,7 @@ export default function (props) {
         style={{
           backgroundImage: listingImgUrl(props.thumbnail.small)
         }}
-      ></div>
+      />
       <div className="ListingCard-content borderTop clrBr">
         <div className="ListingCard-title rowTn clamp">{props.title}</div>
         <div className="flexVCent gutterH noOverflow">
@@ -26,5 +26,5 @@ export default function (props) {
         </div>
       </div>
     </div>
-  )
+  );
 }

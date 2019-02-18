@@ -3,7 +3,7 @@ import {
   FETCH_CATEGORIES_REQUEST,
   FETCH_CATEGORIES_FAILURE,
   FETCH_CATEGORIES_SUCCESS,
-  categories,
+  categories
 } from 'actions/discovery';
 
 const initialState = {
@@ -16,12 +16,12 @@ const initialState = {
       fetching: false,
       fetchFailed: false,
       fetchError: '',
-      cards: [],
+      cards: []
     };
 
     return acc;
   }, {}),
-  categoriesOrder: categories,
+  categoriesOrder: categories
 };
 
 const fetchCatRequest = (state, action) => {
@@ -29,7 +29,7 @@ const fetchCatRequest = (state, action) => {
     ...state.categories[action.category],
     fetching: true,
     fetchFailed: false,
-    fetchError: '',
+    fetchError: ''
   };
 };
 
@@ -38,7 +38,7 @@ const fetchCatFailure = (state, action) => {
     ...state.categories[action.category],
     fetching: false,
     fetchFailed: true,
-    fetchError: action.error,
+    fetchError: action.error
   };
 };
 
@@ -50,15 +50,15 @@ const fetchCatSucceess = (state, action) => {
     fetchError: '',
     cards: action.response.results.results.map(result => ({
       vendorId: result.relationships.vendor.peerID,
-      ...result.data,
-    })),
+      ...result.data
+    }))
   };
 };
 
 export default createReducer(initialState, {
   [FETCH_CATEGORIES_REQUEST]: fetchCatRequest,
   [FETCH_CATEGORIES_FAILURE]: fetchCatFailure,
-  [FETCH_CATEGORIES_SUCCESS]: fetchCatSucceess,
+  [FETCH_CATEGORIES_SUCCESS]: fetchCatSucceess
 });
 
 // selectors
@@ -67,5 +67,5 @@ export const getCategories = createSelector(
   ['categories', 'categoriesOrder'],
   (cats, order) => {
     return order.map(cat => cats[cat]);
-  },
+  }
 );

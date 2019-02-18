@@ -3,7 +3,7 @@
 
 * {
   box-sizing: border-box;
-} 
+}
 
 html {
   font-size: $baseFontSize;
@@ -47,5 +47,3 @@ hr {
     @include disabled;
   }
 }
-
-

@@ -7,25 +7,19 @@ export default class Grid extends Component {
   render() {
     return (
       <div className="ListingsGrid">
-        {
-          this.props.cards
-            .map(card => {
-              const vendorId = this.props.vendorId || card.vendorId;
+        {this.props.cards.map(card => {
+          const vendorId = this.props.vendorId || card.vendorId;
 
-              return (
-                <Card {...card}
-                  key={`${vendorId}-${card.slug}`} />
-              );
-            })
-        }
+          return <Card {...card} key={`${vendorId}-${card.slug}`} />;
+        })}
       </div>
     );
   }
 }
 
 Grid.defaultProps = {
-  cards: [],
-}
+  cards: []
+};
 
 Grid.propTypes = {
   vendorId: PropTypes.string,
@@ -40,9 +34,11 @@ Grid.propTypes = {
           return true;
         }
 
-        return new Error('If not providing a top-level vendorId prop, then ' +
-          'each card must have one set as a non-empty string.');
+        return new Error(
+          'If not providing a top-level vendorId prop, then ' +
+            'each card must have one set as a non-empty string.'
+        );
       });
     }
-  },
-}
+  }
+};

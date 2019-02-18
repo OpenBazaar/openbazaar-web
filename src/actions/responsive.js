@@ -7,14 +7,17 @@ let resizeBound = false;
 const handleWinResize = dispatch => {
   if (resizeBound) return;
 
-  window.addEventListener('resize', throttle(() => {
-    dispatch({
-      type: SET_BREAKPOINT,
-    });
-  }, 100));  
+  window.addEventListener(
+    'resize',
+    throttle(() => {
+      dispatch({
+        type: SET_BREAKPOINT
+      });
+    }, 100)
+  );
 
   resizeBound = true;
-}
+};
 
 /*
  * Initiates the reducer logic to reack breakpoints based on the window size.
