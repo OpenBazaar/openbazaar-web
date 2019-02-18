@@ -7,11 +7,6 @@ export const history = createBrowserHistory();
 
 const middleware = [...getDefaultMiddleware(), routerMiddleware(history)];
 
-if (process.env.NODE_ENV === 'development') {
-  const { logger } = require('redux-logger');
-  middleware.push(logger);
-}
-
 export default configureStore({
   reducer: createRootReducer(history),
   middleware,
