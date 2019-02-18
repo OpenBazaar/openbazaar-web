@@ -69,16 +69,20 @@ class NavMenu extends Component {
   render() {
     let trigger = null;
 
-    if (this.props.auth.authUser && this.props.responsive.breakpoint !== 'mobile') {
+    if (this.props.auth.authUser) {
       trigger =
         <Avatar
           size="medium"
           avatarHashes={this.props.auth.authUser.avatarHashes}
           onClick={this.handleTriggerClick} />;
-    } else if (this.props.navMenu.menuOpen) {
-      trigger = <button
-        className="link NavMenu-trigger NavMenu-closeIcon"
-        onClick={this.handleTriggerClick}>❌</button>;
+
+      if (this.props.navMenu.menuOpen && this.props.responsive.breakpoint === 'mobile') {
+        trigger = <button
+          className="link NavMenu-trigger NavMenu-closeIcon"
+          onClick={this.handleTriggerClick}>
+            <span role="img">❌</span>
+          </button>;
+        }
     } else {
       trigger = <button
         className="link NavMenu-trigger NavMenu-hamburgerIcon"

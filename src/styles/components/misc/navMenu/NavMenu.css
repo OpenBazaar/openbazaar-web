@@ -9,7 +9,7 @@
   .NavMenu .NavMenu-hamburgerIcon::after {
     content: "";
     position: absolute;
-    left: 0;
+    left: -10px;
     top: 0;
     width: 2em;
     height: 0.30em;
@@ -17,9 +17,9 @@
     cursor: pointer; }
 
 .NavMenu .NavMenu-closeIcon {
-  font-size: 2em;
+  font-size: 1.25em;
   position: relative;
-  left: 10px;
+  left: -2px;
   top: 2px; }
 
 .NavMenu-Menu {
