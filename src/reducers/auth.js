@@ -14,7 +14,7 @@ const dummyUserProfile = {
 };
 
 const initialState = {
-  authUser: dummyUserProfile
+  authUser: null,
 };
 
 const login = (state, action) => {
