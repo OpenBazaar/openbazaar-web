@@ -579,3 +579,11 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
 
 .required::after {
   color: red; }
+
+#OBWEB .NavMenu .NavMenu-hamburgerIcon::after {
+  background: black;
+  box-shadow: 0 0.5em 0 0 black, 0 1.05em 0 0 black; }
+
+#OBWEB .NavMenu .NavMenu-closeIcon {
+  color: transparent;
+  text-shadow: 0 0 0 black; }

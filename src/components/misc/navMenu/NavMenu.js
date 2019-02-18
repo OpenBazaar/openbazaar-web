@@ -5,6 +5,7 @@ import * as NavMenuActions from 'actions/navMenu';
 import * as AuthActions from 'actions/auth';
 import Menu from './Menu';
 import Avatar from 'components/ui/Avatar';
+import '../../../styles/theme.scss';
 
 let menuContainer;
 
@@ -67,17 +68,20 @@ class NavMenu extends Component {
 
   render() {
     let trigger = null;
-    console.dir(this.props);
-    console.log(this.props.responsive.breakpoint);
+
     if (this.props.auth.authUser && this.props.responsive.breakpoint !== 'mobile') {
       trigger =
         <Avatar
           size="medium"
           avatarHashes={this.props.auth.authUser.avatarHashes}
           onClick={this.handleTriggerClick} />;
+    } else if (this.props.navMenu.menuOpen) {
+      trigger = <button
+        className="link NavMenu-trigger NavMenu-closeIcon"
+        onClick={this.handleTriggerClick}>❌</button>;
     } else {
       trigger = <button
-        className="link NavMenu-hamburgerIcon"
+        className="link NavMenu-trigger NavMenu-hamburgerIcon"
         onClick={this.handleTriggerClick} />;
     }
 
@@ -109,6 +113,7 @@ function mapStateToProps(state, prop) {
     auth: state.auth,
     responsive: state.responsive,
     router: state.router,
+    navMenu: state.navMenu,
     ...state.navMenu,
   };
 }

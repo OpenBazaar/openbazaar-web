@@ -1,3 +1,6 @@
+.NavMenu .NavMenu-trigger:hover {
+  text-decoration: none; }
+
 .NavMenu .NavMenu-hamburgerIcon {
   position: relative;
   cursor: pointer;
@@ -10,10 +13,14 @@
     top: 0;
     width: 2em;
     height: 0.30em;
-    background: black;
-    box-shadow: 0 0.5em 0 0 black, 0 1.05em 0 0 black;
     transform: translateY(-50%);
     cursor: pointer; }
+
+.NavMenu .NavMenu-closeIcon {
+  font-size: 2em;
+  position: relative;
+  left: 10px;
+  top: 2px; }
 
 .NavMenu-Menu {
   position: absolute;
