@@ -2,11 +2,11 @@ import { createReducer } from 'redux-starter-kit';
 import { SET_BREAKPOINT } from 'actions/responsive';
 
 const breakpoints = {
-  mobile:  320,
-  tablet:  740,
+  mobile: 320,
+  tablet: 740,
   desktop: 980,
   pageWidth: 1010,
-  wide:    1300,
+  wide: 1300
 };
 
 const getCurBreakpoint = () => {
@@ -14,7 +14,9 @@ const getCurBreakpoint = () => {
   const bps = Object.keys(breakpoints);
 
   bps.some((bp, index) => {
-    let mq = `(min-width: ${breakpoints[bp]}px) and (max-width: ${breakpoints[bps[index + 1]]}px)`;
+    let mq = `(min-width: ${breakpoints[bp]}px) and (max-width: ${
+      breakpoints[bps[index + 1]]
+    }px)`;
 
     if (index === 0) {
       mq = `(max-width: ${breakpoints[bp]}px)`;
@@ -24,21 +26,23 @@ const getCurBreakpoint = () => {
 
     if (window.matchMedia(mq).matches) {
       breakpoint = bp;
-      return true;      
+      return true;
     }
 
     return false;
   });
 
   return breakpoint;
-}
+};
 
 const initialState = {
-  breakpoint: null,
-}
+  breakpoint: null
+};
 
-const setBreakpoint = (state, action) => { state.breakpoint = getCurBreakpoint() }
+const setBreakpoint = (state, action) => {
+  state.breakpoint = getCurBreakpoint();
+};
 
 export default createReducer(initialState, {
-  [SET_BREAKPOINT]: setBreakpoint,
+  [SET_BREAKPOINT]: setBreakpoint
 });

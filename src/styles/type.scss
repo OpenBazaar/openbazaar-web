@@ -3,8 +3,18 @@
 @import 'node_modules/sass-mq/mq';
 @import './variables.scss';
 
-h1,h2,h3,h4,h5,h6,
-.h1,.h2,.h3,.h4,.h5,.h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
   margin: 0;
   font-weight: 700;
   -webkit-margin-before: 0;
@@ -20,35 +30,55 @@ h1,h2,h3,h4,h5,h6,
 
 // us h classes for headlines, tx classes for body text
 
-h1, .h1, .tx1, .btn.tx1 {
+h1,
+.h1,
+.tx1,
+.btn.tx1 {
   @include textSize($tx1);
 }
 
-h2, .h2, .tx2, .btn.tx2 {
+h2,
+.h2,
+.tx2,
+.btn.tx2 {
   @include textSize($tx2);
 }
 
-.tx2b, .btn.tx2b {
+.tx2b,
+.btn.tx2b {
   @include textSize($tx2b);
 }
 
-h3, .h3, .tx3, .btn.tx3 {
+h3,
+.h3,
+.tx3,
+.btn.tx3 {
   @include textSize($tx3);
 }
 
-h4, .h4, .tx4, .btn.tx4 {
+h4,
+.h4,
+.tx4,
+.btn.tx4 {
   @include textSize($tx4);
 }
 
-h5, .h5, .tx5, .btn.tx5 {
+h5,
+.h5,
+.tx5,
+.btn.tx5 {
   @include textSize($tx5);
 }
 
-.tx5b, .btn.tx5b {
+.tx5b,
+.btn.tx5b {
   @include textSize($tx5b);
 }
 
-h6, .h6, .tx6, .btn.tx6 {
+h6,
+.h6,
+.tx6,
+.btn.tx6 {
   @include textSize($tx6);
 }
 
@@ -65,35 +95,55 @@ h6, .h6, .tx6, .btn.tx6 {
 }
 
 @include mq($until: tablet) {
-  h1, .h1, .tx1, .btn.tx1 {
+  h1,
+  .h1,
+  .tx1,
+  .btn.tx1 {
     @include textSize($tx2);
   }
 
-  h2, .h2, .tx2, .btn.tx2 {
+  h2,
+  .h2,
+  .tx2,
+  .btn.tx2 {
     @include textSize($tx3);
   }
 
-  .tx2b, .btn.tx2b {
+  .tx2b,
+  .btn.tx2b {
     @include textSize($tx3b);
   }
 
-  h3, .h3, .tx3, .btn.tx3 {
+  h3,
+  .h3,
+  .tx3,
+  .btn.tx3 {
     @include textSize($tx4);
   }
 
-  h4, .h4, .tx4, .btn.tx4 {
+  h4,
+  .h4,
+  .tx4,
+  .btn.tx4 {
     @include textSize($tx5);
   }
 
-  h5, .h5, .tx5, .btn.tx5 {
+  h5,
+  .h5,
+  .tx5,
+  .btn.tx5 {
     @include textSize($tx6);
   }
 
-  .tx5b, .btn.tx5b {
+  .tx5b,
+  .btn.tx5b {
     @include textSize($tx7);
   }
 
-  h6, .h6, .tx6, .btn.tx6 {
+  h6,
+  .h6,
+  .tx6,
+  .btn.tx6 {
     @include textSize($tx7);
   }
 

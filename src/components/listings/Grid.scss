@@ -2,12 +2,12 @@
 @import '../../styles/mixins.scss';
 
 .ListingsGrid {
-   display: grid;
-   grid-template-columns: repeat(auto-fill, 225px);
-   grid-gap: $listingGridGap;
-   justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 225px);
+  grid-gap: $listingGridGap;
+  justify-content: center;
 
-   @include mq($from: pageWidth) {
-    justify-content: flex-start
-   }
+  @include mq($from: pageWidth) {
+    justify-content: flex-start;
+  }
 }

@@ -8,20 +8,23 @@ class Modals extends Component {
   constructor(props) {
     super(props);
     this.handleSimpleModalClick = this.handleSimpleModalClick.bind(this);
-  }  
+  }
 
   handleSimpleModalClick(e) {
     this.props.actions.modals.open({
       Component: SimpleMessage,
       title: 'Hey There Slick Willy',
-      body: 'It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of Darkness, it was the spring of hope, it was the winter of despair, we had everything before us',
+      body:
+        'It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of Darkness, it was the spring of hope, it was the winter of despair, we had everything before us'
     });
   }
 
   render() {
     return (
       <div className="Modals pageWidth pagePadTopBottom">
-        <button class="btn" onClick={this.handleSimpleModalClick}>Simple Modal</button>
+        <button class="btn" onClick={this.handleSimpleModalClick}>
+          Simple Modal
+        </button>
       </div>
     );
   }
@@ -29,7 +32,7 @@ class Modals extends Component {
 
 function mapStateToProps(state, prop) {
   return {
-    modals: state.modals,
+    modals: state.modals
   };
 }
 
