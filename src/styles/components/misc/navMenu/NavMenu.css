@@ -7,12 +7,12 @@
   height: 1em;
   width: 2em; }
   .NavMenu .NavMenu-hamburgerIcon::after {
-    content: "";
+    content: '';
     position: absolute;
     left: -10px;
     top: 0;
     width: 2em;
-    height: 0.30em;
+    height: 0.3em;
     transform: translateY(-50%);
     cursor: pointer; }
 

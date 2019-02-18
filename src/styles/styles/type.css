@@ -1,32 +1,62 @@
-h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .h4, .h5, .h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
   margin: 0;
   font-weight: 700;
   -webkit-margin-before: 0;
   -webkit-margin-after: 0.5em; }
 
-h1, .h1, .tx1, .btn.tx1 {
+h1,
+.h1,
+.tx1,
+.btn.tx1 {
   font-size: 2.6rem; }
 
-h2, .h2, .tx2, .btn.tx2 {
+h2,
+.h2,
+.tx2,
+.btn.tx2 {
   font-size: 2.3rem; }
 
-.tx2b, .btn.tx2b {
+.tx2b,
+.btn.tx2b {
   font-size: 2rem; }
 
-h3, .h3, .tx3, .btn.tx3 {
+h3,
+.h3,
+.tx3,
+.btn.tx3 {
   font-size: 1.7rem; }
 
-h4, .h4, .tx4, .btn.tx4 {
+h4,
+.h4,
+.tx4,
+.btn.tx4 {
   font-size: 1.5rem; }
 
-h5, .h5, .tx5, .btn.tx5 {
+h5,
+.h5,
+.tx5,
+.btn.tx5 {
   font-size: 1.4rem; }
 
-.tx5b, .btn.tx5b {
+.tx5b,
+.btn.tx5b {
   font-size: 1.3rem; }
 
-h6, .h6, .tx6, .btn.tx6 {
+h6,
+.h6,
+.tx6,
+.btn.tx6 {
   font-size: 1.2rem; }
 
 .txBg {
@@ -39,21 +69,41 @@ h6, .h6, .tx6, .btn.tx6 {
   font-size: 1.1rem; }
 
 @media (max-width: 46.24em) {
-  h1, .h1, .tx1, .btn.tx1 {
+  h1,
+  .h1,
+  .tx1,
+  .btn.tx1 {
     font-size: 2.3rem; }
-  h2, .h2, .tx2, .btn.tx2 {
+  h2,
+  .h2,
+  .tx2,
+  .btn.tx2 {
     font-size: 1.7rem; }
-  .tx2b, .btn.tx2b {
+  .tx2b,
+  .btn.tx2b {
     font-size: 1.6rem; }
-  h3, .h3, .tx3, .btn.tx3 {
+  h3,
+  .h3,
+  .tx3,
+  .btn.tx3 {
     font-size: 1.5rem; }
-  h4, .h4, .tx4, .btn.tx4 {
+  h4,
+  .h4,
+  .tx4,
+  .btn.tx4 {
     font-size: 1.4rem; }
-  h5, .h5, .tx5, .btn.tx5 {
+  h5,
+  .h5,
+  .tx5,
+  .btn.tx5 {
     font-size: 1.2rem; }
-  .tx5b, .btn.tx5b {
+  .tx5b,
+  .btn.tx5b {
     font-size: 0.9rem; }
-  h6, .h6, .tx6, .btn.tx6 {
+  h6,
+  .h6,
+  .tx6,
+  .btn.tx6 {
     font-size: 0.9rem; }
   .txBg {
     font-size: 2.6rem; }

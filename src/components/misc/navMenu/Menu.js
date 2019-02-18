@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Avatar from 'components/ui/Avatar';
@@ -13,7 +13,7 @@ const Menu = props => {
 
   if (props.authUser) {
     const userHref = `/${props.authUser.peerID}`;
-    avatarRow =
+    avatarRow = (
       <li className="borderBottom clrBr flexVCent gutterH">
         <Avatar
           size="small"
@@ -22,42 +22,53 @@ const Menu = props => {
         />
         <Link
           to={userHref}
-          onClick={() => props.onLinkClick({ href: userHref })}>
+          onClick={() => props.onLinkClick({ href: userHref })}
+        >
           {props.authUser.name}
         </Link>
-      </li>;    
+      </li>
+    );
   }
-  
-  const loginLink = props.authUser ?
-    <div className='link' onClick={props.onLogoutClick}>Logout</div> :
-    <div className='link' onClick={props.onLoginClick}>Login</div>;
+
+  const loginLink = props.authUser ? (
+    <div className="link" onClick={props.onLogoutClick}>
+      Logout
+    </div>
+  ) : (
+    <div className="link" onClick={props.onLoginClick}>
+      Login
+    </div>
+  );
 
   const aboutHref = '/about';
-  
+
   return ReactDOM.createPortal(
-    (
-      <div className="NavMenu-Menu border pad tx4 clrP clrBr clrSh1">
-        <ul className="unstyled padKids">
-          {avatarRow}
-          <li className="borderBottom clrBr">
-            <Link to={aboutHref} onClick={() => props.onLinkClick({ href: aboutHref })}>About</Link>
-          </li>
-          <li>{loginLink}</li>
-        </ul>
-      </div>
-    ),
+    <div className="NavMenu-Menu border pad tx4 clrP clrBr clrSh1">
+      <ul className="unstyled padKids">
+        {avatarRow}
+        <li className="borderBottom clrBr">
+          <Link
+            to={aboutHref}
+            onClick={() => props.onLinkClick({ href: aboutHref })}
+          >
+            About
+          </Link>
+        </li>
+        <li>{loginLink}</li>
+      </ul>
+    </div>,
     menuContainer
   );
-}
+};
 
 Menu.defaultProps = {
-  onLinkClick: () => {},
-}
+  onLinkClick: () => {}
+};
 
 Menu.propTypes = {
   onLinkClick: PropTypes.func,
   onLogoutClick: PropTypes.func,
-  onLoginClick: PropTypes.func,
-}
+  onLoginClick: PropTypes.func
+};
 
 export default Menu;

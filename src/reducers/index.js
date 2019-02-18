@@ -11,5 +11,5 @@ export default history => ({
   responsive,
   discovery,
   auth,
-  navMenu,
+  navMenu
 });

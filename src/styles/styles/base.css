@@ -39,13 +39,16 @@ body {
   color: #3a4660;
   font-size: 1.5rem; }
 
-a, .link {
+a,
+.link {
   color: #3a4660;
   cursor: pointer;
   text-decoration: none; }
-  a:hover, .link:hover {
+  a:hover,
+  .link:hover {
     text-decoration: underline; }
-  a.unstyled:hover, .link.unstyled:hover {
+  a.unstyled:hover,
+  .link.unstyled:hover {
     text-decoration: none; }
 
 button.link {
@@ -63,10 +66,12 @@ hr {
   hr.dashed {
     border-bottom: 1px dashed; }
 
-ul.unstyled, ol.unstyled {
+ul.unstyled,
+ol.unstyled {
   padding: 0;
   margin: 0; }
-  ul.unstyled li, ol.unstyled li {
+  ul.unstyled li,
+  ol.unstyled li {
     list-style-type: none; }
 
 #OBWEB .block {

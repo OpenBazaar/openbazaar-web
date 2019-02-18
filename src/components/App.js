@@ -37,21 +37,9 @@ class App extends Component {
         </header>
         <div className="App-mainContent">
           <div>
-            <Route
-              exact
-              path="/"
-              component={Discovery}
-            />
-            <Route
-              exact
-              path="/modals"
-              component={Modals}
-            />
-            <Route
-              exact
-              path="/about"
-              component={About}
-            />
+            <Route exact path="/" component={Discovery} />
+            <Route exact path="/modals" component={Modals} />
+            <Route exact path="/about" component={About} />
           </div>
         </div>
         <div className="App-modalContainer">
@@ -59,7 +47,7 @@ class App extends Component {
             <ModalRoot key={modal.id} {...modal} />
           ))}
         </div>
-        <div id="navMenuContainer"></div>
+        <div id="navMenuContainer" />
       </div>
     );
   }
@@ -70,7 +58,7 @@ function mapStateToProps(state, prop) {
     app: state.app,
     modals: state.modals,
     router: state.router,
-    responsive: state.responsive,
+    responsive: state.responsive
   };
 }
 
@@ -78,7 +66,7 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: {
       modals: bindActionCreators(ModalActions, dispatch),
-      responsive: bindActionCreators(ResponsiveActions, dispatch),
+      responsive: bindActionCreators(ResponsiveActions, dispatch)
     }
   };
 }

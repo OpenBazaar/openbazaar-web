@@ -20,7 +20,8 @@ class NavMenu extends Component {
   }
 
   componentDidMount() {
-    menuContainer = menuContainer || document.getElementById('navMenuContainer');
+    menuContainer =
+      menuContainer || document.getElementById('navMenuContainer');
     document.addEventListener('click', this.handleDocClick);
     document.addEventListener('click', this.handleDocClick);
   }
@@ -30,22 +31,25 @@ class NavMenu extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.router.location.pathname !== this.props.router.location.pathname) {
+    if (
+      prevProps.router.location.pathname !== this.props.router.location.pathname
+    ) {
       this.props.actions.navMenu.closeMenu();
     }
   }
 
   handleTriggerClick(e) {
-    const verb = this.props.menuOpen ?
-      'close' : 'open';
+    const verb = this.props.menuOpen ? 'close' : 'open';
     this.props.actions.navMenu[`${verb}Menu`]();
     e.nativeEvent.stopImmediatePropagation();
   }
 
   handleDocClick(e) {
-    if (this.props.menuOpen &&
+    if (
+      this.props.menuOpen &&
       e.target !== menuContainer &&
-      !menuContainer.contains(e.target)) {
+      !menuContainer.contains(e.target)
+    ) {
       this.props.actions.navMenu.closeMenu();
     }
   }
@@ -70,23 +74,36 @@ class NavMenu extends Component {
     let trigger = null;
 
     if (this.props.auth.authUser) {
-      trigger =
+      trigger = (
         <Avatar
           size="medium"
           avatarHashes={this.props.auth.authUser.avatarHashes}
-          onClick={this.handleTriggerClick} />;
+          onClick={this.handleTriggerClick}
+        />
+      );
 
-      if (this.props.navMenu.menuOpen && this.props.responsive.breakpoint === 'mobile') {
-        trigger = <button
-          className="link NavMenu-trigger NavMenu-closeIcon"
-          onClick={this.handleTriggerClick}>
-            <span role="img" aria-label="close navigation menu">❌</span>
-          </button>;
-        }
+      if (
+        this.props.navMenu.menuOpen &&
+        this.props.responsive.breakpoint === 'mobile'
+      ) {
+        trigger = (
+          <button
+            className="link NavMenu-trigger NavMenu-closeIcon"
+            onClick={this.handleTriggerClick}
+          >
+            <span role="img" aria-label="close navigation menu">
+              ❌
+            </span>
+          </button>
+        );
+      }
     } else {
-      trigger = <button
-        className="link NavMenu-trigger NavMenu-hamburgerIcon"
-        onClick={this.handleTriggerClick} />;
+      trigger = (
+        <button
+          className="link NavMenu-trigger NavMenu-hamburgerIcon"
+          onClick={this.handleTriggerClick}
+        />
+      );
     }
 
     let menu = null;
@@ -118,7 +135,7 @@ function mapStateToProps(state, prop) {
     responsive: state.responsive,
     router: state.router,
     navMenu: state.navMenu,
-    ...state.navMenu,
+    ...state.navMenu
   };
 }
 
@@ -126,7 +143,7 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: {
       navMenu: bindActionCreators(NavMenuActions, dispatch),
-      auth: bindActionCreators(AuthActions, dispatch),
+      auth: bindActionCreators(AuthActions, dispatch)
     }
   };
 }

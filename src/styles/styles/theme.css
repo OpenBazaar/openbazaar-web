@@ -7,10 +7,10 @@ button:focus {
 
 .clrP {
   background-color: white; }
-  .clrP input[type="radio"] + label:before,
+  .clrP input[type='radio'] + label:before,
   .clrP .fauxRadioBtn {
     background-color: #f0f0f0; }
-  .clrP input[type="radio"]:checked + label:before,
+  .clrP input[type='radio']:checked + label:before,
   .clrP .fauxRadioBtn.active,
   .clrP .fauxRadioBtn[data-state='selected'] {
     box-shadow: inset 0 0 0 3px #f0f0f0; }
@@ -20,32 +20,32 @@ button:focus {
 
 .clrS {
   background-color: #f0f0f0; }
-  .clrS input[type="radio"] + label:before,
+  .clrS input[type='radio'] + label:before,
   .clrS .fauxRadioBtn {
     background-color: white; }
-  .clrS input[type="radio"]:checked + label:before,
+  .clrS input[type='radio']:checked + label:before,
   .clrS .fauxRadioBtn.active,
   .clrS .fauxRadioBtn[data-state='selected'] {
     box-shadow: inset 0 0 0 3px white; }
 
-input[type=range][class~="clrP"]::-webkit-slider-runnable-track {
+input[type='range'][class~='clrP']::-webkit-slider-runnable-track {
   background-color: #f0f0f0;
   border-color: #dbdbdb; }
 
-input[type=range][class~="clrP"]:focus::-webkit-slider-runnable-track {
+input[type='range'][class~='clrP']:focus::-webkit-slider-runnable-track {
   background-color: #f0f0f0; }
 
-input[type=range][class~="clrP"]::-webkit-slider-thumb {
+input[type='range'][class~='clrP']::-webkit-slider-thumb {
   background-color: white; }
 
-input[type=range][class~="clrS"]::-webkit-slider-runnable-track {
+input[type='range'][class~='clrS']::-webkit-slider-runnable-track {
   background-color: white;
   border-color: #dbdbdb; }
 
-input[type=range][class~="clrS"]:focus::-webkit-slider-runnable-track {
+input[type='range'][class~='clrS']:focus::-webkit-slider-runnable-track {
   background-color: white; }
 
-input[type=range][class~="clrS"]::-webkit-slider-thumb {
+input[type='range'][class~='clrS']::-webkit-slider-thumb {
   background-color: #f0f0f0; }
 
 .clrErr {
@@ -57,18 +57,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: #3a4660; }
   .clrT a {
     color: #8796b6; }
-  .clrT .btn, .clrT .listItem, .clrT.btn, .clrT.listItem {
+  .clrT .btn,
+  .clrT .listItem, .clrT.btn, .clrT.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: #3a4660; }
   a.clrT {
     color: #3a4660; }
-  .clrT input[type="radio"]:checked + label:before,
+  .clrT input[type='radio']:checked + label:before,
   .clrT .fauxRadioBtn.active,
   .clrT .fauxRadioBtn[data-state='selected'] {
     background: #3a4660; }
-  .clrT input[type="checkbox"] + label:before {
+  .clrT input[type='checkbox'] + label:before {
     color: #8796b6; }
-  .clrT input[type="checkbox"]:checked + label:before {
+  .clrT input[type='checkbox']:checked + label:before {
     color: #3a4660; }
 
 .clrT2 {
@@ -77,18 +78,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: #8796b6; }
   .clrT2 a {
     color: #dde1ea; }
-  .clrT2 .btn, .clrT2 .listItem, .clrT2.btn, .clrT2.listItem {
+  .clrT2 .btn,
+  .clrT2 .listItem, .clrT2.btn, .clrT2.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: #8796b6; }
   a.clrT2 {
     color: #8796b6; }
-  .clrT2 input[type="radio"]:checked + label:before,
+  .clrT2 input[type='radio']:checked + label:before,
   .clrT2 .fauxRadioBtn.active,
   .clrT2 .fauxRadioBtn[data-state='selected'] {
     background: #8796b6; }
-  .clrT2 input[type="checkbox"] + label:before {
+  .clrT2 input[type='checkbox'] + label:before {
     color: #dde1ea; }
-  .clrT2 input[type="checkbox"]:checked + label:before {
+  .clrT2 input[type='checkbox']:checked + label:before {
     color: #8796b6; }
 
 .clrT3 {
@@ -97,18 +99,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: #dde1ea; }
   .clrT3 a {
     color: #dde1ea; }
-  .clrT3 .btn, .clrT3 .listItem, .clrT3.btn, .clrT3.listItem {
+  .clrT3 .btn,
+  .clrT3 .listItem, .clrT3.btn, .clrT3.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: #dde1ea; }
   a.clrT3 {
     color: #dde1ea; }
-  .clrT3 input[type="radio"]:checked + label:before,
+  .clrT3 input[type='radio']:checked + label:before,
   .clrT3 .fauxRadioBtn.active,
   .clrT3 .fauxRadioBtn[data-state='selected'] {
     background: #dde1ea; }
-  .clrT3 input[type="checkbox"] + label:before {
+  .clrT3 input[type='checkbox'] + label:before {
     color: #dde1ea; }
-  .clrT3 input[type="checkbox"]:checked + label:before {
+  .clrT3 input[type='checkbox']:checked + label:before {
     color: #dde1ea; }
 
 .clrT4 {
@@ -117,18 +120,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: #f0f2f6; }
   .clrT4 a {
     color: #f0f2f6; }
-  .clrT4 .btn, .clrT4 .listItem, .clrT4.btn, .clrT4.listItem {
+  .clrT4 .btn,
+  .clrT4 .listItem, .clrT4.btn, .clrT4.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: #f0f2f6; }
   a.clrT4 {
     color: #f0f2f6; }
-  .clrT4 input[type="radio"]:checked + label:before,
+  .clrT4 input[type='radio']:checked + label:before,
   .clrT4 .fauxRadioBtn.active,
   .clrT4 .fauxRadioBtn[data-state='selected'] {
     background: #f0f2f6; }
-  .clrT4 input[type="checkbox"] + label:before {
+  .clrT4 input[type='checkbox'] + label:before {
     color: #f0f2f6; }
-  .clrT4 input[type="checkbox"]:checked + label:before {
+  .clrT4 input[type='checkbox']:checked + label:before {
     color: #f0f2f6; }
 
 .clrTEm {
@@ -137,18 +141,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: #2aae24; }
   .clrTEm a {
     color: #60dd5a; }
-  .clrTEm .btn, .clrTEm .listItem, .clrTEm.btn, .clrTEm.listItem {
+  .clrTEm .btn,
+  .clrTEm .listItem, .clrTEm.btn, .clrTEm.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: #2aae24; }
   a.clrTEm {
     color: #2aae24; }
-  .clrTEm input[type="radio"]:checked + label:before,
+  .clrTEm input[type='radio']:checked + label:before,
   .clrTEm .fauxRadioBtn.active,
   .clrTEm .fauxRadioBtn[data-state='selected'] {
     background: #2aae24; }
-  .clrTEm input[type="checkbox"] + label:before {
+  .clrTEm input[type='checkbox'] + label:before {
     color: #60dd5a; }
-  .clrTEm input[type="checkbox"]:checked + label:before {
+  .clrTEm input[type='checkbox']:checked + label:before {
     color: #2aae24; }
 
 .clrTAtt {
@@ -157,18 +162,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: #2aae24; }
   .clrTAtt a {
     color: #60dd5a; }
-  .clrTAtt .btn, .clrTAtt .listItem, .clrTAtt.btn, .clrTAtt.listItem {
+  .clrTAtt .btn,
+  .clrTAtt .listItem, .clrTAtt.btn, .clrTAtt.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: #2aae24; }
   a.clrTAtt {
     color: #2aae24; }
-  .clrTAtt input[type="radio"]:checked + label:before,
+  .clrTAtt input[type='radio']:checked + label:before,
   .clrTAtt .fauxRadioBtn.active,
   .clrTAtt .fauxRadioBtn[data-state='selected'] {
     background: #2aae24; }
-  .clrTAtt input[type="checkbox"] + label:before {
+  .clrTAtt input[type='checkbox'] + label:before {
     color: #60dd5a; }
-  .clrTAtt input[type="checkbox"]:checked + label:before {
+  .clrTAtt input[type='checkbox']:checked + label:before {
     color: #2aae24; }
 
 .clrTErr {
@@ -177,18 +183,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: red; }
   .clrTErr a {
     color: red; }
-  .clrTErr .btn, .clrTErr .listItem, .clrTErr.btn, .clrTErr.listItem {
+  .clrTErr .btn,
+  .clrTErr .listItem, .clrTErr.btn, .clrTErr.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: red; }
   a.clrTErr {
     color: red; }
-  .clrTErr input[type="radio"]:checked + label:before,
+  .clrTErr input[type='radio']:checked + label:before,
   .clrTErr .fauxRadioBtn.active,
   .clrTErr .fauxRadioBtn[data-state='selected'] {
     background: red; }
-  .clrTErr input[type="checkbox"] + label:before {
+  .clrTErr input[type='checkbox'] + label:before {
     color: red; }
-  .clrTErr input[type="checkbox"]:checked + label:before {
+  .clrTErr input[type='checkbox']:checked + label:before {
     color: red; }
 
 .clrTAlert {
@@ -197,18 +204,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: #fecf33; }
   .clrTAlert a {
     color: #fecf33; }
-  .clrTAlert .btn, .clrTAlert .listItem, .clrTAlert.btn, .clrTAlert.listItem {
+  .clrTAlert .btn,
+  .clrTAlert .listItem, .clrTAlert.btn, .clrTAlert.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: #fecf33; }
   a.clrTAlert {
     color: #fecf33; }
-  .clrTAlert input[type="radio"]:checked + label:before,
+  .clrTAlert input[type='radio']:checked + label:before,
   .clrTAlert .fauxRadioBtn.active,
   .clrTAlert .fauxRadioBtn[data-state='selected'] {
     background: #fecf33; }
-  .clrTAlert input[type="checkbox"] + label:before {
+  .clrTAlert input[type='checkbox'] + label:before {
     color: #fecf33; }
-  .clrTAlert input[type="checkbox"]:checked + label:before {
+  .clrTAlert input[type='checkbox']:checked + label:before {
     color: #fecf33; }
 
 .clrTOnEmph {
@@ -217,18 +225,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: white; }
   .clrTOnEmph a {
     color: white; }
-  .clrTOnEmph .btn, .clrTOnEmph .listItem, .clrTOnEmph.btn, .clrTOnEmph.listItem {
+  .clrTOnEmph .btn,
+  .clrTOnEmph .listItem, .clrTOnEmph.btn, .clrTOnEmph.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: white; }
   a.clrTOnEmph {
     color: white; }
-  .clrTOnEmph input[type="radio"]:checked + label:before,
+  .clrTOnEmph input[type='radio']:checked + label:before,
   .clrTOnEmph .fauxRadioBtn.active,
   .clrTOnEmph .fauxRadioBtn[data-state='selected'] {
     background: white; }
-  .clrTOnEmph input[type="checkbox"] + label:before {
+  .clrTOnEmph input[type='checkbox'] + label:before {
     color: white; }
-  .clrTOnEmph input[type="checkbox"]:checked + label:before {
+  .clrTOnEmph input[type='checkbox']:checked + label:before {
     color: white; }
 
 .clrTEmph1 {
@@ -237,18 +246,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: #2aae24; }
   .clrTEmph1 a {
     color: #2aae24; }
-  .clrTEmph1 .btn, .clrTEmph1 .listItem, .clrTEmph1.btn, .clrTEmph1.listItem {
+  .clrTEmph1 .btn,
+  .clrTEmph1 .listItem, .clrTEmph1.btn, .clrTEmph1.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: #2aae24; }
   a.clrTEmph1 {
     color: #2aae24; }
-  .clrTEmph1 input[type="radio"]:checked + label:before,
+  .clrTEmph1 input[type='radio']:checked + label:before,
   .clrTEmph1 .fauxRadioBtn.active,
   .clrTEmph1 .fauxRadioBtn[data-state='selected'] {
     background: #2aae24; }
-  .clrTEmph1 input[type="checkbox"] + label:before {
+  .clrTEmph1 input[type='checkbox'] + label:before {
     color: #2aae24; }
-  .clrTEmph1 input[type="checkbox"]:checked + label:before {
+  .clrTEmph1 input[type='checkbox']:checked + label:before {
     color: #2aae24; }
 
 .clrTEmph1Disabled {
@@ -257,18 +267,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: #c8d6c7; }
   .clrTEmph1Disabled a {
     color: #c8d6c7; }
-  .clrTEmph1Disabled .btn, .clrTEmph1Disabled .listItem, .clrTEmph1Disabled.btn, .clrTEmph1Disabled.listItem {
+  .clrTEmph1Disabled .btn,
+  .clrTEmph1Disabled .listItem, .clrTEmph1Disabled.btn, .clrTEmph1Disabled.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: #c8d6c7; }
   a.clrTEmph1Disabled {
     color: #c8d6c7; }
-  .clrTEmph1Disabled input[type="radio"]:checked + label:before,
+  .clrTEmph1Disabled input[type='radio']:checked + label:before,
   .clrTEmph1Disabled .fauxRadioBtn.active,
   .clrTEmph1Disabled .fauxRadioBtn[data-state='selected'] {
     background: #c8d6c7; }
-  .clrTEmph1Disabled input[type="checkbox"] + label:before {
+  .clrTEmph1Disabled input[type='checkbox'] + label:before {
     color: #c8d6c7; }
-  .clrTEmph1Disabled input[type="checkbox"]:checked + label:before {
+  .clrTEmph1Disabled input[type='checkbox']:checked + label:before {
     color: #c8d6c7; }
 
 .clrTEmph2 {
@@ -277,18 +288,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: #60dd5a; }
   .clrTEmph2 a {
     color: #60dd5a; }
-  .clrTEmph2 .btn, .clrTEmph2 .listItem, .clrTEmph2.btn, .clrTEmph2.listItem {
+  .clrTEmph2 .btn,
+  .clrTEmph2 .listItem, .clrTEmph2.btn, .clrTEmph2.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: #60dd5a; }
   a.clrTEmph2 {
     color: #60dd5a; }
-  .clrTEmph2 input[type="radio"]:checked + label:before,
+  .clrTEmph2 input[type='radio']:checked + label:before,
   .clrTEmph2 .fauxRadioBtn.active,
   .clrTEmph2 .fauxRadioBtn[data-state='selected'] {
     background: #60dd5a; }
-  .clrTEmph2 input[type="checkbox"] + label:before {
+  .clrTEmph2 input[type='checkbox'] + label:before {
     color: #60dd5a; }
-  .clrTEmph2 input[type="checkbox"]:checked + label:before {
+  .clrTEmph2 input[type='checkbox']:checked + label:before {
     color: #60dd5a; }
 
 .clrTPriceAboveMarket {
@@ -297,18 +309,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: red; }
   .clrTPriceAboveMarket a {
     color: red; }
-  .clrTPriceAboveMarket .btn, .clrTPriceAboveMarket .listItem, .clrTPriceAboveMarket.btn, .clrTPriceAboveMarket.listItem {
+  .clrTPriceAboveMarket .btn,
+  .clrTPriceAboveMarket .listItem, .clrTPriceAboveMarket.btn, .clrTPriceAboveMarket.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: red; }
   a.clrTPriceAboveMarket {
     color: red; }
-  .clrTPriceAboveMarket input[type="radio"]:checked + label:before,
+  .clrTPriceAboveMarket input[type='radio']:checked + label:before,
   .clrTPriceAboveMarket .fauxRadioBtn.active,
   .clrTPriceAboveMarket .fauxRadioBtn[data-state='selected'] {
     background: red; }
-  .clrTPriceAboveMarket input[type="checkbox"] + label:before {
+  .clrTPriceAboveMarket input[type='checkbox'] + label:before {
     color: red; }
-  .clrTPriceAboveMarket input[type="checkbox"]:checked + label:before {
+  .clrTPriceAboveMarket input[type='checkbox']:checked + label:before {
     color: red; }
 
 .clrTPriceBelowMarket {
@@ -317,18 +330,19 @@ input[type=range][class~="clrS"]::-webkit-slider-thumb {
   color: #2aae24; }
   .clrTPriceBelowMarket a {
     color: #2aae24; }
-  .clrTPriceBelowMarket .btn, .clrTPriceBelowMarket .listItem, .clrTPriceBelowMarket.btn, .clrTPriceBelowMarket.listItem {
+  .clrTPriceBelowMarket .btn,
+  .clrTPriceBelowMarket .listItem, .clrTPriceBelowMarket.btn, .clrTPriceBelowMarket.listItem {
     /* btnTxt and iconBtn are included automatically because they extend .btn */
     color: #2aae24; }
   a.clrTPriceBelowMarket {
     color: #2aae24; }
-  .clrTPriceBelowMarket input[type="radio"]:checked + label:before,
+  .clrTPriceBelowMarket input[type='radio']:checked + label:before,
   .clrTPriceBelowMarket .fauxRadioBtn.active,
   .clrTPriceBelowMarket .fauxRadioBtn[data-state='selected'] {
     background: #2aae24; }
-  .clrTPriceBelowMarket input[type="checkbox"] + label:before {
+  .clrTPriceBelowMarket input[type='checkbox'] + label:before {
     color: #2aae24; }
-  .clrTPriceBelowMarket input[type="checkbox"]:checked + label:before {
+  .clrTPriceBelowMarket input[type='checkbox']:checked + label:before {
     color: #2aae24; }
 
 .clrBr {

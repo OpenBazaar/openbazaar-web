@@ -15,12 +15,12 @@
     width: 2em;
 
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       left: -10px;
       top: 0;
       width: 2em;
-      height: 0.30em;
+      height: 0.3em;
       transform: translateY(-50%);
       cursor: pointer;
     }
@@ -31,7 +31,7 @@
     position: relative;
     left: -2px;
     top: 2px;
-  }  
+  }
 }
 
 .NavMenu-Menu {

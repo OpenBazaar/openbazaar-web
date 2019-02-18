@@ -18,7 +18,7 @@ export const categories = [
   'clothing',
   'toys',
   'health',
-  'electronics',
+  'electronics'
 ];
 
 // in-progress category fetches
@@ -30,7 +30,7 @@ const fetchCat = (cat, dispatch) => {
   }
 
   if (typeof dispatch !== 'function') {
-    throw new Error('Please provide a dispatch function')
+    throw new Error('Please provide a dispatch function');
   }
 
   if (catFetches[cat]) return catFetches[cat];
@@ -44,7 +44,7 @@ const fetchCat = (cat, dispatch) => {
       catFetches[catToFetch] = get(SEARCH_RANDOM_URL, {
         params: {
           q: cat,
-          size: 8,
+          size: 8
         }
       })
         .then(response => {
@@ -52,7 +52,7 @@ const fetchCat = (cat, dispatch) => {
           dispatch({
             type: FETCH_CATEGORIES_SUCCESS,
             response: response.data,
-            category: cat,
+            category: cat
           });
         })
         .catch(error => {
@@ -60,7 +60,7 @@ const fetchCat = (cat, dispatch) => {
           dispatch({
             type: FETCH_CATEGORIES_FAILURE,
             error: error.message,
-            category: cat,
+            category: cat
           });
         })
         .then(() => {
@@ -68,7 +68,7 @@ const fetchCat = (cat, dispatch) => {
           catFetched = true;
           catFetching = false;
         });
-    }
+    };
 
     const curFetchKeys = Object.keys(catFetches);
 
@@ -90,7 +90,7 @@ const fetchCat = (cat, dispatch) => {
 
   dispatch({
     type: FETCH_CATEGORIES_REQUEST,
-    category: cat,
+    category: cat
   });
 
   return catFetches[cat];

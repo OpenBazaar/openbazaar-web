@@ -1,13 +1,16 @@
 .border {
   border-width: 1px;
-  border-style: solid; }
+  border-style: solid;
+}
 
 .borderBottom {
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  border-bottom-color: inherit; }
+  border-bottom-color: inherit;
+}
 
 .borderTop {
   border-top-width: 1px;
   border-top-style: solid;
-  border-top-color: inherit; }
+  border-top-color: inherit;
+}

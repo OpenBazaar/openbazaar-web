@@ -3,7 +3,7 @@
 
 * {
   box-sizing: border-box;
-} 
+}
 
 html {
   font-size: $baseFontSize;
@@ -18,7 +18,8 @@ body {
   font-size: $tx4;
 }
 
-a, .link {
+a,
+.link {
   color: $text;
   cursor: pointer;
   text-decoration: none;
@@ -55,7 +56,8 @@ hr {
   }
 }
 
-ul, ol {
+ul,
+ol {
   &.unstyled {
     padding: 0;
     margin: 0;

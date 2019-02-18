@@ -14,7 +14,7 @@
 
 @mixin pagePadLeft {
   padding-left: 25px;
-  
+
   @include mq($until: tablet) {
     padding-left: 15px;
   }
@@ -22,11 +22,11 @@
 
 @mixin pagePadRight {
   padding-right: 25px;
-  
+
   @include mq($until: tablet) {
     padding-top: 15px;
     padding-bottom: 15px;
-  }  
+  }
 }
 
 @mixin pagePadLeftRight {
@@ -42,9 +42,10 @@
 @mixin hideScrollAllowScrolling {
   overflow: scroll;
   scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* IE 10+ */
+  -ms-overflow-style: none; /* IE 10+ */
 
-  &::-webkit-scrollbar { /* WebKit */
+  &::-webkit-scrollbar {
+    /* WebKit */
     width: 0px;
     height: 0px;
   }
