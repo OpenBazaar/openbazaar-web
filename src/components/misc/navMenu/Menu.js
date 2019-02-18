@@ -59,3 +59,5 @@ Menu.propTypes = {
   onLogoutClick: PropTypes.func,
   onLoginClick: PropTypes.func,
 }
+
+export default Menu;
