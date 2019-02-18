@@ -1,12 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import Avatar from 'components/ui/Avatar';
 import './NavMenu.scss';
 
 let menuContainer;
 
-export default function (props) {
+const Menu = props => {
   menuContainer = menuContainer || document.getElementById('navMenuContainer');
   let avatarRow = null;
 
@@ -47,4 +48,14 @@ export default function (props) {
     ),
     menuContainer
   );
+}
+
+Menu.defaultProps = {
+  onLinkClick: () => {},
+}
+
+Menu.propTypes = {
+  onLinkClick: PropTypes.func,
+  onLogoutClick: PropTypes.func,
+  onLoginClick: PropTypes.func,
 }

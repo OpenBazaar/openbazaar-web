@@ -80,7 +80,7 @@ class NavMenu extends Component {
         trigger = <button
           className="link NavMenu-trigger NavMenu-closeIcon"
           onClick={this.handleTriggerClick}>
-            <span role="img">❌</span>
+            <span role="img" aria-label="close navigation menu">❌</span>
           </button>;
         }
     } else {
