@@ -397,3 +397,57 @@
   margin-right: 20px;
   @include colHGutter(20px);
 }
+
+//containers should have one of the standard padding sizes
+//padKids classes go on wrapper elements, to make all direct children have that padding
+
+.padTn,
+.padTnKids > * {
+  padding: $padTn;
+}
+
+.padSm,
+.padSmKids > * {
+  padding: $padSm;
+}
+
+.pad,
+.padKids > * {
+  padding: $pad;
+}
+
+.padMd,
+.padMdKids > * {
+  padding: $padMd;
+}
+
+.padMd2,
+.padMd2Kids > * {
+  padding: $padMd2;
+}
+
+.padLg,
+.padLgKids > * {
+  padding: $padLg;
+}
+
+.padHg,
+.padHgKids > * {
+  padding: $padHg;
+}
+
+.padGi,
+.padGiKids > * {
+  padding: $padGi;
+}
+
+.padStack > *:not(:last-child) {
+  //use if the children should collapse the padding between them
+  padding-bottom: 0;
+}
+//elements should have standard spacing between them vertically. There shouldn't be more than a few row classes.
+
+.padStackAll > * {
+  //like padStack, but even the last child will collapse
+  padding-bottom: 0;
+}

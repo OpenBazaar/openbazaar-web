@@ -32,7 +32,7 @@ export default function(props) {
       : 'medium';
 
     results = (
-      <div class="flexCent">
+      <div className="flexCent">
         <Spinner size={spinnerSize} />
       </div>
     );

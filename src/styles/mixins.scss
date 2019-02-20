@@ -24,19 +24,18 @@
   padding-right: 25px;
 
   @include mq($until: tablet) {
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding-right: 15px;
   }
 }
 
 @mixin pagePadLeftRight {
-  @extend .pagePadLeft;
-  @extend .pagePadRight;
+  @include pagePadLeft;
+  @include pagePadRight;
 }
 
 @mixin pagePad {
-  @extend .pagePadLeftRight;
-  @extend .pagePadTopBottom;
+  @include pagePadLeftRight;
+  @include pagePadTopBottom;
 }
 
 @mixin hideScrollAllowScrolling {
