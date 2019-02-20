@@ -1,0 +1,49 @@
+@import '../../../styles/mixins.scss';
+
+.NavMenu {
+  .NavMenu-trigger {
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  .NavMenu-hamburgerIcon {
+    // https://css-tricks.com/three-line-menu-navicon/
+    position: relative;
+    cursor: pointer;
+    height: 1em;
+    width: 2em;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: -10px;
+      top: 0;
+      width: 2em;
+      height: 0.3em;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+  }
+
+  .NavMenu-closeIcon {
+    font-size: 1.25em;
+    position: relative;
+    left: -2px;
+    top: 2px;
+  }
+}
+
+.NavMenu-Menu {
+  position: absolute;
+  right: 10px;
+  top: 60px;
+  width: 225px;
+
+  @include mq($until: tablet) {
+    // todo: in themes file, maybe get rid of the right and left shadows?
+    top: 62px;
+    left: 0;
+    width: 100%;
+  }
+}

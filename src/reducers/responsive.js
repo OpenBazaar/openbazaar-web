@@ -2,7 +2,7 @@ import { createReducer } from 'redux-starter-kit';
 import { SET_BREAKPOINT } from 'actions/responsive';
 
 const breakpoints = {
-  mobile: 320,
+  mobile: 0,
   tablet: 740,
   desktop: 980,
   pageWidth: 1010,
@@ -18,9 +18,7 @@ const getCurBreakpoint = () => {
       breakpoints[bps[index + 1]]
     }px)`;
 
-    if (index === 0) {
-      mq = `(max-width: ${breakpoints[bp]}px)`;
-    } else if (index === bps.length - 1) {
+    if (index === bps.length - 1) {
       mq = `(min-width: ${breakpoints[bp]}px)`;
     }
 

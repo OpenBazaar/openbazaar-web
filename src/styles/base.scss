@@ -1,4 +1,3 @@
-
 @import './variables.scss';
 @import './mixins.scss';
 
@@ -8,15 +7,38 @@
 
 html {
   font-size: $baseFontSize;
+
+  // avoid page jump from pages with a scollbar, to one's without and vice
+  // versa
+  overflow-y: scroll;
 }
 
 body {
   background-color: #fff;
   color: $text;
+  font-size: $tx4;
 }
 
-a {
-  color: #107896;
+a,
+.link {
+  color: $text;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &.unstyled {
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+button.link {
+  border: 0;
+  outline: none;
 }
 
 hr {
@@ -32,6 +54,18 @@ hr {
 
   &.dashed {
     border-bottom: 1px dashed;
+  }
+}
+
+ul,
+ol {
+  &.unstyled {
+    padding: 0;
+    margin: 0;
+
+    li {
+      list-style-type: none;
+    }
   }
 }
 

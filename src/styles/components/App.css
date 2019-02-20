@@ -11,9 +11,15 @@ body:before {
   right: 0;
   top: 0;
   z-index: 100; }
+<<<<<<< HEAD
+  @media all {
+    body:before {
+      content: "mobile ≥ 0px (0em)"; } }
+=======
   @media (min-width: 20em) {
     body:before {
       content: "mobile ≥ 320px (20em)"; } }
+>>>>>>> initial-skeleton
   @media (min-width: 46.25em) {
     body:before {
       content: "tablet ≥ 740px (46.25em)"; } }
@@ -31,6 +37,31 @@ body:before {
   box-sizing: border-box; }
 
 html {
+<<<<<<< HEAD
+  font-size: 10px;
+  overflow-y: scroll; }
+
+body {
+  background-color: #fff;
+  color: #3a4660;
+  font-size: 1.5rem; }
+
+a,
+.link {
+  color: #3a4660;
+  cursor: pointer;
+  text-decoration: none; }
+  a:hover,
+  .link:hover {
+    text-decoration: underline; }
+  a.unstyled:hover,
+  .link.unstyled:hover {
+    text-decoration: none; }
+
+button.link {
+  border: 0;
+  outline: none; }
+=======
   font-size: 10px; }
 
 body {
@@ -39,6 +70,7 @@ body {
 
 a {
   color: #107896; }
+>>>>>>> initial-skeleton
 
 hr {
   border: none;
@@ -51,6 +83,17 @@ hr {
   hr.dashed {
     border-bottom: 1px dashed; }
 
+<<<<<<< HEAD
+ul.unstyled,
+ol.unstyled {
+  padding: 0;
+  margin: 0; }
+  ul.unstyled li,
+  ol.unstyled li {
+    list-style-type: none; }
+
+=======
+>>>>>>> initial-skeleton
 #OBWEB .block {
   display: block; }
 
@@ -63,7 +106,12 @@ hr {
 
 .App .App-header {
   padding: 10px 20px;
+<<<<<<< HEAD
+  box-shadow: 0 1px 3px 0 rgba(219, 219, 219, 0.75);
+  height: 62px; }
+=======
   box-shadow: 0 1px 3px 0 rgba(219, 219, 219, 0.75); }
+>>>>>>> initial-skeleton
   .App .App-header nav {
     margin: 0; }
     .App .App-header nav a {
