@@ -3,8 +3,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as NavMenuActions from 'actions/navMenu';
 import * as AuthActions from 'actions/auth';
+import * as ModalActions from 'actions/modals';
 import Menu from './Menu';
 import Avatar from 'components/ui/Avatar';
+import Login from 'components/auth/Login';
 import '../../../styles/theme.scss';
 
 let menuContainer;
@@ -55,7 +57,8 @@ class NavMenu extends Component {
   }
 
   handleLoginClick() {
-    this.props.actions.auth.login();
+    // this.props.actions.auth.login();
+    this.props.actions.modals.open({ Component: Login });
     this.props.actions.navMenu.closeMenu();
   }
 
@@ -143,7 +146,8 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: {
       navMenu: bindActionCreators(NavMenuActions, dispatch),
-      auth: bindActionCreators(AuthActions, dispatch)
+      auth: bindActionCreators(AuthActions, dispatch),
+      modals: bindActionCreators(ModalActions, dispatch)      
     }
   };
 }
