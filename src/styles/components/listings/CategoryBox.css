@@ -11,9 +11,15 @@ body:before {
   right: 0;
   top: 0;
   z-index: 100; }
+<<<<<<< HEAD
   @media all {
     body:before {
       content: "mobile ≥ 0px (0em)"; } }
+=======
+  @media (min-width: 20em) {
+    body:before {
+      content: "mobile ≥ 320px (20em)"; } }
+>>>>>>> initial-skeleton
   @media (min-width: 46.25em) {
     body:before {
       content: "tablet ≥ 740px (46.25em)"; } }
@@ -45,7 +51,12 @@ body:before {
       padding-right: 25px; } }
   @media (min-width: 46.25em) and (max-width: 46.24em) {
     .CategoryBox {
+<<<<<<< HEAD
       padding-right: 15px; } }
+=======
+      padding-top: 15px;
+      padding-bottom: 15px; } }
+>>>>>>> initial-skeleton
   @media (max-width: 46.24em) {
     .CategoryBox .ListingsGrid {
       display: flex;

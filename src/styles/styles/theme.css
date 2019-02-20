@@ -593,6 +593,7 @@ input[type='range'][class~='clrS']::-webkit-slider-thumb {
 
 .required::after {
   color: red; }
+<<<<<<< HEAD
 
 #OBWEB .NavMenu .NavMenu-hamburgerIcon::after {
   background: black;
@@ -601,3 +602,5 @@ input[type='range'][class~='clrS']::-webkit-slider-thumb {
 #OBWEB .NavMenu .NavMenu-closeIcon {
   color: transparent;
   text-shadow: 0 0 0 black; }
+=======
+>>>>>>> initial-skeleton

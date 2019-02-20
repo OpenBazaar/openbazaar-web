@@ -11,9 +11,15 @@ body:before {
   right: 0;
   top: 0;
   z-index: 100; }
+<<<<<<< HEAD
   @media all {
     body:before {
       content: "mobile ≥ 0px (0em)"; } }
+=======
+  @media (min-width: 20em) {
+    body:before {
+      content: "mobile ≥ 320px (20em)"; } }
+>>>>>>> initial-skeleton
   @media (min-width: 46.25em) {
     body:before {
       content: "tablet ≥ 740px (46.25em)"; } }
@@ -33,6 +39,7 @@ body:before {
     .pageWidth {
       margin: 0 auto; } }
 
+<<<<<<< HEAD
 .pagePadTopBottom {
   padding-top: 25px;
   padding-bottom: 25px; }
@@ -78,6 +85,27 @@ body:before {
       padding-right: 15px; } }
   @media (max-width: 46.24em) {
     .pagePad {
+=======
+.pagePadTopBottom, .pagePad {
+  padding-top: 25px;
+  padding-bottom: 25px; }
+  @media (max-width: 46.24em) {
+    .pagePadTopBottom, .pagePad {
+      padding-top: 15px;
+      padding-bottom: 15px; } }
+
+.pagePadLeft, .pagePadLeftRight, .pagePad {
+  padding-left: 25px; }
+  @media (max-width: 46.24em) {
+    .pagePadLeft, .pagePadLeftRight, .pagePad {
+      padding-left: 15px; } }
+
+.pagePadRight, .pagePadLeftRight, .pagePad {
+  padding-top: 25px;
+  padding-bottom: 25px; }
+  @media (max-width: 46.24em) {
+    .pagePadRight, .pagePadLeftRight, .pagePad {
+>>>>>>> initial-skeleton
       padding-top: 15px;
       padding-bottom: 15px; } }
 
@@ -316,6 +344,7 @@ body:before {
       padding-left: 0; }
     .gutterHLg > *.col:last-child:not(:only-child), .gutterHLg > *.col12:last-child:not(:only-child), .gutterHLg > *.col11:last-child:not(:only-child), .gutterHLg > *.col10:last-child:not(:only-child), .gutterHLg > *.col9:last-child:not(:only-child), .gutterHLg > *.col8:last-child:not(:only-child), .gutterHLg > *.col7:last-child:not(:only-child), .gutterHLg > *.col6:last-child:not(:only-child), .gutterHLg > *.col5:last-child:not(:only-child), .gutterHLg > *.col4:last-child:not(:only-child), .gutterHLg > *.col3:last-child:not(:only-child), .gutterHLg > *.col2:last-child:not(:only-child), .gutterHLg > *.col1:last-child:not(:only-child), .gutterHLg > *.col12:last-child:not(:only-child), .gutterHLg > *.col11:last-child:not(:only-child), .gutterHLg > *.col10:last-child:not(:only-child), .gutterHLg > *.col9:last-child:not(:only-child), .gutterHLg > *.col8:last-child:not(:only-child), .gutterHLg > *.col7:last-child:not(:only-child), .gutterHLg > *.col6:last-child:not(:only-child), .gutterHLg > *.col5:last-child:not(:only-child), .gutterHLg > *.col4:last-child:not(:only-child), .gutterHLg > *.col3:last-child:not(:only-child), .gutterHLg > *.col2:last-child:not(:only-child), .gutterHLg > *.col1:last-child:not(:only-child) {
       padding-right: 0; }
+<<<<<<< HEAD
 
 .padTn,
 .padTnKids > * {
@@ -354,3 +383,5 @@ body:before {
 
 .padStackAll > * {
   padding-bottom: 0; }
+=======
+>>>>>>> initial-skeleton
