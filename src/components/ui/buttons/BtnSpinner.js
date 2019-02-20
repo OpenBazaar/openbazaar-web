@@ -1,9 +1,9 @@
 import React from 'react';
-import { nonEmptyString } from 'util/customPropTypes';
 import Spinner from 'components/ui/Spinner';
 import 'styles/layout.scss';
 
 const BtnSpinner = props => {
+  console.dir(props);
   const className =
     (
       `BtnSpinner ${props.baseClassName} ${props.className}` +
@@ -17,9 +17,9 @@ const BtnSpinner = props => {
       </span>
       <span
         className="BtnSpinner-label"
-        style={{visibility: 'hidden'}}>{props.label}</span>
+        style={{visibility: 'hidden'}}>{props.children}</span>
     </span> :
-    props.label;
+    props.children;
 
   return (
     <button className={className}>
@@ -34,8 +34,4 @@ BtnSpinner.defaultProps = {
   baseClassName: 'btn',
   className: '',
   isProcessing: false,
-};
-
-BtnSpinner.propTypes = {
-  label: nonEmptyString,
 };
