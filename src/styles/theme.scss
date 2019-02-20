@@ -1,0 +1,356 @@
+// theme color styles. All elements that have a background color should have one of these applied.
+// The text class will be applied to the body element, if text is colored differently, apply it to the nearest
+// parent container.
+
+// any color that should change on hover, active, etc. should have a rule for &.clrHover, and the
+// element that should change should have a .clrHover class on it.
+
+@import './variables.scss';
+
+@mixin textColor($col1, $col2: $col1, $col3: $col2) {
+  /* generates the text color rules */
+  /* if no second color is passed, set everything to the first color */
+  color: $col1;
+
+  a {
+    color: $col2;
+  }
+
+  .btn,
+  .listItem,
+  &.btn,
+  &.listItem {
+    /* btnTxt and iconBtn are included automatically because they extend .btn */
+    color: $col1;
+  }
+
+  @at-root {
+    a#{&} {
+      color: $col1;
+    }
+  }
+
+  input[type='radio']:checked + label:before,
+  .fauxRadioBtn.active,
+  .fauxRadioBtn[data-state='selected'] {
+    background: $col1;
+  }
+
+  input[type='checkbox'] + label:before {
+    color: $col2;
+  }
+
+  input[type='checkbox']:checked + label:before {
+    color: $col1;
+  }
+}
+
+@mixin borderColor($col1, $col2: $border2) {
+  /* generates the border color rules */
+  border-color: $col1;
+
+  &:hover,
+  &:focus {
+    border-color: $col1;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    &:focus:not(.disabled) {
+      border-color: $col2;
+    }
+  }
+
+  hr {
+    border-color: $col1;
+  }
+
+  .btn:hover,
+  .btn:focus,
+  &.btn:hover,
+  &.btn:focus,
+  .clrHover:hover,
+  .clrHover:focus,
+  &.clrHover:hover,
+  &.clrHover:focus {
+    border-color: $col2;
+
+    .disabled &,
+    &.disabled,
+    &:disabled {
+      border-color: $col1;
+    }
+  }
+}
+
+/* default for inputs with no color class */
+input,
+select,
+textarea,
+button {
+  &:focus {
+    border-color: $border3;
+  }
+}
+
+.clrP {
+  background-color: $primary;
+
+  input[type='radio'] + label:before,
+  .fauxRadioBtn {
+    background-color: $secondary;
+  }
+
+  input[type='radio']:checked + label:before,
+  .fauxRadioBtn.active,
+  .fauxRadioBtn[data-state='selected'] {
+    box-shadow: inset 0 0 0 3px $secondary;
+  }
+}
+
+.clrPOverlay {
+  background-color: $overlayP;
+}
+
+.clrS {
+  background-color: $secondary;
+
+  input[type='radio'] + label:before,
+  .fauxRadioBtn {
+    background-color: $primary;
+  }
+
+  input[type='radio']:checked + label:before,
+  .fauxRadioBtn.active,
+  .fauxRadioBtn[data-state='selected'] {
+    box-shadow: inset 0 0 0 3px $primary;
+  }
+}
+
+input[type='range'][class~='clrP'] {
+  &::-webkit-slider-runnable-track {
+    background-color: $secondary;
+    border-color: $border;
+  }
+  &:focus::-webkit-slider-runnable-track {
+    background-color: $secondary;
+  }
+  &::-webkit-slider-thumb {
+    background-color: $primary;
+  }
+}
+
+input[type='range'][class~='clrS'] {
+  &::-webkit-slider-runnable-track {
+    background-color: $primary;
+    border-color: $border;
+  }
+  &:focus::-webkit-slider-runnable-track {
+    background-color: $primary;
+  }
+  &::-webkit-slider-thumb {
+    background-color: $secondary;
+  }
+}
+
+.clrErr {
+  background-color: $error;
+}
+
+.clrT {
+  @include textColor($text, $text2, $text);
+}
+
+.clrT2 {
+  @include textColor($text2, $text3, $text);
+}
+
+.clrT3 {
+  // links in text color 3 are the same color, or they'd be too hard to see
+  @include textColor($text3, $text3, $text2);
+}
+
+.clrT4 {
+  // links in text color 4 are the same color, or they'd be too hard to see
+  @include textColor($text4, $text4, $text3);
+}
+
+.clrTEm {
+  @include textColor($emphasis1, $emphasis2);
+}
+
+.clrTAtt {
+  @include textColor($emphasis1, $emphasis2);
+}
+
+.clrTErr {
+  @include textColor($error);
+}
+
+.clrTAlert {
+  @include textColor($alert);
+}
+
+.clrTOnEmph {
+  @include textColor($textOnEmph);
+}
+
+.clrTEmph1 {
+  @include textColor($emphasis1);
+}
+
+.clrTEmph1Disabled {
+  @include textColor($emphasis1Disabled);
+}
+
+.clrTEmph2 {
+  @include textColor($emphasis2);
+}
+
+.clrTPriceAboveMarket {
+  @include textColor($error);
+}
+
+.clrTPriceBelowMarket {
+  @include textColor($emphasis1);
+}
+
+.clrBr {
+  @include borderColor($border, $border3);
+}
+
+.clrBr2 {
+  @include borderColor($border2, $border3);
+}
+
+.clrBr3 {
+  @include borderColor($border3, $border4);
+}
+
+.clrBr4 {
+  @include borderColor($border4, $border5);
+}
+
+.clrBrT {
+  @include borderColor($text, $text2);
+}
+
+.clrBrDec1 {
+  // decorative border with a shadow to create a faint outline
+  border-color: $textOnEmph;
+  border-width: 2px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+}
+
+.clrBrEmph1 {
+  border-color: $emphasis1;
+
+  hr {
+    border-color: $emphasis1;
+  }
+}
+
+.clrBrEmph2 {
+  border-color: $emphasis2;
+
+  hr {
+    border-color: $emphasis2;
+  }
+}
+
+.clrBrError {
+  border-color: $error;
+
+  hr {
+    border-color: $error;
+  }
+}
+
+.clrBrAlert2 {
+  border-color: $alert2;
+}
+
+.clrBrInvis {
+  @include borderColor(transparent, transparent);
+}
+
+.clrBAtt1 {
+  background-color: $emphasis1;
+}
+
+.clrBAtt2 {
+  background-color: $emphasis2;
+}
+
+.clrBAttGrad {
+  background: $emphasisGradient;
+
+  &.processing {
+    .spinner {
+      path:first-child {
+        fill: #666;
+      }
+    }
+  }
+}
+
+.clrBAlert2 {
+  background: $alert2Background;
+}
+
+.clrBAlert2Grad {
+  background: $alert2Gradient;
+  background-color: $alert2Background;
+}
+
+::-webkit-scrollbar-track {
+  background: $secondary;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $text3;
+
+  &:hover {
+    background: $text4;
+  }
+
+  &:active {
+    background: $text4;
+  }
+}
+
+.clrBrBk {
+  background-color: $border;
+}
+
+.clrTx1Br {
+  border-color: $text;
+}
+
+.clrE1 {
+  background-color: $emphasis1;
+}
+
+.clrO {
+  // overlay color
+  background-color: $overlay;
+}
+
+//shadows should be set by the theme too
+.clrSh1 {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.clrSh2 {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+}
+
+.clrSh3 {
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.required::after {
+  color: $error;
+}

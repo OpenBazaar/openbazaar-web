@@ -1,0 +1,248 @@
+// typography
+
+@import 'node_modules/sass-mq/mq';
+@import './variables.scss';
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  margin: 0;
+  font-weight: 700;
+  -webkit-margin-before: 0;
+  -webkit-margin-after: 0.5em;
+}
+
+@mixin textSize($size) {
+  font-size: $size;
+}
+
+// all font sizes are multiples of the base rem. This allows us to increase or decrease all the fonts by changing the
+// font size on the html element (useful for accessibility and small screens).
+
+// us h classes for headlines, tx classes for body text
+
+h1,
+.h1,
+.tx1,
+.btn.tx1 {
+  @include textSize($tx1);
+}
+
+h2,
+.h2,
+.tx2,
+.btn.tx2 {
+  @include textSize($tx2);
+}
+
+.tx2b,
+.btn.tx2b {
+  @include textSize($tx2b);
+}
+
+h3,
+.h3,
+.tx3,
+.btn.tx3 {
+  @include textSize($tx3);
+}
+
+h4,
+.h4,
+.tx4,
+.btn.tx4 {
+  @include textSize($tx4);
+}
+
+h5,
+.h5,
+.tx5,
+.btn.tx5 {
+  @include textSize($tx5);
+}
+
+.tx5b,
+.btn.tx5b {
+  @include textSize($tx5b);
+}
+
+h6,
+.h6,
+.tx6,
+.btn.tx6 {
+  @include textSize($tx6);
+}
+
+.txBg {
+  @include textSize($txBg);
+}
+
+.txTn {
+  @include textSize($tx7);
+}
+
+.txSm {
+  @include textSize(1.1rem);
+}
+
+@include mq($until: tablet) {
+  h1,
+  .h1,
+  .tx1,
+  .btn.tx1 {
+    @include textSize($tx2);
+  }
+
+  h2,
+  .h2,
+  .tx2,
+  .btn.tx2 {
+    @include textSize($tx3);
+  }
+
+  .tx2b,
+  .btn.tx2b {
+    @include textSize($tx3b);
+  }
+
+  h3,
+  .h3,
+  .tx3,
+  .btn.tx3 {
+    @include textSize($tx4);
+  }
+
+  h4,
+  .h4,
+  .tx4,
+  .btn.tx4 {
+    @include textSize($tx5);
+  }
+
+  h5,
+  .h5,
+  .tx5,
+  .btn.tx5 {
+    @include textSize($tx6);
+  }
+
+  .tx5b,
+  .btn.tx5b {
+    @include textSize($tx7);
+  }
+
+  h6,
+  .h6,
+  .tx6,
+  .btn.tx6 {
+    @include textSize($tx7);
+  }
+
+  .txBg {
+    @include textSize($tx1);
+  }
+
+  .txTn {
+    @include textSize($tx7);
+  }
+}
+
+.txBase {
+  @include textSize(1rem);
+}
+
+.txGlow {
+  text-shadow: #000 0 1px 3px;
+}
+
+p {
+  margin: 0;
+  line-height: 1.5;
+  -webkit-margin-before: 0;
+  -webkit-margin-after: 1em;
+
+  a {
+    text-decoration: underline;
+  }
+}
+
+* p:last-child {
+  //if the paragraph is the last item in the container, remove the bottom margin
+  -webkit-margin-after: 0;
+}
+
+.note {
+  font-size: 0.9rem;
+}
+
+.txUnl {
+  margin-bottom: 0;
+}
+
+.txCtr {
+  text-align: center;
+}
+
+.txRgt {
+  text-align: right;
+}
+
+.txLft {
+  text-align: left;
+}
+
+#OBWEB {
+  .txUnb {
+    font-weight: 400;
+  }
+
+  .txB {
+    font-weight: bold;
+  }
+
+  .tx500 {
+    font-weight: 500;
+  }
+}
+
+.txUp {
+  text-transform: uppercase;
+}
+
+.txU,
+.txUHover:hover {
+  text-decoration: underline;
+}
+
+.txNoUnd:hover,
+a.txNoUnd:hover,
+a .txNoUnd:hover {
+  text-decoration: none;
+}
+
+.ic90r:before {
+  //rotate icon 90 degrees
+  transform: rotate(90deg);
+}
+
+.noOverflow {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+// Todo: try and get proper multi-line cross-browser clamping. If possible. If not, maybe JS?
+.clamp {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

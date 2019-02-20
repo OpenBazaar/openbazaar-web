@@ -1,0 +1,177 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  margin: 0;
+  font-weight: 700;
+  -webkit-margin-before: 0;
+  -webkit-margin-after: 0.5em; }
+
+h1,
+.h1,
+.tx1,
+.btn.tx1 {
+  font-size: 2.6rem; }
+
+h2,
+.h2,
+.tx2,
+.btn.tx2 {
+  font-size: 2.3rem; }
+
+.tx2b,
+.btn.tx2b {
+  font-size: 2rem; }
+
+h3,
+.h3,
+.tx3,
+.btn.tx3 {
+  font-size: 1.7rem; }
+
+h4,
+.h4,
+.tx4,
+.btn.tx4 {
+  font-size: 1.5rem; }
+
+h5,
+.h5,
+.tx5,
+.btn.tx5 {
+  font-size: 1.4rem; }
+
+.tx5b,
+.btn.tx5b {
+  font-size: 1.3rem; }
+
+h6,
+.h6,
+.tx6,
+.btn.tx6 {
+  font-size: 1.2rem; }
+
+.txBg {
+  font-size: 4.75rem; }
+
+.txTn {
+  font-size: 0.9rem; }
+
+.txSm {
+  font-size: 1.1rem; }
+
+@media (max-width: 46.24em) {
+  h1,
+  .h1,
+  .tx1,
+  .btn.tx1 {
+    font-size: 2.3rem; }
+  h2,
+  .h2,
+  .tx2,
+  .btn.tx2 {
+    font-size: 1.7rem; }
+  .tx2b,
+  .btn.tx2b {
+    font-size: 1.6rem; }
+  h3,
+  .h3,
+  .tx3,
+  .btn.tx3 {
+    font-size: 1.5rem; }
+  h4,
+  .h4,
+  .tx4,
+  .btn.tx4 {
+    font-size: 1.4rem; }
+  h5,
+  .h5,
+  .tx5,
+  .btn.tx5 {
+    font-size: 1.2rem; }
+  .tx5b,
+  .btn.tx5b {
+    font-size: 0.9rem; }
+  h6,
+  .h6,
+  .tx6,
+  .btn.tx6 {
+    font-size: 0.9rem; }
+  .txBg {
+    font-size: 2.6rem; }
+  .txTn {
+    font-size: 0.9rem; } }
+
+.txBase {
+  font-size: 1rem; }
+
+.txGlow {
+  text-shadow: #000 0 1px 3px; }
+
+p {
+  margin: 0;
+  line-height: 1.5;
+  -webkit-margin-before: 0;
+  -webkit-margin-after: 1em; }
+  p a {
+    text-decoration: underline; }
+
+* p:last-child {
+  -webkit-margin-after: 0; }
+
+.note {
+  font-size: 0.9rem; }
+
+.txUnl {
+  margin-bottom: 0; }
+
+.txCtr {
+  text-align: center; }
+
+.txRgt {
+  text-align: right; }
+
+.txLft {
+  text-align: left; }
+
+#OBWEB .txUnb {
+  font-weight: 400; }
+
+#OBWEB .txB {
+  font-weight: bold; }
+
+#OBWEB .tx500 {
+  font-weight: 500; }
+
+.txUp {
+  text-transform: uppercase; }
+
+.txU,
+.txUHover:hover {
+  text-decoration: underline; }
+
+.txNoUnd:hover,
+a.txNoUnd:hover,
+a .txNoUnd:hover {
+  text-decoration: none; }
+
+.ic90r:before {
+  transform: rotate(90deg); }
+
+.noOverflow {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden; }
+
+.clamp {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }

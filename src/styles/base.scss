@@ -1,0 +1,50 @@
+
+@import './variables.scss';
+@import './mixins.scss';
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: $baseFontSize;
+}
+
+body {
+  background-color: #fff;
+  color: $text;
+}
+
+a {
+  color: #107896;
+}
+
+hr {
+  border: none;
+  border-bottom: 1px solid;
+  margin-before: 0.5em;
+  margin-after: 0.5em;
+
+  &.unleaded {
+    margin-before: 0;
+    margin-after: 0;
+  }
+
+  &.dashed {
+    border-bottom: 1px dashed;
+  }
+}
+
+#OBWEB {
+  .block {
+    display: block;
+  }
+
+  .hide {
+    display: none;
+  }
+
+  .disabled {
+    @include disabled;
+  }
+}

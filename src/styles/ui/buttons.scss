@@ -1,0 +1,99 @@
+@import '../variables.scss';
+
+.ctrl {
+  height: $buttonHeight;
+  padding: 0 24px;
+  border-radius: $corner;
+  border-width: 1px;
+  border-style: solid;
+  font-size: $tx5;
+  font-weight: 400;
+  box-sizing: border-box;
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center; // centers icons if they are a child element
+  justify-content: center;
+  -webkit-user-select: none; // quick clicks will now not highlight
+}
+
+.btn {
+  @extend .ctrl;
+  cursor: pointer;
+  font-weight: 700;
+  transition: border 0.15s ease;
+  text-align: center;
+
+  &:hover:not(.btnRadio, .btnAsLink),
+  &:focus:not(.btnRadio, .btnAsLink) {
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  &:focus:not(.btnRadio) {
+    outline: 0;
+  }
+
+  &.form {
+    // use when buttons are inline with form elements and should match their size
+    height: $inputHeight + 2;
+  }
+
+  &.btnProcessing {
+    position: relative;
+
+    .spinner {
+      display: none;
+    }
+
+    &.processing {
+      pointer-events: none;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: inherit;
+        z-index: 1;
+      }
+
+      .spinner {
+        position: absolute;
+        display: block;
+        top: 50%;
+        left: 50%;
+        right: 0;
+        bottom: 0;
+        background-color: inherit;
+        transform: translate(-50%, -50%);
+        border-radius: inherit;
+        width: 25px;
+        height: 25px;
+        z-index: 1;
+      }
+    }
+  }
+
+  .icon {
+    // use this for icons that are inline in a button in front of text
+    width: 1.5em;
+    height: 1.5em;
+    margin-right: 0.5em;
+    display: inline-flex;
+    align-content: center;
+  }
+}
+
+.iconBtn {
+  //this button has only an icon in it
+  @extend .btn;
+  font-size: 1.8rem;
+  padding: 0 12px;
+  width: $buttonHeight;
+
+  &.form {
+    width: $inputHeight;
+  }
+}

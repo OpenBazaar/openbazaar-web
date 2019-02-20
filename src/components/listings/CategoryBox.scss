@@ -1,0 +1,45 @@
+@import 'node_modules/sass-mq/mq';
+@import '../../styles/variables.scss';
+@import '../../styles/mixins.scss';
+
+.CategoryBox {
+  @include pagePadLeft;
+
+  &.CategoryBox-noResultsYet {
+    .CategoryBox-resultsWrap {
+      // The following heights should be equal to the height of the listings grid
+      // + the See All button row + margins once the grid is loaded with results. The
+      // idea is to eliminate page jumps as content loads in.
+      height: 635px;
+
+      @include mq(740px, 770px) {
+        // probably should decrease the card size here
+        // so a row of three isn't so tall
+        height: 930px;
+      }
+
+      @include mq($until: tablet) {
+        height: 255px;
+      }
+    }
+  }
+
+  @include mq($from: tablet) {
+    @include pagePadRight;
+  }
+
+  @include mq($until: tablet) {
+    .ListingsGrid {
+      display: flex;
+      justify-content: flex-start;
+      overflow-x: scroll;
+      overflow-y: hidden;
+
+      @include hideScrollAllowScrolling;
+
+      .ListingCard {
+        margin-right: $listingGridGap;
+      }
+    }
+  }
+}

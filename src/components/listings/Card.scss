@@ -1,0 +1,35 @@
+@import 'node_modules/sass-mq/mq';
+@import '../../styles/variables.scss';
+
+.ListingCard {
+  width: 225px;
+  height: 280px;
+
+  .ListingCard-listingImage {
+    width: 223px;
+    height: 223px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .ListingCard-content {
+    padding: $pad;
+  }
+
+  @include mq($until: tablet) {
+    width: 158px;
+    height: 195px;
+
+    .ListingCard-listingImage {
+      width: 156px;
+      height: 156px;
+    }
+
+    .ListingCard-content {
+      .ListingCard-title {
+        display: none;
+      }
+    }
+  }
+}

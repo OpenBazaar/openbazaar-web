@@ -1,0 +1,59 @@
+@import 'node_modules/sass-mq/mq';
+
+// The "pagePad" classes are explained in layout.scss. They are created as mixins to allow them to
+// be used in media queries.
+@mixin pagePadTopBottom {
+  padding-top: 25px;
+  padding-bottom: 25px;
+
+  @include mq($until: tablet) {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+}
+
+@mixin pagePadLeft {
+  padding-left: 25px;
+
+  @include mq($until: tablet) {
+    padding-left: 15px;
+  }
+}
+
+@mixin pagePadRight {
+  padding-right: 25px;
+
+  @include mq($until: tablet) {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+}
+
+@mixin pagePadLeftRight {
+  @extend .pagePadLeft;
+  @extend .pagePadRight;
+}
+
+@mixin pagePad {
+  @extend .pagePadLeftRight;
+  @extend .pagePadTopBottom;
+}
+
+@mixin hideScrollAllowScrolling {
+  overflow: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+
+  &::-webkit-scrollbar {
+    /* WebKit */
+    width: 0px;
+    height: 0px;
+  }
+}
+
+@mixin disabled {
+  pointer-events: none;
+  // Bumping this up until we have a more context specific
+  // disable style. 0.2 is too low for most things.
+  opacity: 0.4;
+}
