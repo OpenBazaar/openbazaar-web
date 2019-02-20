@@ -23,7 +23,6 @@ class NavMenu extends Component {
     menuContainer =
       menuContainer || document.getElementById('navMenuContainer');
     document.addEventListener('click', this.handleDocClick);
-    document.addEventListener('click', this.handleDocClick);
   }
 
   componentWillUnmount() {

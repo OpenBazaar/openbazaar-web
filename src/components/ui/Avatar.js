@@ -51,7 +51,6 @@ export default function(props) {
       <div
         className={`${className} link`}
         style={style}
-        to={props.href}
         onClick={props.onClick}
       >
         User Avatar
