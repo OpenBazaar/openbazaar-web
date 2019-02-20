@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as ModalActions from 'actions/modals';
-import './ModalRoot.css';
+import './ModalRoot.scss';
 
 class ModalRoot extends Component {
   constructor(props) {
@@ -16,8 +16,6 @@ class ModalRoot extends Component {
   processProps(props = {}) {
     import(`../../${props.path}`).then(
       ModalModule => {
-        console.log('moo');
-        window.moo = ModalModule;
         if (this.state.ModalComponent) return;
         this.setState({ ModalComponent: ModalModule.default });
       },

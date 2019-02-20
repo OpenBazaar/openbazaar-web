@@ -13,7 +13,7 @@ const WrappedForm = props => {
       <header className="flexVCent">
         {heading}
       </header>
-      {props.mainContent}
+      {props.formContent}
       <footer>The foot of the matter</footer>
     </section>
   );
@@ -25,6 +25,7 @@ export default WrappedForm;
 // props.heading, optional, ''
 // props.headingClass, optional, ''
 // props.mainContent, optional, null
+// props.headerRightContent, optional, 
 
 WrappedForm.defaultProps = {
   headingTagName: 'h1'

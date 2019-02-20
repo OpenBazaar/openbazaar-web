@@ -451,3 +451,9 @@
   //like padStack, but even the last child will collapse
   padding-bottom: 0;
 }
+
+.center {
+  // Creates a container with content vertically and horizontally
+  // center. Requires the parent to have a non-static positioning.
+  @include center();
+}
