@@ -21,6 +21,8 @@ class App extends Component {
   }
 
   render() {
+    console.dir(process.env);
+    window.moo = process.env;
     return (
       <div className="App" id="OBWEB">
         <header className="App-header">

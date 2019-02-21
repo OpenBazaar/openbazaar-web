@@ -32,8 +32,8 @@
     ]
   },
   "scripts": {
-    "build-css": "node-sass-chokidar --include-path ./src/styles/ --include-path ./node_modules src/ -o src/styles/",
-    "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src/styles/ --include-path ./node_modules src/ -o src/styles/ --watch --recursive",
+    "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/styles/",
+    "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/styles/ --watch --recursive",
     "start-js": "cross-env NODE_PATH=src react-scripts start",
     "start": "npm-run-all -p watch-css start-js",
     "build-js": "cross-env NODE_PATH=src react-scripts build",
