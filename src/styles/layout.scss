@@ -452,6 +452,36 @@
   padding-bottom: 0;
 }
 
+.pad0 {
+  padding: 0;
+}
+
+.padTop0 {
+  padding-top: 0;
+}
+
+.padBot0 {
+  padding-bottom: 0;
+}
+
+.padTopBot0 {
+  @extend .padTop0;
+  @extend .padBot0;
+}
+
+.padLeft0 {
+  padding-left: 0;
+}
+
+.padRight0 {
+  padding-right: 0;
+}
+
+.padLeftRight0 {
+  @extend .padLeft0;
+  @extend .padRight0;
+}
+
 .center {
   // Creates a container with content vertically and horizontally
   // center. Requires the parent to have a non-static positioning.

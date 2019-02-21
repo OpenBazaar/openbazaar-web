@@ -39,6 +39,13 @@ a,
 button.link {
   border: 0;
   outline: none;
+  padding: 0;
+  height: auto;
+  font-weight: normal;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 hr {
@@ -80,5 +87,9 @@ ol {
 
   .disabled {
     @include disabled;
+  }
+
+  .unleaded {
+    margin-bottom: 0;
   }
 }

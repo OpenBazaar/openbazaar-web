@@ -1,41 +1,60 @@
 import React from 'react';
 import BtnSpinner from 'components/ui/buttons/BtnSpinner';
+import './WrappedForm.scss';
 
 const WrappedForm = props => {
   const HeadingTag = props.headingTagName;
   const headerRightContent = props.headerRightContent === undefined ?
-    <BtnSpinner isProcessing={props.isSaving}>Save</BtnSpinner> :
+    <BtnSpinner
+      className={!props.saveable ? 'disabled' : ''}
+      isProcessing={props.isSaving}>Save</BtnSpinner> :
     props.headerRightContent;
+  const footerContent = props.footerContent === undefined ?
+    <BtnSpinner
+      className={!props.saveable ? 'disabled' : ''}
+      isProcessing={props.isSaving}>Save</BtnSpinner> :
+    props.footerContent;  
 
   return (
     <section className="WrappedForm">
-      <header className="flexCent">
-        <div className="flexNoShrink">{props.headerLeftContent}</div>
-        <HeadingTag
-          className={`WrappedForm-heading ${props.headingBaseClass} ${props.headingClass}`}>
+      <header>
+        <div className="WrappedForm-headerRightContent">{props.headerLeftContent}</div>
+        <HeadingTag className="WrappedForm-heading">
           {props.heading}
         </HeadingTag>
-        <div className="flexNoShrink">{headerRightContent}</div>
+        <div className="WrappedForm-headerRightContent">{headerRightContent}</div>
       </header>
+      <hr className="WrappedForm-headerHr clrBr" />
       {props.formContent}
-      <footer>The foot of the matter</footer>
+      {props.showFooterHr ?
+        <hr className="WrappedForm-headerHr clrBr" /> : null}
+      <footer>
+        <div className="WrappedForm-footerContent">{footerContent}</div>
+      </footer>
     </section>
   );
 }
 
 export default WrappedForm;
 
+// ====> ensure types
 // props.headingTagName, optional, h1
 // props.heading, required
 // props.headingClass, optional, ''
 // props.mainContent, optional, null
 // props.headerRightContent, optional, <BtnProceessing>Save</BtnProceessing>
 // props.headerLeftContent, optional,
+// props.footerContent, optional, <BtnProceessing>Save</BtnProceessing>
+// props.showFooterHr, optional, true
+
+// todo: need onSaveClick prop
 
 WrappedForm.defaultProps = {
   headingTagName: 'h1',
-  headingBaseClass: 'flexExpand txCtr',
-  headingClass: 'h3',
+  showFooterHr: true,
+  // headingBaseClass: 'f2lexExpand t2xCtr',
+  // headingClass: 'h3',
+
   // todo note about these two below
   isSaving: false,
   saveable: true,
