@@ -3,7 +3,6 @@ import Spinner from 'components/ui/Spinner';
 import 'styles/layout.scss';
 
 const BtnSpinner = props => {
-  console.dir(props);
   const className =
     (
       `BtnSpinner ${props.baseClassName} ${props.className}` +

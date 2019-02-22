@@ -28,7 +28,7 @@ const WrappedForm = props => {
       {props.formContent}
       {props.showFooterHr ?
         <hr className="WrappedForm-headerHr clrBr" /> : null}
-      <footer>
+      <footer style={props.footerStyle} className="sweet alicia">
         <div className="WrappedForm-footerContent">{footerContent}</div>
       </footer>
     </section>
@@ -46,6 +46,8 @@ export default WrappedForm;
 // props.headerLeftContent, optional,
 // props.footerContent, optional, <BtnProceessing>Save</BtnProceessing>
 // props.showFooterHr, optional, true
+// props.footerStyle, optional, {} (no def needed?)
+// ^^^ style props to other content objects?
 
 // todo: need onSaveClick prop
 
