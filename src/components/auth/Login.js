@@ -1,23 +1,12 @@
 import React, { Component } from 'react';
-import Tooltip from 'components/ui/Tooltip';
+import CopyToClipboard from 'components/ui/CopyToClipboard';
 import WrappedForm from 'components/ui/WrappedForm';
 import BtnSpinner from 'components/ui/buttons/BtnSpinner';
 import 'react-tippy/dist/tippy.css'
 import 'styles/ui/form.scss';
 
-import posed from 'react-pose';
-
 const SCREEN_ENTER_SEED = 'ENTER_SEED';
 const SCREEN_GET_SEED = 'GET_SEED';
-
-const CopiedText = posed.div({
-  hidden: {
-    opacity: 0
-  },
-  visible: {
-    opacity: 1,
-  },
-});
 
 export default class Login extends Component {
   constructor(props) {
@@ -27,16 +16,11 @@ export default class Login extends Component {
     this.handleGetMnemonicClick =
       this.handleGetMnemonicClick.bind(this);
     this.handleBackClick = this.handleBackClick.bind(this);
-    this.handleCopySeedClick = this.handleCopySeedClick.bind(this);
 
     this.state = {
       screen: SCREEN_ENTER_SEED,
-      showCopiedText: true,
+      showCopiedText: false,
     };
-  }
-
-  componentWillUnmount() {
-    clearTimeout(this.copiedTextTimeout);
   }
 
   handleLoginClick() {
@@ -48,16 +32,11 @@ export default class Login extends Component {
   }
 
   handleBackClick() {
-    this.setState({ screen: SCREEN_ENTER_SEED });
-  }
-
-  handleCopySeedClick() {
     clearTimeout(this.copiedTextTimeout);
-    this.setState({ showCopiedText: true });
-
-    this.copiedTextTimeout = setTimeout(() => {
-      this.setState({ showCopiedText: false });
-    }, 2000);
+    this.setState({
+      screen: SCREEN_ENTER_SEED,
+      showCopiedText: false,
+    });
   }
 
   render() {
@@ -99,13 +78,11 @@ export default class Login extends Component {
           className="btn"
             onClick={this.handleBackClick}>Back</button>
           <div className="flexHRight flex Expand">
-            <Tooltip
-              title="Copied"
-              open={this.state.showCopiedText}>
-              <button
-                className="btn"
-                onClick={this.handleCopySeedClick}>Copy Seed</button>              
-            </Tooltip>          
+            <CopyToClipboard
+              showCopiedText={this.state.showCopiedText}
+              copyContent="silly billy and i love willy">
+              <button className="btn">Copy Seed</button>
+            </CopyToClipboard>
           </div>
         </div>
       );

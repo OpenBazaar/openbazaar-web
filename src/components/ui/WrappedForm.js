@@ -28,7 +28,7 @@ const WrappedForm = props => {
       {props.formContent}
       {props.showFooterHr ?
         <hr className="WrappedForm-headerHr clrBr" /> : null}
-      <footer style={props.footerStyle} className="sweet alicia">
+      <footer style={props.footerStyle}>
         <div className="WrappedForm-footerContent">{footerContent}</div>
       </footer>
     </section>
