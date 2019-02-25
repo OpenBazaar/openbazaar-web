@@ -1,5 +1,11 @@
 import { createReducer } from 'redux-starter-kit';
-import { AUTH_LOGIN, AUTH_LOGOUT } from 'actions/auth';
+import {
+  AUTH_LOGIN,
+  AUTH_LOGOUT,
+  AUTH_GENERATING_MNEMONIC,
+  AUTH_GENERATE_MNEMONIC_SUCCESS,
+  AUTH_GENERATE_MNEMONIC_FAIL,
+} from 'actions/auth';
 
 const dummyUserProfile = {
   peerID: 'QmQ2ThBL6zcYxBsCH2fUV3EUiPM3tYmdnP3q7jke21uBMp',
@@ -14,7 +20,11 @@ const dummyUserProfile = {
 };
 
 const initialState = {
-  authUser: null
+  authUser: null,
+  generatingMnemonic: false,
+  generateMnemonicFailed: false,
+  generateMnemonicError: '',
+  mnemonic: '',
 };
 
 const login = (state, action) => {
@@ -25,7 +35,27 @@ const logout = (state, action) => {
   state.authUser = null;
 };
 
+const generatingMnemonic = (state, action) => {
+  state.generatingMnemonic = true;
+  state.generateMnemonicFailed = false;
+  state.generateMnemonicError = '';
+};
+
+const generateMnemonicSuccess = (state, action) => {
+  state.generatingMnemonic = false;
+  state.mnemonic = action.data.mnemonic;
+};
+
+const generateMnemonicFail = (state, action) => {
+  state.generatingMnemonic = false;
+  state.generateMnemonicFailed = true;
+  state.generateMnemonicError = action.error;
+};
+
 export default createReducer(initialState, {
   [AUTH_LOGIN]: login,
-  [AUTH_LOGOUT]: logout
+  [AUTH_LOGOUT]: logout,
+  [AUTH_GENERATING_MNEMONIC]: generatingMnemonic,
+  [AUTH_GENERATE_MNEMONIC_SUCCESS]: generateMnemonicSuccess,
+  [AUTH_GENERATE_MNEMONIC_FAIL]: generateMnemonicFail
 });

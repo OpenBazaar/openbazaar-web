@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import * as AuthActions from 'actions/auth';
 import CopyToClipboard from 'components/ui/CopyToClipboard';
 import WrappedForm from 'components/ui/WrappedForm';
 import BtnSpinner from 'components/ui/buttons/BtnSpinner';
+import GetMnemonicContent from './GetMnemonicContent';
 import 'react-tippy/dist/tippy.css'
 import 'styles/ui/form.scss';
 
 const SCREEN_ENTER_SEED = 'ENTER_SEED';
 const SCREEN_GET_SEED = 'GET_SEED';
 
-export default class Login extends Component {
+class Login extends Component {
   constructor(props) {
     super(props);
     
@@ -16,11 +20,16 @@ export default class Login extends Component {
     this.handleGetMnemonicClick =
       this.handleGetMnemonicClick.bind(this);
     this.handleBackClick = this.handleBackClick.bind(this);
+    this.handleRefreshMnemonicClick = this.handleRefreshMnemonicClick.bind(this);
 
     this.state = {
       screen: SCREEN_ENTER_SEED,
       showCopiedText: false,
     };
+  }
+
+  componentDidMount() {
+    this.props.actions.auth.generateMnemonic();
   }
 
   handleLoginClick() {
@@ -37,6 +46,10 @@ export default class Login extends Component {
       screen: SCREEN_ENTER_SEED,
       showCopiedText: false,
     });
+  }
+
+  handleRefreshMnemonicClick() {
+    this.props.actions.auth.generateMnemonic();
   }
 
   render() {
@@ -62,16 +75,11 @@ export default class Login extends Component {
       footerContent =
         <BtnSpinner onClick={this.handleLoginClick}>Login</BtnSpinner>
     } else {
-      formContent = (
-        <div className="padMd padLeftRight0">
-          <div
-            className="border clrBr pad"
-            // match the height of the text area on the prev screen
-            style={{ minHeight: '54px' }}> 
-            hey slick rick hows it handing stay away from weinstein
-          </div>
-        </div>
-      );
+      formContent = <GetMnemonicContent
+        mnemonic={this.props.auth.mnemonic}
+        generateMnemonicError={this.props.auth.generateMnemonicError}
+        onRefreshClick={this.handleRefreshMnemonicClick} />
+
       footerContent = (
         <div className="flexVCent">
           <button
@@ -80,8 +88,11 @@ export default class Login extends Component {
           <div className="flexHRight flex Expand">
             <CopyToClipboard
               showCopiedText={this.state.showCopiedText}
-              copyContent="silly billy and i love willy">
-              <button className="btn">Copy Seed</button>
+              copyContent={this.props.auth.menmonic}>
+              <button
+                className={`btn ${!this.props.auth.menmonic ? 'disable' : ''}`}>
+                Copy Seed
+              </button>
             </CopyToClipboard>
           </div>
         </div>
@@ -102,3 +113,22 @@ export default class Login extends Component {
 }
 
 Login.modulePath = 'components/auth/Login';
+
+function mapStateToProps(state, prop) {
+  return {
+    auth: state.auth,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: {
+      auth: bindActionCreators(AuthActions, dispatch),
+    }
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Login);
