@@ -29,7 +29,7 @@ const GetMnemonicContent = props => {
         className="border clrBr pad"
         // match the height of the text area on the prev screen
         style={{
-          minHeight: '54px',
+          minHeight: '58px',
           marginBottom: '5px',
         }}>
         {mnemonicContent}

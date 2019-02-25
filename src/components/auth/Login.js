@@ -49,7 +49,7 @@ class Login extends Component {
   }
 
   handleRefreshMnemonicClick() {
-    this.props.actions.auth.generateMnemonic();
+    this.props.actions.auth.refreshMnemonic();
   }
 
   render() {
@@ -61,7 +61,10 @@ class Login extends Component {
       formContent = (
         <div className="padMd padLeftRight0">
           <textarea
-            style={{marginBottom: '5px'}}
+            style={{
+              marginBottom: '5px',
+              minHeight: '58px'
+            }}
             className="clrBr clrSh2"
             placeholder="Enter your mnemonic"></textarea>
           <div className="flexHRight">
@@ -88,7 +91,7 @@ class Login extends Component {
           <div className="flexHRight flex Expand">
             <CopyToClipboard
               showCopiedText={this.state.showCopiedText}
-              copyContent={this.props.auth.menmonic}>
+              copyContent={this.props.auth.mnemonic}>
               <button
                 className={`btn ${!this.props.auth.menmonic ? 'disable' : ''}`}>
                 Copy Seed

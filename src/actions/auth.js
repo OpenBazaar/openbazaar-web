@@ -15,26 +15,37 @@ export const logout = (props = {}) => ({
 });
 
 let generatingMnemonic = null;
-
-// cache mnemonic and explicit different refresh
+let mnemonicData = null;
 
 export const generateMnemonic = (props = {}) => (dispatch, getState) => {
   if (generatingMnemonic) return generatingMnemonic;
 
   dispatch({ type: AUTH_GENERATING_MNEMONIC });
 
-  generatingMnemonic = generatePeerId()
-    .then(data => {
-      dispatch({
-        type: AUTH_GENERATE_MNEMONIC_SUCCESS,
-        data,
-      });
-    }, error => {
-      dispatch({
-        type: AUTH_GENERATE_MNEMONIC_FAIL,
-        error,
-      });
-    })
-      .catch()
-      .then(() => generatingMnemonic = null);
+  if (mnemonicData) {
+    return new Promise(resolve => resolve(mnemonicData));
+  } else {
+    generatingMnemonic = generatePeerId()
+      .then(data => {
+        mnemonicData = data;
+        dispatch({
+          type: AUTH_GENERATE_MNEMONIC_SUCCESS,
+          data,
+        });
+      }, error => {
+        dispatch({
+          type: AUTH_GENERATE_MNEMONIC_FAIL,
+          error,
+        });
+      })
+        .catch(() => {})
+        .then(() => generatingMnemonic = null);
+
+    return generatingMnemonic;
+  }
 };
+
+export const refreshMnemonic = (props = {}) => {
+  mnemonicData = null;
+  return generateMnemonic(props);
+}
