@@ -22,27 +22,30 @@ export const generateMnemonic = (props = {}) => (dispatch, getState) => {
 
   dispatch({ type: AUTH_GENERATING_MNEMONIC });
 
-  if (mnemonicData) {
-    return new Promise(resolve => resolve(mnemonicData));
-  } else {
-    generatingMnemonic = generatePeerId()
-      .then(data => {
-        mnemonicData = data;
-        dispatch({
-          type: AUTH_GENERATE_MNEMONIC_SUCCESS,
-          data,
-        });
-      }, error => {
-        dispatch({
-          type: AUTH_GENERATE_MNEMONIC_FAIL,
-          error,
-        });
-      })
-        .catch(() => {})
-        .then(() => generatingMnemonic = null);
+  let promise;
 
-    return generatingMnemonic;
+  if (mnemonicData) {
+    promise = new Promise(resolve => resolve(mnemonicData));
+  } else {
+    promise = generatingMnemonic = generatePeerId();
   }
+
+  promise.then(data => {
+    mnemonicData = data;
+    dispatch({
+      type: AUTH_GENERATE_MNEMONIC_SUCCESS,
+      data,
+    });
+  }, error => {
+    dispatch({
+      type: AUTH_GENERATE_MNEMONIC_FAIL,
+      error,
+    });
+  })
+    .catch(() => {})
+    .then(() => generatingMnemonic = null);
+
+  return promise;
 };
 
 export const refreshMnemonic = (props = {}) => {

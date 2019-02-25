@@ -2,31 +2,33 @@ import React from 'react';
 import Spinner from 'components/ui/Spinner';
 
 const GetMnemonicContent = props => {
+  let mnemonicContentWrapClass = '';
   let mnemonicContent = null;
-  let refreshLinkText = '';
+  let subcontentClass = '';
 
   if (props.isFetching) {
-    mnemonicContent = (
-      <div class="flexCent">
-        <Spinner size="small" />
-      </div>
-    );
+    mnemonicContentWrapClass = "flexCent";
+    mnemonicContent = <Spinner size="small" />;
+    subcontentClass = 'disabled';
   } else if (props.mnemonic) {
     mnemonicContent = props.mnemonic;
-    refreshLinkText = 'Refresh';
   } else {
     // fetch failed
-    mnemonicContent =
-      'There was an error generating the mnemonic' +
-      props.generateMnemonicError ?
-        `: ${props.generateMnemonicError}` : '.';
-    refreshLinkText = 'Retry';
+    mnemonicContent = (
+      <span className="clrTErr">
+        {
+          'There was an error generating the mnemonic' +
+          (props.generateMnemonicError ?
+            `: ${props.generateMnemonicError}` : '.')
+        }
+      </span>
+    );
   }
 
   return (
     <div className="padMd padLeftRight0">
       <div
-        className="border clrBr pad"
+        className={`border clrBr pad ${mnemonicContentWrapClass}`}
         // match the height of the text area on the prev screen
         style={{
           minHeight: '58px',
@@ -34,11 +36,11 @@ const GetMnemonicContent = props => {
         }}>
         {mnemonicContent}
       </div>
-      <div className="flexHRight">
+      <div className={`flexHRight ${subcontentClass}`}>
         <button
           style={{marginRight: '3px'}}
           className="btn link"
-          onClick={props.onRefreshClick}>{refreshLinkText}</button>
+          onClick={props.onRegenerateClick}>Regenerate</button>
       </div>
     </div>
   );

@@ -81,7 +81,8 @@ class Login extends Component {
       formContent = <GetMnemonicContent
         mnemonic={this.props.auth.mnemonic}
         generateMnemonicError={this.props.auth.generateMnemonicError}
-        onRefreshClick={this.handleRefreshMnemonicClick} />
+        isFetching={this.props.auth.generatingMnemonic}
+        onRegenerateClick={this.handleRefreshMnemonicClick} />
 
       footerContent = (
         <div className="flexVCent">
@@ -93,7 +94,7 @@ class Login extends Component {
               showCopiedText={this.state.showCopiedText}
               copyContent={this.props.auth.mnemonic}>
               <button
-                className={`btn ${!this.props.auth.menmonic ? 'disable' : ''}`}>
+                className={`btn ${!!this.props.auth.mnemonic ? '' : 'disabled'}`}>
                 Copy Seed
               </button>
             </CopyToClipboard>
