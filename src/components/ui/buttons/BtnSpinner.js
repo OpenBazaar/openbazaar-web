@@ -21,7 +21,10 @@ const BtnSpinner = props => {
     props.children;
 
   return (
-    <button className={className}>
+    <button
+      className={className}
+      onClick={props.onClick}
+      onFocus={props.onFocus}>
       {btnContent}
     </button>
   )

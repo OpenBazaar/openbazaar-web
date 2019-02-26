@@ -5,6 +5,9 @@ import {
   AUTH_GENERATING_MNEMONIC,
   AUTH_GENERATE_MNEMONIC_SUCCESS,
   AUTH_GENERATE_MNEMONIC_FAIL,
+  AUTH_LOGGING_IN,
+  AUTH_LOGIN_FAIL,
+  AUTH_LOGIN_SUCCESS,
 } from 'actions/auth';
 
 const dummyUserProfile = {
@@ -25,6 +28,11 @@ const initialState = {
   generateMnemonicFailed: false,
   generateMnemonicError: '',
   mnemonic: '',
+  loggingIn: false,
+  loggedIn: false,
+  // loginFailed: false,
+  // loginError: '',
+  profile: null,
 };
 
 const login = (state, action) => {
@@ -52,10 +60,35 @@ const generateMnemonicFail = (state, action) => {
   state.generateMnemonicError = action.error;
 };
 
+const loggingIn = (state, action) => {
+  state.loggingIn = true;
+  state.loggedIn = false;
+  state.profile = null;
+  // state.loginFailed = false;
+  // state.loginError = '';
+}
+
+const loginSuccess = (state, action) => {
+  state.loggingIn = false;
+  state.loggedIn = true;
+  state.profile = action.profile || null;
+}
+
+const loginFail = (state, action) => {
+  state.loggingIn = false;
+  state.loggedIn = false;
+  state.profile = null;
+  // state.loginFailed = true;
+  // state.loginError = action.error || '';
+}
+
 export default createReducer(initialState, {
   [AUTH_LOGIN]: login,
   [AUTH_LOGOUT]: logout,
   [AUTH_GENERATING_MNEMONIC]: generatingMnemonic,
   [AUTH_GENERATE_MNEMONIC_SUCCESS]: generateMnemonicSuccess,
-  [AUTH_GENERATE_MNEMONIC_FAIL]: generateMnemonicFail
+  [AUTH_GENERATE_MNEMONIC_FAIL]: generateMnemonicFail,
+  [AUTH_LOGGING_IN]: loggingIn,
+  [AUTH_LOGIN_SUCCESS]: loginSuccess,
+  [AUTH_LOGIN_FAIL]: loginFail
 });

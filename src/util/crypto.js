@@ -140,9 +140,14 @@ export function decrypt(privKeyBytes, text) {
 export function isValidMenmonic(mnemonic) {
   let isValid = true;
 
-  if (typeof mnemonic !== 'string' ||
-    mnemonic.match(/\S+/g).length !== 12) {
+  if (typeof mnemonic !== 'string' || !mnemonic) {
     isValid = false;
+  } else {
+    const match = mnemonic.match(/\S+/g);
+
+    if (!match || match.length !== 12) {
+      isValid = false;
+    }
   }
 
   return isValid;

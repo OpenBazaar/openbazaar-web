@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { isValidMenmonic } from 'util/crypto';
 import * as AuthActions from 'actions/auth';
+import * as ModalActions from 'actions/modals';
+import SimpleMessage from 'components/modals/SimpleMessage';
 import CopyToClipboard from 'components/ui/CopyToClipboard';
 import WrappedForm from 'components/ui/WrappedForm';
 import BtnSpinner from 'components/ui/buttons/BtnSpinner';
@@ -16,6 +19,7 @@ class Login extends Component {
   constructor(props) {
     super(props);
     
+    this.handleInputChange = this.handleInputChange.bind(this);
     this.handleLoginClick = this.handleLoginClick.bind(this);
     this.handleGetMnemonicClick =
       this.handleGetMnemonicClick.bind(this);
@@ -25,6 +29,8 @@ class Login extends Component {
     this.state = {
       screen: SCREEN_ENTER_SEED,
       showCopiedText: false,
+      mnemonic: '',
+      errors: {},
     };
   }
 
@@ -32,8 +38,55 @@ class Login extends Component {
     this.props.actions.auth.generateMnemonic();
   }
 
-  handleLoginClick() {
+  handleInputChange(event) {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
 
+    this.setState({
+      [name]: value
+    });
+  }
+
+  handleLoginClick() {
+    const mnemonic = this.state.mnemonic;
+
+    if (!isValidMenmonic(this.state.mnemonic)) {
+      this.setState({
+        errors: {
+          ...this.state.errors,
+          mnemonic:
+            'The mnemonic should contain 12 words each seperated by a space.'
+        }
+      });
+
+      return;
+    }
+
+    this.props.actions.auth.login({ mnemonic: this.state.mnemonic })
+      .then(profile => {
+        if (!profile) {
+          this.props.actions.modals.open({
+            Component: SimpleMessage,
+            title: 'I need me some onboarding yo',
+            body: '',
+          });
+        }
+      }).catch(e => {
+        // todo: show an error modal
+        this.props.actions.modals.open({
+          Component: SimpleMessage,
+          title: 'Unable to login',
+          body: e.message || '',
+        });
+      });
+
+    this.setState({
+      errors: {
+        ...this.state.errors,
+        mnemonic: '',
+      }
+    });
   }
 
   handleGetMnemonicClick() {
@@ -56,17 +109,24 @@ class Login extends Component {
     let formContent;
     let footerContent;
     let footerStyle;
+    const menmonicError = this.state.errors.mnemonic ?
+      // todo: form error should be a reusable component
+      <p className="clrTErr">{this.state.errors.mnemonic}</p> : null;
 
     if (this.state.screen === SCREEN_ENTER_SEED) {
       formContent = (
         <div className="padMd padLeftRight0">
+          {menmonicError}
           <textarea
             style={{
               marginBottom: '5px',
               minHeight: '58px'
             }}
-            className="clrBr clrSh2"
-            placeholder="Enter your mnemonic"></textarea>
+            className={`clrBr clrSh2 ${this.props.auth.loggingIn ? 'disabled' : ''}`}
+            placeholder="Enter your mnemonic"
+            name="mnemonic"
+            onChange={this.handleInputChange}
+            value={this.state.mnemonic}></textarea>
           <div className="flexHRight">
             <button
               style={{marginRight: '3px'}}
@@ -76,7 +136,9 @@ class Login extends Component {
         </div>
       );
       footerContent =
-        <BtnSpinner onClick={this.handleLoginClick}>Login</BtnSpinner>
+        <BtnSpinner
+          onClick={this.handleLoginClick}
+          isProcessing={this.props.auth.loggingIn}>Login</BtnSpinner>
     } else {
       formContent = <GetMnemonicContent
         mnemonic={this.props.auth.mnemonic}
@@ -128,6 +190,7 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: {
       auth: bindActionCreators(AuthActions, dispatch),
+      modals: bindActionCreators(ModalActions, dispatch),
     }
   };
 }
