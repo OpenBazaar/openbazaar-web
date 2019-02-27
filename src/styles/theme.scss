@@ -49,16 +49,11 @@
   /* generates the border color rules */
   border-color: $col1;
 
-  &:hover,
-  &:focus {
-    border-color: $col1;
-  }
-
   input,
   select,
   textarea,
   button {
-    &:focus:not(.disabled) {
+    &:focus:not(.disabled), &:hover:not(.disabled) {
       border-color: $col2;
     }
   }

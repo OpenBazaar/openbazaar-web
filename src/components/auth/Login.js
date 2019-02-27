@@ -6,10 +6,10 @@ import * as AuthActions from 'actions/auth';
 import * as ModalActions from 'actions/modals';
 import SimpleMessage from 'components/modals/SimpleMessage';
 import CopyToClipboard from 'components/ui/CopyToClipboard';
-import WrappedForm from 'components/ui/WrappedForm';
-import BtnSpinner from 'components/ui/buttons/BtnSpinner';
+import WrappedForm from 'components/ui/form/WrappedForm';
+import BtnSpinner from 'components/ui/BtnSpinner';
+import Onboarding from 'components/onboarding/Onboarding';
 import GetMnemonicContent from './GetMnemonicContent';
-import 'react-tippy/dist/tippy.css'
 import 'styles/ui/form.scss';
 
 const SCREEN_ENTER_SEED = 'ENTER_SEED';
@@ -66,14 +66,10 @@ class Login extends Component {
     this.props.actions.auth.login({ mnemonic: this.state.mnemonic })
       .then(profile => {
         if (!profile) {
-          this.props.actions.modals.open({
-            Component: SimpleMessage,
-            title: 'I need me some onboarding yo',
-            body: '',
-          });
+          this.props.actions.modals.open({ Component: Onboarding });
+          this.props.actions.modals.close({ id: this.props.id });
         }
       }).catch(e => {
-        // todo: show an error modal
         this.props.actions.modals.open({
           Component: SimpleMessage,
           title: 'Unable to login',
@@ -115,7 +111,7 @@ class Login extends Component {
 
     if (this.state.screen === SCREEN_ENTER_SEED) {
       formContent = (
-        <div className="padMd padLeftRight0">
+        <form className="padMd padLeftRight0">
           {menmonicError}
           <textarea
             style={{
@@ -133,7 +129,7 @@ class Login extends Component {
               className="btn link"
               onClick={this.handleGetMnemonicClick}>I don't have a mnemonic</button>
           </div>
-        </div>
+        </form>
       );
       footerContent =
         <BtnSpinner
@@ -169,16 +165,17 @@ class Login extends Component {
     return (
       <WrappedForm
         heading="Login"
-        formContent={formContent}
         headerRightContent={null}
         footerContent={footerContent}
         footerStyle={footerStyle}>
+        {formContent}
       </WrappedForm>
     );
   }
 }
 
 Login.modulePath = 'components/auth/Login';
+Login.rootClass = 'modalS';
 
 function mapStateToProps(state, prop) {
   return {

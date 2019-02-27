@@ -12,7 +12,7 @@ $tx5b: 1.3rem;
 $tx6: 1.2rem;
 $tx7: 0.9rem;
 
-$formElementHeight: 4rem;
+$formElementHeight: 2rem;
 
 // colors
 $primary: hsl(0, 0%, 100%);
@@ -64,6 +64,10 @@ $inputHeight: 40px;
 
 // controls
 $corner: 2px;
+
+$modalWidthS: 536px;
+$modalWidthM: 750px;
+$modalWidthL: 957px;
 
 // breakpoints
 // This should probably match the breakpoints enumeratd in reducers/responsive.js.

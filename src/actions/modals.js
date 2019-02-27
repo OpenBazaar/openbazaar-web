@@ -41,6 +41,7 @@ export const open = (props = {}) => (dispatch, getState) => {
   }
 
   const path = props.Component.modulePath;
+  const rootClass = props.rootClass || props.Component.rootClass || '';
   const curModal = getState().modals.openModals.find(
     modal => singletonModals.includes(path) && modal.path === path
   );
@@ -48,7 +49,8 @@ export const open = (props = {}) => (dispatch, getState) => {
   const id = curModal ? curModal.id : uuidv4();
   const actionProps = {
     ...props,
-    path
+    path,
+    rootClass,
   };
   delete actionProps.Component;
 

@@ -117,7 +117,7 @@ label {
 
 .required::after {
   content: '*';
-  position: absolute;
+  display: inline;
   font-size: 130%;
 }
 

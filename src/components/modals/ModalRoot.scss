@@ -1,3 +1,5 @@
+@import 'styles/variables.scss';
+
 .ModalRoot {
   background-color: rgba(255, 255, 255, 0.8);
   position: absolute;
@@ -22,7 +24,7 @@
     left: 50%;
     transform: translateX(-50%);
     border: 1px solid #ccc;
-    width: 500px;
+    width: $modalWidthL;
     max-width: 100%;
   }
 
@@ -36,5 +38,17 @@
       background-color: black;
       color: white;
     }    
+  }
+
+  &.modalS {
+    .ModalRoot-innerWrap { width: $modalWidthS }
+  }
+
+  &.modalM {
+    .ModalRoot-innerWrap { width: $modalWidthM }
+  }
+
+  &.modalL {
+    .ModalRoot-innerWrap { width: $modalWidthL }
   }
 }

@@ -19,7 +19,7 @@ RxDB.plugin(pouchDbAdapterHttp); //enable syncing over http
 // todo: this should be driven from a config file
 const syncUrl = `http://${window.location.hostname}:5984/`;
 
-let dbPromises = {};
+let curDb = null;
 
 const _create = async (name, password) => {
   const db = await RxDB.create({
@@ -34,26 +34,8 @@ const _create = async (name, password) => {
     window.db = db;
   }
 
-  // show leadership in title
-  // db.waitForLeadership().then(() => {
-  //     console.log('isLeader now');
-  //     document.title = '♛ ' + document.title;
-  // });
-
   // create collections
   await Promise.all(collections.map(data => db.collection(data)));
-
-  // hooks
-  // db.collections.heroes.preInsert(docObj => {
-  //     const { color } = docObj;
-  //     return db.collections.heroes.findOne({color}).exec().then(has => {
-  //         if (has != null) {
-  //             alert('another hero already has the color ' + color);
-  //             throw new Error('color already there');
-  //         }
-  //         return db;
-  //     });
-  // });
 
   // sync
   // console.log('DatabaseService: sync');
@@ -68,13 +50,32 @@ const _create = async (name, password) => {
 };
 
 export const get = (name, password) => {
-  ['name', 'password'].forEach(arg => {
-    if (typeof arg !== 'string' || !arg) {
-      throw new Error(`Please provide the ${arg} argument as a non-empty string.`);
-    }
-  });
+  if (
+    name !== undefined ||
+    password !== undefined
+  ) {
+    ['name', 'password'].forEach(arg => {
+      if (typeof arg !== 'string' || !arg) {
+        throw new Error('If providing the name or password, both must be provided ' +
+          'as non-empty strings.');
+      }
+    });    
+  }
 
-  if (!dbPromises[name])
-    dbPromises[name] = _create(name, password);
-  return dbPromises[name];
+  if (
+    name &&
+    curDb &&
+    curDb.name === name &&
+    curDb.password === password
+  ) {
+    return curDb.promise;
+  }
+
+  curDb = {
+    name,
+    password,
+    promise: _create(name, password), 
+  };
+
+  return curDb.promise;
 }

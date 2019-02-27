@@ -58,7 +58,7 @@ class ModalRoot extends Component {
     delete modalProps.type;
 
     return (
-      <section className="ModalRoot">
+      <section className={`ModalRoot ${this.props.rootClass}`}>
         <div className="ModalRoot-innerWrap">
           <button className="ModalRoot-close" onClick={this.handleCloseClick}>
             X

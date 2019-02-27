@@ -1,3 +1,4 @@
+@import 'sass-mq/mq';
 @import './variables.scss';
 @import './mixins.scss';
 
@@ -80,6 +81,11 @@
   @extend .flex;
   //use this to contain columns
   align-items: stretch; //this stretches the items to 100% height
+
+  // have columns stack on mobile
+  @include mq($until: tablet) {
+    display: block;
+  }  
 }
 
 .flexInline {
@@ -228,6 +234,10 @@
   box-sizing: border-box;
   position: relative;
   flex: 0 0 auto; //do not shrink or grow columns
+
+  @include mq($until: tablet) {
+    width: 100%;
+  }
 }
 
 .col12 {
@@ -354,6 +364,18 @@
 
     &:last-child:not(:only-child) {
       padding-right: 0;
+    }
+
+    @include mq($until: tablet) {
+      padding-left: 0;
+
+      // when the cols are stacked on mobile, we'll let's transfer
+      // the horizontal gutter to be vertical
+      padding-bottom: $colPad / 2;
+
+      &:last-child {
+        padding-bottom: 0;
+      }
     }
   }
 }

@@ -12,6 +12,9 @@ const SimpleMessage = props => {
 
 SimpleMessage.modulePath = 'components/modals/SimpleMessage';
 
+// todo: update docs that this can be declared here or passed into the open action
+SimpleMessage.rootClass = 'modalS';
+
 // todo: probably only title should be required or maybe one-of title or body.
 SimpleMessage.propTypes = {
   title: PropTypes.string.isRequired,

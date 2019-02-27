@@ -1,5 +1,5 @@
 import React from 'react';
-import BtnSpinner from 'components/ui/buttons/BtnSpinner';
+import BtnSpinner from 'components/ui/BtnSpinner';
 import './WrappedForm.scss';
 
 const WrappedForm = props => {
@@ -7,11 +7,13 @@ const WrappedForm = props => {
   const headerRightContent = props.headerRightContent === undefined ?
     <BtnSpinner
       className={!props.saveable ? 'disabled' : ''}
+      onClick={props.onSaveClick}
       isProcessing={props.isSaving}>Save</BtnSpinner> :
     props.headerRightContent;
   const footerContent = props.footerContent === undefined ?
     <BtnSpinner
       className={!props.saveable ? 'disabled' : ''}
+      onClick={props.onSaveClick}
       isProcessing={props.isSaving}>Save</BtnSpinner> :
     props.footerContent;  
 
@@ -25,7 +27,7 @@ const WrappedForm = props => {
         <div className="WrappedForm-headerRightContent">{headerRightContent}</div>
       </header>
       <hr className="WrappedForm-headerHr clrBr" />
-      {props.formContent}
+      {props.children}
       {props.showFooterHr ?
         <hr className="WrappedForm-headerHr clrBr" /> : null}
       <footer style={props.footerStyle}>

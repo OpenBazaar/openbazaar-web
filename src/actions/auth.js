@@ -51,8 +51,8 @@ export const login = (props = {}) => (dispatch, getState) => {
           });
           resolve(profile);
         }, error => {
+          // todo; handle this better
           console.error(error);
-          // onboarding needed
         }
       );
   });
