@@ -62,20 +62,30 @@ export const get = (name, password) => {
     });    
   }
 
-  if (
-    name &&
-    curDb &&
-    curDb.name === name &&
-    curDb.password === password
-  ) {
-    return curDb.promise;
-  }
+  if (curDb && !name) return curDb.promise;
 
+  if (curDb) {
+    if (
+      !name ||
+      (
+        curDb.name === name &&
+        curDb.password === password
+      )
+    ) {
+      return curDb;
+    }
+  } else {
+    if (!name) {
+      return Promise.reject('');
+    }
+  }
   curDb = {
     name,
     password,
     promise: _create(name, password), 
   };
 
+  console.log('moo');
+  window.moo = curDb.promise;
   return curDb.promise;
 }

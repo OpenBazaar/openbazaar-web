@@ -2,11 +2,11 @@ import {
   generatePeerId,
   isValidMenmonic,
   hash,
+  identityKeyFromSeed,
 } from 'util/crypto';
 import { fromByteArray } from 'base64-js';
 import { get as getDb } from 'util/database';
 
-export const AUTH_LOGIN = 'AUTH_LOGIN';
 export const AUTH_LOGOUT = 'AUTH_LOGOUT';
 export const AUTH_GENERATING_MNEMONIC = 'AUTH_GENERATING_MNEMONIC';
 export const AUTH_GENERATE_MNEMONIC_SUCCESS = 'AUTH_GENERATE_MNEMONIC_SUCCESS';
@@ -26,35 +26,39 @@ export const login = (props = {}) => (dispatch, getState) => {
     const mnemonic = props.mnemonic;
     const nameHash = hash(mnemonic, { hmacSeed: 'ob-db-name' });
     const pwHash = hash(mnemonic, { hmacSeed: 'ob-db-password' });
+    let identity;
 
     Promise
-      .all([nameHash, pwHash])
+      .all([nameHash, pwHash, identityKeyFromSeed(props.mnemonic)])
       .then(vals => {
+        identity = {
+          peerId: vals[2].peerIdB58,
+          peerIdBytes: fromByteArray(vals[2].peerId),
+          publicKey: fromByteArray(vals[2].publicKey),
+          privateKey: fromByteArray(vals[2].privateKey),
+        };
+
         return getDb(`a${vals[0].toString('hex')}`, fromByteArray(vals[1]))
       })
       .then(
         db => {
           return db.profile.find().exec();
-        }, error => {
-          dispatch({
-            type: AUTH_LOGIN_FAIL,
-            error: error.message,
-          });
-          reject(error);
-        })
+        }
+      )
       .then(
         profiles => {
           const profile = profiles[0] || null;
           dispatch({
             type: AUTH_LOGIN_SUCCESS,
             profile,
+            identity,
           });
           resolve(profile);
-        }, error => {
-          // todo; handle this better
-          console.error(error);
-        }
-      );
+      })
+      .catch(error => {
+        reject(error);
+        throw error;
+      });
   });
 }
 

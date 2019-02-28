@@ -10,23 +10,27 @@ const schema = {
     },
     handle: {
       type: 'string',
-      encrypted: true
+      encrypted: true,
+      default: '',
     },    
     name: {
       type: 'string',
-      encrypted: true
+      encrypted: true,
     },
     location: {
       type: 'string',
-      encrypted: true
+      encrypted: true,
+      default: '',
     },
     about: {
       type: 'string',
-      encrypted: true
+      encrypted: true,
+      default: '',
     },
     shortDescription: {
       type: 'string',
-      encrypted: true      
+      encrypted: true,
+      default: '',
     },
     nsfw: {
       type: 'boolean',
@@ -45,12 +49,11 @@ const schema = {
     },
     // Will work this in later
     moderatorInfo: {
-      type: 'object',
+      type: ['object', 'null'],
       encrypted: true,
-      default: {}
     },
     contactInfo: {
-      type: 'object',
+      type: ['object', 'null'],
       encrypted: true,
       properties: {
         website: {
@@ -83,7 +86,7 @@ const schema = {
       }
     },
     colors: {
-      type: 'object',
+      type: ['object', 'null'],
       encrypted: true,
       properties: {
         primary: {
@@ -105,30 +108,25 @@ const schema = {
     },
   },
   avatarHashes: {
-    type: 'array',
-    uniqueItems: true,
-    items: {
-      type: 'object',
-      properties: {
-        tiny: {
-          type: 'string'
-        },
-        small: {
-          type: 'string'
-        },
-        medium: {
-          type: 'string'
-        },
-        large: {
-          type: 'string'
-        },
-        original: {
-          type: 'string'
-        },
-      }
+    type: ['object', 'null'],
+    properties: {
+      tiny: {
+        type: 'string'
+      },
+      small: {
+        type: 'string'
+      },
+      medium: {
+        type: 'string'
+      },
+      large: {
+        type: 'string'
+      },
+      original: {
+        type: 'string'
+      },
     }
   },
-  // todo: more should almost certainly be required
   required: ['peerID', 'name']
 };
 

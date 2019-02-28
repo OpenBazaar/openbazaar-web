@@ -82,6 +82,7 @@ export function identityKeyFromSeed(mnemonic, bits = 4096) {
             // todo: strip the 'Key' suffix from pub and priv
             resolve({
               peerId: peerId.toBytes(),
+              peerIdB58: peerId.toB58String(),
               publicKey: keypair.public.bytes,
               privateKey: keypair._key,
             });

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-// import { isValidMenmonic } from 'util/crypto';
-import * as ModelsActions from 'actions/models';
+import * as OnboardingActions from 'actions/onboarding';
+import * as ModalsActions from 'actions/modals';
 import SimpleMessage from 'components/modals/SimpleMessage';
 import WrappedForm from 'components/ui/form/WrappedForm';
 import ColumnedForm from 'components/ui/form/ColumnedForm';
@@ -15,7 +15,7 @@ class Onboarding extends Component {
     this.state = {
       form: {
         name: '',
-        description: '',
+        shortDescription: '',
       },
     };    
 
@@ -37,21 +37,16 @@ class Onboarding extends Component {
   }
 
   handleSaveClick() {
-    window.rick = this.props.actions.models.saveProfile({
+    this.props.actions.onboarding.save({
       data: this.state.form,
     })
-      .then(
-        () => { alert('good') },
-        () => { alert('b b b bad') }
-      );
-    // .catch(e => {
-    //   console.log('slick rick');
-    //   this.props.actions.modals.open({
-    //     Component: SimpleMessage,
-    //     title: 'Unable to save your onboarding data',
-    //     body: e.message || '',
-    //   });
-    // });
+    .catch(e => {
+      this.props.actions.modals.open({
+        Component: SimpleMessage,
+        title: 'Unable to save your onboarding data',
+        body: e.message || '',
+      });
+    });
   }
 
   render() {
@@ -72,17 +67,16 @@ class Onboarding extends Component {
             ),
           },
           {
-            key: 'description',
-            labelColContent: <label className="required">Description</label>,
-            helperText: 'Something fun. Something sassy. OB is a no '
-              + 'judgment zone.',
+            key: 'shortDescription',
+            labelColContent: <label>Short Description</label>,
+            helperText: '160 characters or less.',
             fieldColContent: (
               <textarea
                 type="text"
-                name="name"
+                name="shortDescription"
                 className="clrBr clrSh2"
                 placeholder="Describe yourself"
-                value={this.state.description}
+                value={this.state.shortDescription}
                 onChange={this.handleInputChange}></textarea>
             ),
           }          
@@ -93,7 +87,7 @@ class Onboarding extends Component {
       <WrappedForm
         heading="Onboarding"
         headerRightContent={null}
-        isSaving={this.props.models.savingProfile}
+        isSaving={this.props.onboarding.saving}
         onSaveClick={this.handleSaveClick}>
         {formContent}
       </WrappedForm>
@@ -106,15 +100,16 @@ Onboarding.rootClass = 'modalM';
 
 function mapStateToProps(state, prop) {
   return {
-    // models: state.models,
-    models: {},
+    modals: state.modals,
+    onboarding: state.onboarding,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     actions: {
-      models: bindActionCreators(ModelsActions, dispatch),
+      onboarding: bindActionCreators(OnboardingActions, dispatch),
+      modals: bindActionCreators(ModalsActions, dispatch),
     }
   };
 }
