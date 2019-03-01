@@ -72,20 +72,20 @@ export const get = (name, password) => {
         curDb.password === password
       )
     ) {
-      return curDb;
+      return curDb.promise;
     }
   } else {
     if (!name) {
-      return Promise.reject('');
+      return Promise.reject('There is no current db connection. You can create one ' +
+        'by passing in a name and password.');
     }
   }
+
   curDb = {
     name,
     password,
     promise: _create(name, password), 
   };
 
-  console.log('moo');
-  window.moo = curDb.promise;
   return curDb.promise;
 }

@@ -40,11 +40,7 @@ export const login = (props = {}) => (dispatch, getState) => {
 
         return getDb(`a${vals[0].toString('hex')}`, fromByteArray(vals[1]))
       })
-      .then(
-        db => {
-          return db.profile.find().exec();
-        }
-      )
+      .then(db => db.profile.find().exec())
       .then(
         profiles => {
           const profile = profiles[0] || null;
