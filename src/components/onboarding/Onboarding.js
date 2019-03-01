@@ -3,6 +3,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OnboardingActions from 'actions/onboarding';
 import * as ModalsActions from 'actions/modals';
+import { validate as validateProfile } from 'models/profile';
+import { mapErrorsToComponents } from 'util/formErrors';
 import SimpleMessage from 'components/modals/SimpleMessage';
 import WrappedForm from 'components/ui/form/WrappedForm';
 import ColumnedForm from 'components/ui/form/ColumnedForm';
@@ -22,6 +24,7 @@ class Onboarding extends Component {
         name: '',
         shortDescription: '',
       },
+      formErrors: null,
     };    
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -38,54 +41,78 @@ class Onboarding extends Component {
         ...this.state.form,
         [name]: value
       },
+      formErrors: null,
     });
   }
 
   handleSaveClick() {
-    this.props.actions.onboarding.save({
-      data: this.state.form,
-    })
-    .catch(e => {
-      this.props.actions.modals.open({
-        Component: SimpleMessage,
-        title: 'Unable to save your onboarding data',
-        body: e.message || '',
-      });
-    });
+    const formErrors = validateProfile(this.state.form);
+
+    // ignoring the missing peerID since that is provided by
+    // the onboarding.save() action creator
+    delete formErrors.peerID;
+
+    if (formErrors && Object.keys(formErrors).length) {
+      this.setState({ formErrors });
+      console.dir(formErrors);
+    } else {
+      this.setState({ formErrors: null });
+
+      this.props.actions.onboarding.save({
+        data: this.state.form,
+      })
+      .catch(e => {
+        this.props.actions.modals.open({
+          Component: SimpleMessage,
+          title: 'Unable to save your onboarding data',
+          body: e.message || '',
+        });
+      });      
+    }
   }
 
   render() {
+    const errorComponents = mapErrorsToComponents(this.state.formErrors);
+
     const formContent = (
-      <ColumnedForm
-        rows={[
-          {
-            key: 'name',
-            labelColContent: <label className="required">Name</label>,
-            fieldColContent: (
-              <input
-                type="text"
-                name="name"
-                className="clrBr clrSh2"
-                placeholder="Enter your name"
-                value={this.state.name}
-                onChange={this.handleInputChange} />
-            ),
-          },
-          {
-            key: 'shortDescription',
-            labelColContent: <label>Short Description</label>,
-            helperText: '160 characters or less.',
-            fieldColContent: (
-              <textarea
-                type="text"
-                name="shortDescription"
-                className="clrBr clrSh2"
-                placeholder="Describe yourself"
-                value={this.state.shortDescription}
-                onChange={this.handleInputChange}></textarea>
-            ),
-          }          
-        ]}></ColumnedForm>
+      <div>
+        <ColumnedForm
+          rows={[
+            {
+              key: 'name',
+              labelColContent: <label className="required">Name</label>,
+              fieldColContent: (
+                <div>
+                  {errorComponents['name'] || null}
+                  <input
+                    type="text"
+                    name="name"
+                    className="clrBr clrSh2"
+                    placeholder="Enter your name"
+                    value={this.state.name}
+                    onChange={this.handleInputChange} />
+                </div>
+              ),
+            },
+            {
+              key: 'shortDescription',
+              labelColContent: <label>Short Description</label>,
+              helperText: '160 characters or less.',
+              fieldColContent: (
+                <div>
+                  {errorComponents['shortDescription'] || null}
+                  <textarea
+                    type="text"
+                    name="shortDescription"
+                    className="clrBr clrSh2"
+                    placeholder="Describe yourself"
+                    value={this.state.shortDescription}
+                    onChange={this.handleInputChange}></textarea>
+                </div>
+              ),
+            }          
+          ]}></ColumnedForm>
+        </div>
     )
     
     return (

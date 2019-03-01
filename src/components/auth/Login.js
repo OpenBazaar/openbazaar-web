@@ -56,7 +56,7 @@ class Login extends Component {
   handleLoginClick() {
     const mnemonic = this.state.mnemonic;
 
-    if (!isValidMenmonic(this.state.mnemonic)) {
+    if (!isValidMenmonic(mnemonic)) {
       this.setState({
         errors: {
           ...this.state.errors,
@@ -68,12 +68,12 @@ class Login extends Component {
       return;
     }
 
-    this.props.actions.auth.login({ mnemonic: this.state.mnemonic })
+    this.props.actions.auth.login({ mnemonic })
       .then(profile => {
         if (!profile) {
           this.props.actions.modals.open({ Component: Onboarding });
-          this.props.actions.modals.close({ id: this.props.id });
         }
+        this.props.actions.modals.close({ id: this.props.id });
       }).catch(e => {
         this.props.actions.modals.open({
           Component: SimpleMessage,

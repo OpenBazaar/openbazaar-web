@@ -22,7 +22,7 @@ class Modals extends Component {
   render() {
     return (
       <div className="Modals pageWidth pagePadTopBottom">
-        <button class="btn" onClick={this.handleSimpleModalClick}>
+        <button className="btn" onClick={this.handleSimpleModalClick}>
           Simple Modal
         </button>
       </div>

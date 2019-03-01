@@ -11,7 +11,6 @@ const schema = {
     handle: {
       type: 'string',
       encrypted: true,
-      default: '',
     },    
     name: {
       type: 'string',
@@ -20,34 +19,27 @@ const schema = {
     location: {
       type: 'string',
       encrypted: true,
-      default: '',
     },
     about: {
       type: 'string',
       encrypted: true,
-      default: '',
     },
     shortDescription: {
       type: 'string',
       encrypted: true,
-      default: '',
     },
     nsfw: {
       type: 'boolean',
       encrypted: true,
-      default: false,
     },
     vendor: {
       type: 'boolean',
       encrypted: true,
-      default: false,
     },
     moderator: {
       type: 'boolean',
       encrypted: true,
-      default: false,
     },
-    // Will work this in later
     moderatorInfo: {
       type: ['object', 'null'],
       encrypted: true,
@@ -106,26 +98,27 @@ const schema = {
         },
       }
     },
-  },
-  avatarHashes: {
-    type: ['object', 'null'],
-    properties: {
-      tiny: {
-        type: 'string'
-      },
-      small: {
-        type: 'string'
-      },
-      medium: {
-        type: 'string'
-      },
-      large: {
-        type: 'string'
-      },
-      original: {
-        type: 'string'
-      },
-    }
+    avatarHashes: {
+      type: ['object', 'null'],
+      encrypted: true,
+      properties: {
+        tiny: {
+          type: 'string'
+        },
+        small: {
+          type: 'string'
+        },
+        medium: {
+          type: 'string'
+        },
+        large: {
+          type: 'string'
+        },
+        original: {
+          type: 'string'
+        },
+      }
+    },    
   },
   required: ['peerID', 'name']
 };

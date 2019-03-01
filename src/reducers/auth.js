@@ -48,8 +48,6 @@ const loggingIn = (state, action) => {
   state.loggedIn = false;
   state.profile = null;
   state.identity = null;
-  // state.loginFailed = false;
-  // state.loginError = '';
 }
 
 const loginSuccess = (state, action) => {

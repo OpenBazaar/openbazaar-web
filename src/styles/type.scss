@@ -166,9 +166,8 @@ h6,
 
 p {
   margin: 0;
+  margin-bottom: 1em;
   line-height: 1.5;
-  -webkit-margin-before: 0;
-  -webkit-margin-after: 1em;
 
   a {
     text-decoration: underline;
@@ -177,7 +176,15 @@ p {
 
 * p:last-child {
   //if the paragraph is the last item in the container, remove the bottom margin
-  -webkit-margin-after: 0;
+  margin-bottom: 0;
+}
+
+li {
+  margin-bottom: 0.5em;
+
+  &::last-child {
+    margin-bottom: 0;
+  }
 }
 
 .note {
