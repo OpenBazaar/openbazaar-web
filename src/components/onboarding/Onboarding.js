@@ -9,6 +9,11 @@ import ColumnedForm from 'components/ui/form/ColumnedForm';
 import 'styles/ui/form.scss';
 
 class Onboarding extends Component {
+  static modalProps = {
+    path: 'components/onboarding/Onboarding',
+    rootClass: 'modalM',
+  };
+
   constructor(props) {
     super(props);
 
@@ -94,9 +99,6 @@ class Onboarding extends Component {
     );
   }
 }
-
-Onboarding.modulePath = 'components/onboarding/Onboarding';
-Onboarding.rootClass = 'modalM';
 
 function mapStateToProps(state, prop) {
   return {

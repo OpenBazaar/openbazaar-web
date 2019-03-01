@@ -16,6 +16,11 @@ const SCREEN_ENTER_SEED = 'ENTER_SEED';
 const SCREEN_GET_SEED = 'GET_SEED';
 
 class Login extends Component {
+  static modalProps = {
+    path: 'components/auth/Login',
+    rootClass: 'modalS',
+  }
+
   constructor(props) {
     super(props);
     
@@ -173,9 +178,6 @@ class Login extends Component {
     );
   }
 }
-
-Login.modulePath = 'components/auth/Login';
-Login.rootClass = 'modalS';
 
 function mapStateToProps(state, prop) {
   return {

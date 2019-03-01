@@ -28,7 +28,12 @@ class ModalRoot extends Component {
   }
 
   handleEscKeyUp(e) {
-    if (e.keyCode !== 27) return;
+    if (
+      !this.props.closeable ||
+      !this.props.closeableViaEsc ||
+      e.keyCode !== 27) {
+      return;
+    }
 
     const topModal = this.props.modals.openModals[
       this.props.modals.openModals.length - 1
@@ -57,12 +62,18 @@ class ModalRoot extends Component {
     const modalProps = { ...this.props };
     delete modalProps.type;
 
+    const btnClose =
+      this.props.closeable && this.props.closeableViaCloseButton ?
+        (
+          <button className="ModalRoot-close" onClick={this.handleCloseClick}>
+            X
+          </button>          
+        ) : null;
+
     return (
       <section className={`ModalRoot ${this.props.rootClass}`}>
         <div className="ModalRoot-innerWrap">
-          <button className="ModalRoot-close" onClick={this.handleCloseClick}>
-            X
-          </button>
+          {btnClose}
           <this.state.ModalComponent {...modalProps} />
         </div>
       </section>
