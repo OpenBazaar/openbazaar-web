@@ -68,8 +68,6 @@ const loginFail = (state, action) => {
 }
 
 const ownProfileSet = (state, action) => {
-  console.dir(state);
-  console.dir(action);
   if (state.identity) {
     state.profile = action.profile;
   }

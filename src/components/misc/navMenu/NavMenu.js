@@ -75,11 +75,11 @@ class NavMenu extends Component {
   render() {
     let trigger = null;
 
-    if (this.props.auth.authUser) {
+    if (this.props.auth.profile) {
       trigger = (
         <Avatar
           size="medium"
-          avatarHashes={this.props.auth.authUser.avatarHashes}
+          avatarHashes={this.props.auth.profile.avatarHashes}
           onClick={this.handleTriggerClick}
         />
       );
@@ -113,7 +113,8 @@ class NavMenu extends Component {
     if (this.props.menuOpen) {
       menu = (
         <Menu
-          authUser={this.props.auth.authUser}
+          loggedIn={this.props.auth.loggedIn}
+          profile={this.props.auth.profile}
           breakpoint={this.props.responsive.breakpoint}
           onLoginClick={this.handleLoginClick}
           onLogoutClick={this.handleLogoutClick}

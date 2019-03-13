@@ -18,7 +18,6 @@ const  subscribeOwnProfile = store => next => action => {
       store.dispatch({
         type: SUBSCRIBE_OWN_PROFILE_SET,
         profile: strippedProfile,
-        dopper: 'feather',
       });
     });
 
