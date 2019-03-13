@@ -28,7 +28,10 @@ export const save = (props = {}) => (dispatch, getState) => {
     peerID,
   })
     .then(
-      () => dispatch({ type: ONBOARDING_SAVE_SUCCESS }),
+      profile => dispatch({
+        type: ONBOARDING_SAVE_SUCCESS,
+        profile,
+      }),
       e => {
         return new Promise((resolve, reject) => {
           dispatch({

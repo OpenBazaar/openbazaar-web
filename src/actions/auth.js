@@ -40,15 +40,12 @@ export const login = (props = {}) => (dispatch, getState) => {
         return getDb(`a${vals[0].toString('hex')}`, fromByteArray(vals[1]))
       })
       // todo: probably better to explicitly pull profile based on peerId.
-      .then(db => {
-        console.log('hey now hey now');
-        db.profile.find().exec()
-        console.log('dont you dream that its over');
-      })
+      .then(db => db.profile.find().exec())
       .then(
         profiles => {
           const profile = profiles && profiles[0] ?
             profiles[0] : null;
+
           dispatch({
             type: AUTH_LOGIN_SUCCESS,
             profile: profile ? profile.toJSON() : null,

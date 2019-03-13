@@ -8,7 +8,6 @@ import SimpleMessage from 'components/modals/SimpleMessage';
 import CopyToClipboard from 'components/ui/CopyToClipboard';
 import WrappedForm from 'components/ui/form/WrappedForm';
 import BtnSpinner from 'components/ui/BtnSpinner';
-import Onboarding from 'components/onboarding/Onboarding';
 import GetMnemonicContent from './GetMnemonicContent';
 import 'styles/ui/form.scss';
 
@@ -43,6 +42,12 @@ class Login extends Component {
     this.props.actions.auth.generateMnemonic();
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.auth.loggedIn) {
+      this.props.actions.modals.close({ id: this.props.id });      
+    }
+  }
+
   handleInputChange(event) {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -69,12 +74,7 @@ class Login extends Component {
     }
 
     this.props.actions.auth.login({ mnemonic })
-      .then(profile => {
-        if (!profile) {
-          this.props.actions.modals.open({ Component: Onboarding });
-        }
-        this.props.actions.modals.close({ id: this.props.id });
-      }).catch(e => {
+      .catch(e => {
         this.props.actions.modals.open({
           Component: SimpleMessage,
           title: 'Unable to login',

@@ -8,6 +8,7 @@ import {
   AUTH_LOGIN_FAIL,
   AUTH_LOGIN_SUCCESS,
 } from 'actions/auth';
+import { SUBSCRIBE_OWN_PROFILE_SET } from 'middleware/subscribeOwnProfile';
 
 const initialState = {
   generatingMnemonic: false,
@@ -16,14 +17,17 @@ const initialState = {
   mnemonic: '',
   loggingIn: false,
   loggedIn: false,
-  // loginFailed: false,
-  // loginError: '',
   profile: null,
   identity: null,
+  needOnboarding: false,
 };
 
 const logout = (state, action) => {
-  // state.authUser = null;
+  state.loggingIn = false;
+  state.loggedIn = false;
+  state.profile = null;
+  state.needOnboarding = false;
+  state.identity = null;
 };
 
 const generatingMnemonic = (state, action) => {
@@ -54,12 +58,21 @@ const loginSuccess = (state, action) => {
   state.loggingIn = false;
   state.loggedIn = true;
   state.profile = action.profile || null;
+  state.needOnboarding = !state.profile;
   state.identity = action.identity;
 }
 
 const loginFail = (state, action) => {
   state.loggingIn = false;
   state.loggedIn = false;
+}
+
+const ownProfileSet = (state, action) => {
+  console.dir(state);
+  console.dir(action);
+  if (state.identity) {
+    state.profile = action.profile;
+  }
 }
 
 export default createReducer(initialState, {
@@ -69,5 +82,6 @@ export default createReducer(initialState, {
   [AUTH_GENERATE_MNEMONIC_FAIL]: generateMnemonicFail,
   [AUTH_LOGGING_IN]: loggingIn,
   [AUTH_LOGIN_SUCCESS]: loginSuccess,
-  [AUTH_LOGIN_FAIL]: loginFail
+  [AUTH_LOGIN_FAIL]: loginFail,
+  [SUBSCRIBE_OWN_PROFILE_SET]: ownProfileSet,
 });

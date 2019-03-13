@@ -10,6 +10,7 @@ import Discovery from 'components/pages/Discovery';
 import Modals from 'components/pages/Modals';
 import About from 'components/pages/About';
 import NavMenu from 'components/misc/navMenu/NavMenu';
+import Onboarding from 'components/onboarding/Onboarding';
 import './App.scss';
 import 'styles/layout.scss';
 import 'styles/ui/buttons.scss';
@@ -18,6 +19,12 @@ import logo from 'img/ob-logo.png';
 class App extends Component {
   componentDidMount() {
     this.props.actions.responsive.trackBreakpoints();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.auth.needOnboarding && !prevProps.auth.needOnboarding) {
+      this.props.actions.modals.open({ Component: Onboarding });
+    }
   }
 
   render() {
@@ -58,7 +65,8 @@ function mapStateToProps(state, prop) {
     app: state.app,
     modals: state.modals,
     router: state.router,
-    responsive: state.responsive
+    responsive: state.responsive,
+    auth: state.auth,
   };
 }
 

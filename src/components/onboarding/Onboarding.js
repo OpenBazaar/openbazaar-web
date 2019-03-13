@@ -16,17 +16,16 @@ class Onboarding extends Component {
     rootClass: 'modalM',
   };
 
+  state = {
+    form: {
+      name: '',
+      shortDescription: '',
+    },
+    formErrors: null,
+  };
+
   constructor(props) {
     super(props);
-
-    this.state = {
-      form: {
-        name: '',
-        shortDescription: '',
-      },
-      formErrors: null,
-    };    
-
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSaveClick = this.handleSaveClick.bind(this);
   }
@@ -61,13 +60,14 @@ class Onboarding extends Component {
       this.props.actions.onboarding.save({
         data: this.state.form,
       })
-      .catch(e => {
-        this.props.actions.modals.open({
-          Component: SimpleMessage,
-          title: 'Unable to save your onboarding data',
-          body: e.message || '',
+        .then(() => this.props.actions.modals.close({ id: this.props.id }))
+        .catch(e => {
+          this.props.actions.modals.open({
+            Component: SimpleMessage,
+            title: 'Unable to save your onboarding data',
+            body: e.message || '',
+          });
         });
-      });      
     }
   }
 

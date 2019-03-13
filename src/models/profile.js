@@ -51,7 +51,7 @@ export const save = (data = {}) => {
         }
       )
       .then(
-        profile => resolve(),
+        profile => resolve(profile),
       )
       .catch(e => {
         reject(e);

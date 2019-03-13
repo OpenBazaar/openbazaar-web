@@ -14,7 +14,7 @@ const schema = {
     },    
     name: {
       type: 'string',
-      encrypted: true,
+      // encrypted: true,
     },
     location: {
       type: 'string',
