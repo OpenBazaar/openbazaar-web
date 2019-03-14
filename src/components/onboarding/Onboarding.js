@@ -57,6 +57,9 @@ class Onboarding extends Component {
     } else {
       this.setState({ formErrors: null });
 
+      console.log('moo');
+      window.moo = this.state.form;
+
       this.props.actions.onboarding.save({
         data: this.state.form,
       })

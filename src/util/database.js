@@ -89,3 +89,21 @@ export const get = (name, password) => {
 
   return curDb.promise;
 }
+
+export const destroy = name => {
+  if (typeof name !== 'string' || !name) {
+    throw new Error('Please provide a database name as a non-empty string.');
+  }
+
+  // What happens if you try to reconnect to a database that is
+  // being destroyed?
+  // What happens if you try and destroy a database that is being created?
+  if (curDb && curDb.name === name) {
+    return curDb.promise
+      .then(db => db.destroy());
+  }
+
+  return Promise.reject(
+    new Error('Not connected to a database with that name.')
+  );
+}
