@@ -41,5 +41,7 @@ export const save = (props = {}) => (dispatch, getState) => {
           throw e;
         });
       }
-    );
+    ).then(() => {
+      
+    });
 }

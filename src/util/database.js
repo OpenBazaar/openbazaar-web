@@ -62,32 +62,42 @@ export const get = (name, password) => {
     });    
   }
 
-  if (curDb && !name) return curDb.promise;
-
-  if (curDb) {
+  if (name) {
     if (
-      !name ||
-      (
-        curDb.name === name &&
-        curDb.password === password
-      )
+      curDb &&
+      curDb.name === name &&
+      curDb.password === password    
     ) {
       return curDb.promise;
-    }
+    } else {
+      if (curDb) destroy(name);
+      curDb = {
+        name,
+        password,
+        promise: _create(name, password)
+          .catch(e => {
+            if (
+              curDb &&
+              curDb.name === name &&
+              curDb.password === password
+            ) {
+              curDb = null;
+            }
+
+            throw e;
+          }),
+      };
+
+      return curDb.promise;
+    }    
   } else {
-    if (!name) {
-      return Promise.reject('There is no current db connection. You can create one ' +
-        'by passing in a name and password.');
-    }
+    return curDb ?
+      curDb.promise :
+      Promise.reject(
+        new Error('There is no current db connection. You can create one ' +
+          'by passing in a name and password.')
+      );
   }
-
-  curDb = {
-    name,
-    password,
-    promise: _create(name, password), 
-  };
-
-  return curDb.promise;
 }
 
 export const destroy = name => {
@@ -97,13 +107,13 @@ export const destroy = name => {
 
   // What happens if you try to reconnect to a database that is
   // being destroyed?
-  // What happens if you try and destroy a database that is being created?
   if (curDb && curDb.name === name) {
     return curDb.promise
-      .then(db => db.destroy());
+      .then(db => {
+        curDb = null;
+        db.destroy();
+      });
   }
 
-  return Promise.reject(
-    new Error('Not connected to a database with that name.')
-  );
+  return Promise.resolve();
 }

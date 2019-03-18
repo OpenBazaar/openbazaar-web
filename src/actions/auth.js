@@ -1,10 +1,14 @@
+import { fromByteArray } from 'base64-js';
 import {
   generatePeerId,
   isValidMenmonic,
   hash,
   identityKeyFromSeed,
 } from 'util/crypto';
-import { fromByteArray } from 'base64-js';
+import {
+  get as getIpfsNode,
+  destroy as destroyIpfsNode,
+} from 'util/ipfs';
 import {
   get as getDb,
   destroy as destroyDb,
@@ -20,6 +24,8 @@ export const AUTH_LOGIN_SUCCESS = 'AUTH_LOGIN_SUCCESS';
 
 let loggedInDbName = null;
 
+// todo: stop node on logout
+
 export const login = (props = {}) => (dispatch, getState) => {
   if (!isValidMenmonic(props.mnemonic)) {
     throw new Error('Please provide a valid mnemonic.');
@@ -33,23 +39,31 @@ export const login = (props = {}) => (dispatch, getState) => {
     const nameHash = hash(mnemonic, { hmacSeed: 'ob-db-name' });
     const pwHash = hash(mnemonic, { hmacSeed: 'ob-db-password' });
     let identity;
+    let publicKey = null;
     let nameHashHex = null;
 
     Promise
       .all([nameHash, pwHash, identityKeyFromSeed(props.mnemonic)])
       .then(vals => {
+        publicKey = fromByteArray(vals[2].publicKey);
+        const privateKey = fromByteArray(vals[2].privateKey);
+        const peerId = vals[2].peerIdB58;
+
         identity = {
-          peerId: vals[2].peerIdB58,
-          publicKey: fromByteArray(vals[2].publicKey),
-          privateKey: fromByteArray(vals[2].privateKey),
+          peerId,
+          publicKey,
+          privateKey,
         };
 
         nameHashHex = `a${vals[0].toString('hex')}`;
 
-        return getDb(nameHashHex, fromByteArray(vals[1]))
+        return Promise.all([
+          getDb(nameHashHex, fromByteArray(vals[1])),
+          getIpfsNode(peerId, privateKey),
+        ]);
       })
       // todo: probably better to explicitly pull profile based on peerId.
-      .then(db => db.profile.find().exec())
+      .then(vals => vals[0].profile.find().exec())
       .then(
         profiles => {
           const profile = profiles && profiles[0] ?
@@ -66,7 +80,14 @@ export const login = (props = {}) => (dispatch, getState) => {
           resolve(profile);
       })
       .catch(error => {
+        destroyIpfsNode(publicKey);
+        destroyDb(nameHashHex)
         reject(error);
+
+        dispatch({
+          type: AUTH_LOGIN_FAIL,
+        });
+
         throw error;
       });
   });
