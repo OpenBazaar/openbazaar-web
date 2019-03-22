@@ -3,12 +3,11 @@ import { ONBOARDING_SAVE_SUCCESS } from 'actions/onboarding';
 
 export const SUBSCRIBE_OWN_PROFILE_SET = 'SUBSCRIBE_OWN_PROFILE_SET';
 
-const  subscribeOwnProfile = store => next => action => {
+const subscribeOwnProfile = store => next => action => {
   const nextAction = { ...action };
 
   if (
-    [AUTH_LOGIN_SUCCESS, ONBOARDING_SAVE_SUCCESS]
-      .includes(action.type) &&
+    [AUTH_LOGIN_SUCCESS, ONBOARDING_SAVE_SUCCESS].includes(action.type) &&
     action.profile
   ) {
     action.profile.$.subscribe(p => {
@@ -17,7 +16,7 @@ const  subscribeOwnProfile = store => next => action => {
       delete strippedProfile._rev;
       store.dispatch({
         type: SUBSCRIBE_OWN_PROFILE_SET,
-        profile: strippedProfile,
+        profile: strippedProfile
       });
     });
 

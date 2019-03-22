@@ -29,15 +29,16 @@ class Card extends Component {
     // todo: should probably be made into a component
     // todo: make that parseFloat trick into a toFixedDropZeros function in
     //   a number util module.
-    let rating = this.props.averageRating === 0 ?
-      `${this.props.averageRating} (${this.props.ratingCount})` :
-      `${parseFloat((this.props.averageRating).toFixed(2))}  (${this.props.ratingCount})`;
+    let rating =
+      this.props.averageRating === 0
+        ? `${this.props.averageRating} (${this.props.ratingCount})`
+        : `${parseFloat(this.props.averageRating.toFixed(2))}  (${
+            this.props.ratingCount
+          })`;
     rating = (
       <div className="flexVCent">
         <div>
-          <span
-            role="img"
-            aria-label={getPoly().t('emojis.ratingsStar')}>
+          <span role="img" aria-label={getPoly().t('emojis.ratingsStar')}>
             ⭐
           </span>
         </div>
@@ -47,8 +48,11 @@ class Card extends Component {
 
     let price = null;
 
-    if (this.props.price)  {
-      price = formatCurrency(this.props.price.amount, this.props.price.currencyCode);
+    if (this.props.price) {
+      price = formatCurrency(
+        this.props.price.amount,
+        this.props.price.currencyCode
+      );
     }
 
     return (
@@ -60,7 +64,9 @@ class Card extends Component {
           }}
         />
         <div className="ListingCard-content borderTop clrBr">
-          <div className="ListingCard-title rowTn clamp txB">{this.props.title}</div>
+          <div className="ListingCard-title rowTn clamp txB">
+            {this.props.title}
+          </div>
           <div className="flexVCent gutterH noOverflow">
             <div className="flexNoShrink">{rating}</div>
             <div className="flexExpand flexHRight">{price}</div>
@@ -74,8 +80,7 @@ class Card extends Component {
 // todo: default onClick of card should router to the listing detail page
 
 function mapStateToProps(state, prop) {
-  return {
-  };
+  return {};
 }
 
 function mapDispatchToProps(dispatch) {

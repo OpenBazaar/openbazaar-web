@@ -12,8 +12,8 @@ const SimpleMessage = props => {
 
 SimpleMessage.modalProps = {
   path: 'components/modals/SimpleMessage',
-  rootClass: 'modalS',
-}
+  rootClass: 'modalS'
+};
 
 // todo: probably only title should be required or maybe one-of title or body.
 SimpleMessage.propTypes = {

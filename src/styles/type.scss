@@ -110,7 +110,7 @@ img {
   &.tx4 {
     width: $tx4;
     height: $tx4;
-  }  
+  }
 }
 
 @include mq($until: tablet) {

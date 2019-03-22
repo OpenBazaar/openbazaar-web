@@ -37,18 +37,24 @@
     &:hover {
       background-color: black;
       color: white;
-    }    
+    }
   }
 
   &.modalS {
-    .ModalRoot-innerWrap { width: $modalWidthS }
+    .ModalRoot-innerWrap {
+      width: $modalWidthS;
+    }
   }
 
   &.modalM {
-    .ModalRoot-innerWrap { width: $modalWidthM }
+    .ModalRoot-innerWrap {
+      width: $modalWidthM;
+    }
   }
 
   &.modalL {
-    .ModalRoot-innerWrap { width: $modalWidthL }
+    .ModalRoot-innerWrap {
+      width: $modalWidthL;
+    }
   }
 }

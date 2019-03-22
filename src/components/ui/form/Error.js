@@ -6,32 +6,31 @@ const Error = props => {
 
   if (Array.isArray(props.error)) {
     errors = props.error.map(err =>
-      typeof err === 'string' ? err : err.error);
+      typeof err === 'string' ? err : err.error
+    );
   } else {
-    errors = typeof  props.error === 'string' ?
-      [props.error] : [props.error.error];
+    errors =
+      typeof props.error === 'string' ? [props.error] : [props.error.error];
   }
 
   let error = null;
 
   if (errors.length) {
     error = <p className={`FormError ${props.clrClass}`}>{errors[0]}</p>;
-    
+
     if (errors.length > 1) {
       error = (
         <ul className={`FormError ${props.clrClass}`}>
-          {
-            errors.map(err => (
-              <li>{err}</li>
-            ))
-          }
+          {errors.map(err => (
+            <li>{err}</li>
+          ))}
         </ul>
       );
     }
   }
 
   return error;
-}
+};
 
 export default Error;
 
@@ -40,5 +39,5 @@ export default Error;
 // with error props as a string.
 Error.defaultProps = {
   error: [],
-  clrClass: 'clrTErr',
-}
+  clrClass: 'clrTErr'
+};

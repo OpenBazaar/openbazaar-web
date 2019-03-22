@@ -6,56 +6,56 @@ const schema = {
   properties: {
     peerID: {
       type: 'string',
-      primary: true,
+      primary: true
     },
     handle: {
       type: 'string',
-      encrypted: true,
-    },    
+      encrypted: true
+    },
     name: {
-      type: 'string',
+      type: 'string'
       // encrypted: true,
     },
     location: {
       type: 'string',
-      encrypted: true,
+      encrypted: true
     },
     about: {
       type: 'string',
-      encrypted: true,
+      encrypted: true
     },
     shortDescription: {
       type: 'string',
-      encrypted: true,
+      encrypted: true
     },
     nsfw: {
       type: 'boolean',
-      encrypted: true,
+      encrypted: true
     },
     vendor: {
       type: 'boolean',
-      encrypted: true,
+      encrypted: true
     },
     moderator: {
       type: 'boolean',
-      encrypted: true,
+      encrypted: true
     },
     moderatorInfo: {
       type: ['object', 'null'],
-      encrypted: true,
+      encrypted: true
     },
     contactInfo: {
       type: ['object', 'null'],
       encrypted: true,
       properties: {
         website: {
-          type: 'string',
+          type: 'string'
         },
         email: {
-          type: 'string',
+          type: 'string'
         },
         phoneNumber: {
-          type: 'string',
+          type: 'string'
         },
         social: {
           type: 'array',
@@ -71,7 +71,7 @@ const schema = {
               },
               proof: {
                 type: 'string'
-              },
+              }
             }
           }
         }
@@ -82,20 +82,20 @@ const schema = {
       encrypted: true,
       properties: {
         primary: {
-          type: 'string',
+          type: 'string'
         },
         secondary: {
-          type: 'string',
+          type: 'string'
         },
         text: {
-          type: 'string',
+          type: 'string'
         },
         highlight: {
-          type: 'string',
+          type: 'string'
         },
         highlightText: {
-          type: 'string',
-        },
+          type: 'string'
+        }
       }
     },
     avatarHashes: {
@@ -116,9 +116,9 @@ const schema = {
         },
         original: {
           type: 'string'
-        },
+        }
       }
-    },    
+    }
   },
   required: ['peerID', 'name']
 };

@@ -6,32 +6,28 @@ const ColumnedForm = props => {
 
   return (
     <form className={`ColumnedForm ${props.className}`}>
-      {
-        props.rows.map(row => {
-          let helper = null;
+      {props.rows.map(row => {
+        let helper = null;
 
-          if (row.helperContent) {
-            helper = row.helperContent;
-          } else if (row.helperText) {
-            helper = <div className="clrT2 txSm">{row.helperText}</div>
-          }
+        if (row.helperContent) {
+          helper = row.helperContent;
+        } else if (row.helperText) {
+          helper = <div className="clrT2 txSm">{row.helperText}</div>;
+        }
 
-          return (
-            <div
-              className="ColumnedForm-row flexRow gutterH"
-              key={row.key}>
-              <div className={labelColClass}>
-                {row.labelColContent}
-                {helper}
-              </div>
-              <div className={fieldColClass}>{row.fieldColContent}</div>
+        return (
+          <div className="ColumnedForm-row flexRow gutterH" key={row.key}>
+            <div className={labelColClass}>
+              {row.labelColContent}
+              {helper}
             </div>
-          );
-        })
-      }
+            <div className={fieldColClass}>{row.fieldColContent}</div>
+          </div>
+        );
+      })}
     </form>
   );
-}
+};
 
 export default ColumnedForm;
 
@@ -49,5 +45,5 @@ ColumnedForm.defaultProps = {
   className: 'box clrP padMdKids padStack',
   labelColCount: 3,
   fieldColCount: 9,
-  rows: [],
+  rows: []
 };

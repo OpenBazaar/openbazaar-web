@@ -10,9 +10,8 @@ const isFiat = cur => {
 
 // temp stub until we have a wallet curs module
 const isWalletCur = code => {
-  return ['BTC', 'BCH', 'LTC', 'ZEC', 'ETH']
-    .includes(code.toUpperCase());
-}
+  return ['BTC', 'BCH', 'LTC', 'ZEC', 'ETH'].includes(code.toUpperCase());
+};
 
 // todo: doc me up
 export const fromBaseUnits = (value, cur) => {
@@ -25,9 +24,8 @@ export const fromBaseUnits = (value, cur) => {
   }
 
   // non Satoshi curs (e.g. ETH) will be wrong for now
-  return isFiat(cur) ?
-    value / 100 : value / 100000000;
-}
+  return isFiat(cur) ? value / 100 : value / 100000000;
+};
 
 // todo: doc me up
 export const toBaseUnits = (value, cur) => {
@@ -40,9 +38,8 @@ export const toBaseUnits = (value, cur) => {
   }
 
   // non Satoshi curs (e.g. ETH) will be wrong for now
-  return isFiat(cur) ?
-    value * 100 : value * 100000000;
-}
+  return isFiat(cur) ? value * 100 : value * 100000000;
+};
 
 /**
  * Will format an amount in the given currency into the format appropriate for the
@@ -66,7 +63,7 @@ export function formatCurrency(amount, currency, options) {
     // If you just want to format a number representing a crypto currency amount
     // but don't want any code or symbol used, set to false.
     includeCryptoCurIdentifier: true,
-    ...options,
+    ...options
   };
 
   // todo: perhaps a general failGracefully option should default
@@ -84,8 +81,9 @@ export function formatCurrency(amount, currency, options) {
     throw new Error('Please provide a currency as a string');
   }
 
-  const price = opts.convertAmountFromBaseUnits ?
-    fromBaseUnits(amount, currency) : amount;
+  const price = opts.convertAmountFromBaseUnits
+    ? fromBaseUnits(amount, currency)
+    : amount;
 
   const cur = currency.toUpperCase();
   let curData = getCurrencyByCode(cur);
@@ -104,15 +102,15 @@ export function formatCurrency(amount, currency, options) {
   const isCryptoListingCur = !cryptoCur && !curData;
 
   if (cryptoCur || isCryptoListingCur) {
-    opts.minDisplayDecimals = typeof opts.minDisplayDecimals === 'number' ?
-      opts.minDisplayDecimals : 0;
-    opts.maxDisplayDecimals = typeof opts.maxDisplayDecimals === 'number' ?
-      opts.maxDisplayDecimals : 8;
+    opts.minDisplayDecimals =
+      typeof opts.minDisplayDecimals === 'number' ? opts.minDisplayDecimals : 0;
+    opts.maxDisplayDecimals =
+      typeof opts.maxDisplayDecimals === 'number' ? opts.maxDisplayDecimals : 8;
   } else {
-    opts.minDisplayDecimals = typeof opts.minDisplayDecimals === 'number' ?
-      opts.minDisplayDecimals : 2;
-    opts.maxDisplayDecimals = typeof opts.maxDisplayDecimals === 'number' ?
-      opts.maxDisplayDecimals : 2;
+    opts.minDisplayDecimals =
+      typeof opts.minDisplayDecimals === 'number' ? opts.minDisplayDecimals : 2;
+    opts.maxDisplayDecimals =
+      typeof opts.maxDisplayDecimals === 'number' ? opts.maxDisplayDecimals : 2;
   }
 
   if (cryptoCur) {
@@ -139,35 +137,40 @@ export function formatCurrency(amount, currency, options) {
       amt = bitcoinConvert(price, 'BTC', bitcoinConvertUnit);
     }
 
-    const formattedAmount = formattedCurrency = new Intl.NumberFormat(opts.locale, {
-      minimumFractionDigits: opts.minDisplayDecimals,
-      // maximumFractionDigits: getSmartMaxDisplayDigits(amount, opts.maxDisplayDecimals),
-      maximumFractionDigits: opts.maxDisplayDecimals,
-    }).format(amt);
+    const formattedAmount = (formattedCurrency = new Intl.NumberFormat(
+      opts.locale,
+      {
+        minimumFractionDigits: opts.minDisplayDecimals,
+        // maximumFractionDigits: getSmartMaxDisplayDigits(amount, opts.maxDisplayDecimals),
+        maximumFractionDigits: opts.maxDisplayDecimals
+      }
+    ).format(amt));
 
     if (opts.includeCryptoCurIdentifier) {
-      const translationSubKey = curSymbol === curData.symbol ?
-        'curSymbolAmount' : 'curCodeAmount';
+      const translationSubKey =
+        curSymbol === curData.symbol ? 'curSymbolAmount' : 'curCodeAmount';
       formattedCurrency = getPoly().t(
         `cryptoCurrencyFormat.${translationSubKey}`,
         {
           amount: formattedAmount,
-          [curSymbol === curData.symbol ? 'symbol' : 'code']: curSymbol,
+          [curSymbol === curData.symbol ? 'symbol' : 'code']: curSymbol
         }
       );
     }
   } else if (isCryptoListingCur) {
-    const formattedAmount = formattedCurrency = new Intl.NumberFormat(opts.locale, {
-      minimumFractionDigits: opts.minDisplayDecimals,
-      // maximumFractionDigits: getSmartMaxDisplayDigits(amount, opts.maxDisplayDecimals),
-      maximumFractionDigits: opts.maxDisplayDecimals,
-    }).format(price);
+    const formattedAmount = (formattedCurrency = new Intl.NumberFormat(
+      opts.locale,
+      {
+        minimumFractionDigits: opts.minDisplayDecimals,
+        // maximumFractionDigits: getSmartMaxDisplayDigits(amount, opts.maxDisplayDecimals),
+        maximumFractionDigits: opts.maxDisplayDecimals
+      }
+    ).format(price));
 
     if (opts.includeCryptoCurIdentifier) {
       formattedCurrency = getPoly().t('cryptoCurrencyFormat.curCodeAmount', {
         amount: formattedAmount,
-        code: cur.length > 8 ?
-          `${cur.slice(0, 8)}…` : cur,
+        code: cur.length > 8 ? `${cur.slice(0, 8)}…` : cur
       });
     }
   } else {
@@ -176,7 +179,7 @@ export function formatCurrency(amount, currency, options) {
       currency,
       minimumFractionDigits: opts.minDisplayDecimals,
       // maximumFractionDigits: getSmartMaxDisplayDigits(amount, opts.maxDisplayDecimals),
-      maximumFractionDigits: opts.maxDisplayDecimals,
+      maximumFractionDigits: opts.maxDisplayDecimals
     }).format(price);
   }
 

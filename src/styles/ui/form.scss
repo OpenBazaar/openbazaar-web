@@ -35,12 +35,12 @@ textarea {
   color: inherit;
   border-radius: 3px;
   font: {
-    family: "Noto Sans", sans-serif;
+    family: 'Noto Sans', sans-serif;
     size: $tx5;
   }
 }
 
-input[type=reset] {
+input[type='reset'] {
   cursor: pointer;
 
   &:hover {
@@ -52,11 +52,11 @@ select {
   width: 100%;
 }
 
-input[type="text"],
-input[type="number"],
-input[type="password"],
-input[type="email"],
-input[type="url"],
+input[type='text'],
+input[type='number'],
+input[type='password'],
+input[type='email'],
+input[type='url'],
 textarea {
   border-style: solid;
   border-width: 1px;
@@ -109,7 +109,8 @@ textarea {
 
 label {
   &.error {
-    input, textarea {
+    input,
+    textarea {
       border: 1px solid red;
     }
   }
@@ -121,11 +122,11 @@ label {
   font-size: 130%;
 }
 
-input[type="radio"]:checked + label {
+input[type='radio']:checked + label {
   font-weight: 700;
 }
 
-input[type="checkbox"] {
+input[type='checkbox'] {
   display: none;
 
   & + label {
@@ -134,9 +135,9 @@ input[type="checkbox"] {
     cursor: pointer;
 
     &:before {
-      content: "\f372";
+      content: '\f372';
       font-family: Ionicons;
-      line-height:inherit;
+      line-height: inherit;
       font-size: 1.5em;
       position: relative;
       top: 0.15em;
@@ -149,7 +150,7 @@ input[type="checkbox"] {
   }
 
   &:checked + label:before {
-    content: "\f373";
+    content: '\f373';
   }
 
   &.centerLabel + label {

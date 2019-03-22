@@ -13,5 +13,5 @@ export default history => ({
   discovery,
   auth,
   navMenu,
-  onboarding,
+  onboarding
 });

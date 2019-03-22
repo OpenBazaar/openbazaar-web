@@ -2,13 +2,13 @@ import { createReducer } from 'redux-starter-kit';
 import {
   ONBOARDING_SAVING,
   ONBOARDING_SAVE_SUCCESS,
-  ONBOARDING_SAVE_FAILED,
+  ONBOARDING_SAVE_FAILED
 } from 'actions/onboarding';
 
 const initialState = {
   saving: false,
   saveFailed: false,
-  saveError: '',
+  saveError: ''
 };
 
 const saving = (state, action) => {

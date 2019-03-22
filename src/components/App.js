@@ -20,18 +20,18 @@ import logo from 'img/ob-logo.png';
 
 class App extends Component {
   state = {
-    langLoaded: false,
-  }
+    langLoaded: false
+  };
 
   componentDidMount() {
     this.props.actions.responsive.trackBreakpoints();
-    
+
     // hard-coded for now
     const lang = 'en_US';
     loadLang(lang)
       .then(() => this.setState({ langLoaded: true }))
       .catch(e => console.error(e));
-      // todo: handle error case better here.
+    // todo: handle error case better here.
   }
 
   componentDidUpdate(prevProps) {
@@ -41,41 +41,39 @@ class App extends Component {
   }
 
   render() {
-    const Content = !this.state.langLoaded ?
-      (
-        <div className="flexCent">
-          <Spinner size="large" />
-        </div>
-      ) :
-      (
-        <div className="App" id="OBWEB">
-          <header className="App-header">
-            <nav className="flexVCent row gutterH">
-              <Link to="/" className="App-logo-wrap">
-                <img src={logo} className="App-logo" alt="logo" />
-              </Link>
-              <div className="flexExpand">
-                <div className="flexHRight">
-                  <NavMenu />
-                </div>
+    const Content = !this.state.langLoaded ? (
+      <div className="flexCent">
+        <Spinner size="large" />
+      </div>
+    ) : (
+      <div className="App" id="OBWEB">
+        <header className="App-header">
+          <nav className="flexVCent row gutterH">
+            <Link to="/" className="App-logo-wrap">
+              <img src={logo} className="App-logo" alt="logo" />
+            </Link>
+            <div className="flexExpand">
+              <div className="flexHRight">
+                <NavMenu />
               </div>
-            </nav>
-          </header>
-          <div className="App-mainContent">
-            <div>
-              <Route exact path="/" component={Discovery} />
-              <Route exact path="/modals" component={Modals} />
-              <Route exact path="/about" component={About} />
             </div>
+          </nav>
+        </header>
+        <div className="App-mainContent">
+          <div>
+            <Route exact path="/" component={Discovery} />
+            <Route exact path="/modals" component={Modals} />
+            <Route exact path="/about" component={About} />
           </div>
-          <div className="App-modalContainer">
-            {this.props.modals.openModals.map(modal => (
-              <ModalRoot key={modal.id} {...modal} />
-            ))}
-          </div>
-          <div id="navMenuContainer" />
         </div>
-      );
+        <div className="App-modalContainer">
+          {this.props.modals.openModals.map(modal => (
+            <ModalRoot key={modal.id} {...modal} />
+          ))}
+        </div>
+        <div id="navMenuContainer" />
+      </div>
+    );
 
     return Content;
   }
@@ -87,7 +85,7 @@ function mapStateToProps(state, prop) {
     modals: state.modals,
     router: state.router,
     responsive: state.responsive,
-    auth: state.auth,
+    auth: state.auth
   };
 }
 

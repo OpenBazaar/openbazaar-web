@@ -7,8 +7,8 @@ import './ModalRoot.scss';
 class ModalRoot extends Component {
   static defaultProps = {
     rootClass: '',
-    innerWrapClass: '',
-  }
+    innerWrapClass: ''
+  };
 
   constructor(props) {
     super(props);
@@ -36,7 +36,8 @@ class ModalRoot extends Component {
     if (
       !this.props.closeable ||
       !this.props.closeableViaEsc ||
-      e.keyCode !== 27) {
+      e.keyCode !== 27
+    ) {
       return;
     }
 
@@ -68,17 +69,19 @@ class ModalRoot extends Component {
     delete modalProps.type;
 
     const btnClose =
-      this.props.closeable && this.props.closeableViaCloseButton ?
-        (
-          <button className="ModalRoot-close" onClick={this.handleCloseClick}>
-            X
-          </button>          
-        ) : null;
+      this.props.closeable && this.props.closeableViaCloseButton ? (
+        <button className="ModalRoot-close" onClick={this.handleCloseClick}>
+          X
+        </button>
+      ) : null;
 
     return (
       <section className={`ModalRoot ${this.props.rootClass}`}>
         <div
-          className={`ModalRoot-innerWrap clrP clrBr clrSh3 ${this.props.innerWrapClass}`}>
+          className={`ModalRoot-innerWrap clrP clrBr clrSh3 ${
+            this.props.innerWrapClass
+          }`}
+        >
           {btnClose}
           <this.state.ModalComponent {...modalProps} />
         </div>

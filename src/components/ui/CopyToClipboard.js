@@ -11,14 +11,14 @@ export default class extends Component {
   static defaultProps = {
     copiedText: 'Copied',
     // TODO: make this a required prop with no default
-    copyContent: '',
-  }
+    copyContent: ''
+  };
 
   constructor(props) {
     super(props);
-    
+
     this.state = {
-      showCopiedText: false,
+      showCopiedText: false
     };
 
     this.handleTriggerClick = this.handleTriggerClick.bind(this);
@@ -43,10 +43,12 @@ export default class extends Component {
         title={this.props.copiedComponent ? '' : this.props.copiedText}
         html={this.props.copiedComponent}
         open={this.state.showCopiedText}
-        {...this.props}>
+        {...this.props}
+      >
         <CopyToClipboard
           text={this.props.copyContent}
-          onCopy={this.handleTriggerClick}>
+          onCopy={this.handleTriggerClick}
+        >
           {this.props.children}
         </CopyToClipboard>
       </Tooltip>

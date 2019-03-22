@@ -53,7 +53,8 @@
   select,
   textarea,
   button {
-    &:focus:not(.disabled), &:hover:not(.disabled) {
+    &:focus:not(.disabled),
+    &:hover:not(.disabled) {
       border-color: $col2;
     }
   }
@@ -380,7 +381,7 @@ body .tippy-popper {
 
     &.clrS-theme {
       background-color: $secondary;
-    } 
+    }
 
     &.clrT-theme {
       @extend .clrT;
@@ -399,46 +400,46 @@ body .tippy-popper {
     }
 
     &.clrSh1-theme {
-      @extend .clrSh1; 
+      @extend .clrSh1;
     }
   }
 
-  &[x-placement="bottom"] {
+  &[x-placement='bottom'] {
     .arrow-regular[x-arrow] {
       border-bottom-color: $border;
 
       &::before {
-        border-bottom-color: $primary;        
+        border-bottom-color: $primary;
       }
     }
   }
 
-  &[x-placement="top"] {
+  &[x-placement='top'] {
     .arrow-regular[x-arrow] {
       border-top-color: $border;
 
       &::before {
-        border-top-color: $primary;        
+        border-top-color: $primary;
       }
     }
   }
 
-  &[x-placement="left"] {
+  &[x-placement='left'] {
     .arrow-regular[x-arrow] {
       border-left-color: $border;
 
       &::before {
-        border-left-color: $primary;        
+        border-left-color: $primary;
       }
     }
   }
 
-  &[x-placement="right"] {
+  &[x-placement='right'] {
     .arrow-regular[x-arrow] {
       border-right-color: $border;
 
       &::before {
-        border-right-color: $primary;        
+        border-right-color: $primary;
       }
     }
   }

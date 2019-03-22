@@ -147,7 +147,7 @@ function mapDispatchToProps(dispatch) {
     actions: {
       navMenu: bindActionCreators(NavMenuActions, dispatch),
       auth: bindActionCreators(AuthActions, dispatch),
-      modals: bindActionCreators(ModalActions, dispatch)      
+      modals: bindActionCreators(ModalActions, dispatch)
     }
   };
 }

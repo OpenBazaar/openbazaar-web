@@ -29,19 +29,24 @@ const UserContentLoading = props => {
           <Avatar size="tiny" avatarHashes={props.userAvatarHashes} />
           {userName}
         </div>
-      </div>      
+      </div>
     );
   }
 
-  const headingText = props.isProcessing ?
-    <h1 className="h3 clrT">{getPoly().t('userContentLoading.connecting')}</h1> :
-    <h1 className="h3 clrT">{getPoly().t('userContentLoading.failedToConnect')}</h1>
+  const headingText = props.isProcessing ? (
+    <h1 className="h3 clrT">{getPoly().t('userContentLoading.connecting')}</h1>
+  ) : (
+    <h1 className="h3 clrT">
+      {getPoly().t('userContentLoading.failedToConnect')}
+    </h1>
+  );
 
-  let content = <p className="clrT2 tx5">{props.contentText}</p>
+  let content = <p className="clrT2 tx5">{props.contentText}</p>;
   if (props.children) content = props.children;
 
-  let btnSpinnerContent = props.isProcessing ?
-    null : getPoly().t('userContentLoading.btnRetry');
+  let btnSpinnerContent = props.isProcessing
+    ? null
+    : getPoly().t('userContentLoading.btnRetry');
 
   return (
     <section className="UserContentLoading">
@@ -53,45 +58,49 @@ const UserContentLoading = props => {
             <MdArrowForward className="clrT2 lineHeight1 tx3" />
             <Avatar size="small" avatarHashes={props.userAvatarHashes} />
           </div>
-          
+
           {headingText}
-          
+
           <div className="rowHg contentWrap">{content}</div>
-          
-          <p className="clrT2 tx6 rowSm">{getPoly().t('userContentLoading.socialHeading')}</p>
+
+          <p className="clrT2 tx6 rowSm">
+            {getPoly().t('userContentLoading.socialHeading')}
+          </p>
           <div className="flexVCent flexInline gutterHSm socialIcons">
             <a
               href="https://twitter.com/openbazaar"
               target="_blank"
-              rel="noopener noreferrer">
+              rel="noopener noreferrer"
+            >
               <LogoTwitter className="twitterColor" />
             </a>
             <a
               href="https://www.facebook.com/OpenBazaarProject"
               target="_blank"
-              rel="noopener noreferrer">
+              rel="noopener noreferrer"
+            >
               <LogoFacebook className="facebookColor" />
             </a>
             <a
               href="https://www.reddit.com/r/OpenBazaar/"
               target="_blank"
-              rel="noopener noreferrer">
+              rel="noopener noreferrer"
+            >
               <LogoReddit className="redditColor" />
             </a>
             <a
               href="https://github.com/OpenBazaar/openbazaar-desktop"
               target="_blank"
-              rel="noopener noreferrer">
+              rel="noopener noreferrer"
+            >
               <LogoGithub className="githubColor" />
             </a>
             <a
               href="https://openbazaar.org/slack/"
               target="_blank"
-              rel="noopener noreferrer">
-              <img
-                src={slackIcon}
-                alt="Slack icon"
-                className="tx3" />
+              rel="noopener noreferrer"
+            >
+              <img src={slackIcon} alt="Slack icon" className="tx3" />
             </a>
           </div>
         </div>
@@ -99,17 +108,21 @@ const UserContentLoading = props => {
       <div className="flexRow flexBtnWrapper">
         <button
           className="txCtr btnFlx flexExpand clrP"
-          onClick={props.onCancelClick}>
+          onClick={props.onCancelClick}
+        >
           {getPoly().t('userContentLoading.btnCancel')}
         </button>
         <BtnSpinner
           isProcessing={props.isProcessing}
           className="btnFlx flexExpand clrP"
-          onClick={props.onRetryClick}>{btnSpinnerContent}</BtnSpinner>
+          onClick={props.onRetryClick}
+        >
+          {btnSpinnerContent}
+        </BtnSpinner>
       </div>
-    </section>    
+    </section>
   );
-}
+};
 
 export default UserContentLoading;
 
@@ -117,4 +130,4 @@ UserContentLoading.modalProps = {
   path: 'components/misc/UserContentLoading',
   closeable: false,
   innerWrapClass: 'pad0'
-}
+};

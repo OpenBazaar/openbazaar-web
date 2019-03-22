@@ -25,23 +25,23 @@ export const save = (props = {}) => (dispatch, getState) => {
 
   return profileSave({
     ...props.data,
-    peerID,
+    peerID
   })
     .then(
-      profile => dispatch({
-        type: ONBOARDING_SAVE_SUCCESS,
-        profile,
-      }),
+      profile =>
+        dispatch({
+          type: ONBOARDING_SAVE_SUCCESS,
+          profile
+        }),
       e => {
         return new Promise((resolve, reject) => {
           dispatch({
             type: ONBOARDING_SAVE_FAILED,
-            error: e.message,
+            error: e.message
           });
           throw e;
         });
       }
-    ).then(() => {
-      
-    });
-}
+    )
+    .then(() => {});
+};

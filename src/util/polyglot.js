@@ -16,8 +16,6 @@ export const loadLang = lang => {
       })
       .catch(e => reject(e));
   });
-}
-
-
+};
 
 export const getPoly = () => polyglot;

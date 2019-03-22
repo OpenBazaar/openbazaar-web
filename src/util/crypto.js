@@ -23,14 +23,16 @@ export function generatePeerId(mnemonic) {
     hmac.update(bip39seed);
     const seed = new Uint8Array(hmac.array());
     keys.generateKeyPairFromSeed('ed25519', seed, (err, keypair) => {
-      PeerId.createFromPubKey(keys.marshalPublicKey(keypair.public),
+      PeerId.createFromPubKey(
+        keys.marshalPublicKey(keypair.public),
         (err, key) => {
           resolve({
             mnemonic,
-            peerId: key._idB58String,
+            peerId: key._idB58String
           });
-        });
-    });     
+        }
+      );
+    });
   });
 }
 
@@ -72,7 +74,8 @@ export function identityKeyFromSeed(mnemonic, bits = 4096) {
 
     keys.generateKeyPairFromSeed('ed25519', seed, bits, (err, keypair) => {
       if (!err) {
-        PeerId.createFromPubKey(keys.marshalPublicKey(keypair.public),
+        PeerId.createFromPubKey(
+          keys.marshalPublicKey(keypair.public),
           (err, peerId) => {
             if (err) {
               reject(err);
@@ -84,9 +87,10 @@ export function identityKeyFromSeed(mnemonic, bits = 4096) {
               peerId: peerId.toBytes(),
               peerIdB58: peerId.toB58String(),
               publicKey: keypair.public.bytes,
-              privateKey: keypair.bytes,
+              privateKey: keypair.bytes
             });
-          });
+          }
+        );
       } else {
         reject(err);
       }
@@ -96,18 +100,23 @@ export function identityKeyFromSeed(mnemonic, bits = 4096) {
 
 export function encrypt(pubKeyBytes, textBytes) {
   const libp2pPubKey = libp2pCrypto.keys.unmarshalPublicKey(pubKeyBytes);
-  
+
   // Generate ephemeral key
   const ephemKeypair = nacl.box.keyPair();
-  
+
   // Convert to curve25519 pubkey
   const pubkeyCurve = ed2curve.convertPublicKey(libp2pPubKey._key);
-  
+
   // 24 bit random nonce
   const nonce = new Uint8Array(randomBytes(24));
-  
+
   // Create ciphertext
-  const cipherText = nacl.box(textBytes, nonce, pubkeyCurve, ephemKeypair.secretKey);
+  const cipherText = nacl.box(
+    textBytes,
+    nonce,
+    pubkeyCurve,
+    ephemKeypair.secretKey
+  );
 
   const jointCiphertext = Buffer.concat([
     Buffer.from(nonce),
@@ -120,20 +129,19 @@ export function encrypt(pubKeyBytes, textBytes) {
 
 export function decrypt(privKeyBytes, text) {
   const messageBytes = Buffer.from(text, 'base64');
-  const nonce = messageBytes.slice(0,24);
-  const pubKey = messageBytes.slice(24,56);
+  const nonce = messageBytes.slice(0, 24);
+  const pubKey = messageBytes.slice(24, 56);
   const cipherText = messageBytes.slice(56, messageBytes.length);
   const privKey = ed2curve.convertSecretKey(privKeyBytes);
 
   const out = nacl.box.open(cipherText, nonce, pubKey, privKey);
-  
+
   if (!out) {
     throw new Error('Unable to decrypt.');
   }
 
   return out;
 }
-
 
 /*
  * Very simple naive way of validating a mnemonic.

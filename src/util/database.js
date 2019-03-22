@@ -7,8 +7,8 @@ const collections = [
   {
     name: 'profile',
     schema: profileSchema,
-    sync: true,
-  },
+    sync: true
+  }
 ];
 
 RxDB.QueryChangeDetector.enableDebugging();
@@ -28,7 +28,6 @@ const _create = async (name, password) => {
     password
   });
 
-  
   if (process.env.NODE_ENV === 'development') {
     // write to window for debugging
     window.db = db;
@@ -51,55 +50,47 @@ const _create = async (name, password) => {
 };
 
 export const get = (name, password) => {
-  if (
-    name !== undefined ||
-    password !== undefined
-  ) {
+  if (name !== undefined || password !== undefined) {
     ['name', 'password'].forEach(arg => {
       if (typeof arg !== 'string' || !arg) {
-        throw new Error('If providing the name or password, both must be provided ' +
-          'as non-empty strings.');
+        throw new Error(
+          'If providing the name or password, both must be provided ' +
+            'as non-empty strings.'
+        );
       }
-    });    
+    });
   }
 
   if (name) {
-    if (
-      curDb &&
-      curDb.name === name &&
-      curDb.password === password    
-    ) {
+    if (curDb && curDb.name === name && curDb.password === password) {
       return curDb.promise;
     } else {
       if (curDb) destroy(name);
       curDb = {
         name,
         password,
-        promise: _create(name, password)
-          .catch(e => {
-            if (
-              curDb &&
-              curDb.name === name &&
-              curDb.password === password
-            ) {
-              curDb = null;
-            }
+        promise: _create(name, password).catch(e => {
+          if (curDb && curDb.name === name && curDb.password === password) {
+            curDb = null;
+          }
 
-            throw e;
-          }),
+          throw e;
+        })
       };
 
       return curDb.promise;
-    }    
+    }
   } else {
-    return curDb ?
-      curDb.promise :
-      Promise.reject(
-        new Error('There is no current db connection. You can create one ' +
-          'by passing in a name and password.')
-      );
+    return curDb
+      ? curDb.promise
+      : Promise.reject(
+          new Error(
+            'There is no current db connection. You can create one ' +
+              'by passing in a name and password.'
+          )
+        );
   }
-}
+};
 
 export const destroy = name => {
   if (typeof name !== 'string' || !name) {
@@ -109,12 +100,11 @@ export const destroy = name => {
   // What happens if you try to reconnect to a database that is
   // being destroyed?
   if (curDb && curDb.name === name) {
-    return curDb.promise
-      .then(db => {
-        curDb = null;
-        db.destroy();
-      });
+    return curDb.promise.then(db => {
+      curDb = null;
+      db.destroy();
+    });
   }
 
   return Promise.resolve();
-}
+};

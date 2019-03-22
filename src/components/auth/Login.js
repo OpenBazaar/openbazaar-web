@@ -17,24 +17,25 @@ const SCREEN_GET_SEED = 'GET_SEED';
 class Login extends Component {
   static modalProps = {
     path: 'components/auth/Login',
-    rootClass: 'modalS',
-  }
+    rootClass: 'modalS'
+  };
 
   constructor(props) {
     super(props);
-    
+
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleLoginClick = this.handleLoginClick.bind(this);
-    this.handleGetMnemonicClick =
-      this.handleGetMnemonicClick.bind(this);
+    this.handleGetMnemonicClick = this.handleGetMnemonicClick.bind(this);
     this.handleBackClick = this.handleBackClick.bind(this);
-    this.handleRefreshMnemonicClick = this.handleRefreshMnemonicClick.bind(this);
+    this.handleRefreshMnemonicClick = this.handleRefreshMnemonicClick.bind(
+      this
+    );
 
     this.state = {
       screen: SCREEN_ENTER_SEED,
       showCopiedText: false,
       mnemonic: '',
-      errors: {},
+      errors: {}
     };
   }
 
@@ -44,7 +45,7 @@ class Login extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.auth.loggedIn) {
-      this.props.actions.modals.close({ id: this.props.id });      
+      this.props.actions.modals.close({ id: this.props.id });
     }
   }
 
@@ -73,19 +74,18 @@ class Login extends Component {
       return;
     }
 
-    this.props.actions.auth.login({ mnemonic })
-      .catch(e => {
-        this.props.actions.modals.open({
-          Component: SimpleMessage,
-          title: 'Unable to login',
-          body: e.message || '',
-        });
+    this.props.actions.auth.login({ mnemonic }).catch(e => {
+      this.props.actions.modals.open({
+        Component: SimpleMessage,
+        title: 'Unable to login',
+        body: e.message || ''
       });
+    });
 
     this.setState({
       errors: {
         ...this.state.errors,
-        mnemonic: '',
+        mnemonic: ''
       }
     });
   }
@@ -98,7 +98,7 @@ class Login extends Component {
     clearTimeout(this.copiedTextTimeout);
     this.setState({
       screen: SCREEN_ENTER_SEED,
-      showCopiedText: false,
+      showCopiedText: false
     });
   }
 
@@ -110,9 +110,10 @@ class Login extends Component {
     let formContent;
     let footerContent;
     let footerStyle;
-    const menmonicError = this.state.errors.mnemonic ?
+    const menmonicError = this.state.errors.mnemonic ? (
       // todo: form error should be a reusable component
-      <p className="clrTErr">{this.state.errors.mnemonic}</p> : null;
+      <p className="clrTErr">{this.state.errors.mnemonic}</p>
+    ) : null;
 
     if (this.state.screen === SCREEN_ENTER_SEED) {
       formContent = (
@@ -123,41 +124,58 @@ class Login extends Component {
               marginBottom: '5px',
               minHeight: '58px'
             }}
-            className={`clrBr clrSh2 ${this.props.auth.loggingIn ? 'disabled' : ''}`}
+            className={`clrBr clrSh2 ${
+              this.props.auth.loggingIn ? 'disabled' : ''
+            }`}
             placeholder="Enter your mnemonic"
             name="mnemonic"
             onChange={this.handleInputChange}
-            value={this.state.mnemonic}></textarea>
+            value={this.state.mnemonic}
+          />
           <div className="flexHRight">
             <button
-              style={{marginRight: '3px'}}
+              style={{ marginRight: '3px' }}
               className="btn link"
-              onClick={this.handleGetMnemonicClick}>I don't have a mnemonic</button>
+              onClick={this.handleGetMnemonicClick}
+            >
+              I don't have a mnemonic
+            </button>
           </div>
         </form>
       );
-      footerContent =
+      footerContent = (
         <BtnSpinner
           onClick={this.handleLoginClick}
-          isProcessing={this.props.auth.loggingIn}>Login</BtnSpinner>
+          isProcessing={this.props.auth.loggingIn}
+        >
+          Login
+        </BtnSpinner>
+      );
     } else {
-      formContent = <GetMnemonicContent
-        mnemonic={this.props.auth.mnemonic}
-        generateMnemonicError={this.props.auth.generateMnemonicError}
-        isFetching={this.props.auth.generatingMnemonic}
-        onRegenerateClick={this.handleRefreshMnemonicClick} />
+      formContent = (
+        <GetMnemonicContent
+          mnemonic={this.props.auth.mnemonic}
+          generateMnemonicError={this.props.auth.generateMnemonicError}
+          isFetching={this.props.auth.generatingMnemonic}
+          onRegenerateClick={this.handleRefreshMnemonicClick}
+        />
+      );
 
       footerContent = (
         <div className="flexVCent">
-          <button
-          className="btn"
-            onClick={this.handleBackClick}>Back</button>
+          <button className="btn" onClick={this.handleBackClick}>
+            Back
+          </button>
           <div className="flexHRight flex Expand">
             <CopyToClipboard
               showCopiedText={this.state.showCopiedText}
-              copyContent={this.props.auth.mnemonic}>
+              copyContent={this.props.auth.mnemonic}
+            >
               <button
-                className={`btn ${!!this.props.auth.mnemonic ? '' : 'disabled'}`}>
+                className={`btn ${
+                  !!this.props.auth.mnemonic ? '' : 'disabled'
+                }`}
+              >
                 Copy Seed
               </button>
             </CopyToClipboard>
@@ -172,7 +190,8 @@ class Login extends Component {
         heading="Login"
         headerRightContent={null}
         footerContent={footerContent}
-        footerStyle={footerStyle}>
+        footerStyle={footerStyle}
+      >
         {formContent}
       </WrappedForm>
     );
@@ -181,7 +200,7 @@ class Login extends Component {
 
 function mapStateToProps(state, prop) {
   return {
-    auth: state.auth,
+    auth: state.auth
   };
 }
 
@@ -189,7 +208,7 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: {
       auth: bindActionCreators(AuthActions, dispatch),
-      modals: bindActionCreators(ModalActions, dispatch),
+      modals: bindActionCreators(ModalActions, dispatch)
     }
   };
 }

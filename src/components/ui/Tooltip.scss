@@ -7,10 +7,10 @@
   .arrow-regular[x-arrow]::before {
     content: '';
     position: absolute;
-    transform: scale(calc(.9));
+    transform: scale(calc(0.9));
   }
 
-  &[x-placement="bottom"] {
+  &[x-placement='bottom'] {
     .arrow-regular[x-arrow] {
       &::before {
         border-bottom: 7px solid #333;
@@ -22,7 +22,7 @@
     }
   }
 
-  &[x-placement="top"] {
+  &[x-placement='top'] {
     .arrow-regular[x-arrow] {
       &::before {
         border-top: 7px solid #333;
@@ -34,10 +34,10 @@
     }
   }
 
-  &[x-placement="left"] {
+  &[x-placement='left'] {
     .arrow-regular[x-arrow] {
       margin-top: 3px;
-      
+
       &::before {
         border-left: 7px solid #333;
         border-top: 7px solid transparent;
@@ -48,7 +48,7 @@
     }
   }
 
-  &[x-placement="right"] {
+  &[x-placement='right'] {
     .arrow-regular[x-arrow] {
       // top: 50%;
       margin-top: 3px;

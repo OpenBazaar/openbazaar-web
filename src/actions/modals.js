@@ -43,10 +43,8 @@ export const open = (props = {}) => (dispatch, getState) => {
 
   if (
     typeof props.Component.modalProps !== 'object' ||
-    (
-      typeof props.Component.modalProps.path !== 'string' ||
-      !props.Component.modalProps.path
-    )
+    (typeof props.Component.modalProps.path !== 'string' ||
+      !props.Component.modalProps.path)
   ) {
     throw new Error(
       'The component must implement a modalProps object as a static getter or ' +
@@ -66,13 +64,14 @@ export const open = (props = {}) => (dispatch, getState) => {
     closeableViaCloseButton: true,
     closeableViaEsc: true,
     ...props.Component.modalProps,
-    ...props,
+    ...props
   };
-  
+
   delete modalProps.Component;
 
   const curModal = getState().modals.openModals.find(
-    modal => singletonModals.includes(modalProps.path) &&
+    modal =>
+      singletonModals.includes(modalProps.path) &&
       modal.path === modalProps.path
   );
 

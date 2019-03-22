@@ -7,7 +7,7 @@ const GetMnemonicContent = props => {
   let subcontentClass = '';
 
   if (props.isFetching) {
-    mnemonicContentWrapClass = "flexCent";
+    mnemonicContentWrapClass = 'flexCent';
     mnemonicContent = <Spinner size="small" />;
     subcontentClass = 'disabled';
   } else if (props.mnemonic) {
@@ -16,11 +16,10 @@ const GetMnemonicContent = props => {
     // fetch failed
     mnemonicContent = (
       <span className="clrTErr">
-        {
-          'There was an error generating the mnemonic' +
-          (props.generateMnemonicError ?
-            `: ${props.generateMnemonicError}` : '.')
-        }
+        {'There was an error generating the mnemonic' +
+          (props.generateMnemonicError
+            ? `: ${props.generateMnemonicError}`
+            : '.')}
       </span>
     );
   }
@@ -32,23 +31,27 @@ const GetMnemonicContent = props => {
         // match the height of the text area on the prev screen
         style={{
           minHeight: '58px',
-          marginBottom: '5px',
-        }}>
+          marginBottom: '5px'
+        }}
+      >
         {mnemonicContent}
       </div>
       <div className={`flexHRight ${subcontentClass}`}>
         <button
-          style={{marginRight: '3px'}}
+          style={{ marginRight: '3px' }}
           className="btn link"
-          onClick={props.onRegenerateClick}>Regenerate</button>
+          onClick={props.onRegenerateClick}
+        >
+          Regenerate
+        </button>
       </div>
     </div>
   );
-}
+};
 
 export default GetMnemonicContent;
 
 GetMnemonicContent.defaultProps = {
   mnemonic: '',
-  generateMnemonicError: '',
+  generateMnemonicError: ''
 };

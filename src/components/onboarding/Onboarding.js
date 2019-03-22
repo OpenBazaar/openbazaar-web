@@ -13,15 +13,15 @@ import 'styles/ui/form.scss';
 class Onboarding extends Component {
   static modalProps = {
     path: 'components/onboarding/Onboarding',
-    rootClass: 'modalM',
+    rootClass: 'modalM'
   };
 
   state = {
     form: {
       name: '',
-      shortDescription: '',
+      shortDescription: ''
     },
-    formErrors: null,
+    formErrors: null
   };
 
   constructor(props) {
@@ -40,7 +40,7 @@ class Onboarding extends Component {
         ...this.state.form,
         [name]: value
       },
-      formErrors: null,
+      formErrors: null
     });
   }
 
@@ -60,15 +60,16 @@ class Onboarding extends Component {
       console.log('moo');
       window.moo = this.state.form;
 
-      this.props.actions.onboarding.save({
-        data: this.state.form,
-      })
+      this.props.actions.onboarding
+        .save({
+          data: this.state.form
+        })
         .then(() => this.props.actions.modals.close({ id: this.props.id }))
         .catch(e => {
           this.props.actions.modals.open({
             Component: SimpleMessage,
             title: 'Unable to save your onboarding data',
-            body: e.message || '',
+            body: e.message || ''
           });
         });
     }
@@ -93,9 +94,10 @@ class Onboarding extends Component {
                     className="clrBr clrSh2"
                     placeholder="Enter your name"
                     value={this.state.name}
-                    onChange={this.handleInputChange} />
+                    onChange={this.handleInputChange}
+                  />
                 </div>
-              ),
+              )
             },
             {
               key: 'shortDescription',
@@ -110,20 +112,23 @@ class Onboarding extends Component {
                     className="clrBr clrSh2"
                     placeholder="Describe yourself"
                     value={this.state.shortDescription}
-                    onChange={this.handleInputChange}></textarea>
+                    onChange={this.handleInputChange}
+                  />
                 </div>
-              ),
-            }          
-          ]}></ColumnedForm>
-        </div>
-    )
-    
+              )
+            }
+          ]}
+        />
+      </div>
+    );
+
     return (
       <WrappedForm
         heading="Onboarding"
         headerRightContent={null}
         isSaving={this.props.onboarding.saving}
-        onSaveClick={this.handleSaveClick}>
+        onSaveClick={this.handleSaveClick}
+      >
         {formContent}
       </WrappedForm>
     );
@@ -133,7 +138,7 @@ class Onboarding extends Component {
 function mapStateToProps(state, prop) {
   return {
     modals: state.modals,
-    onboarding: state.onboarding,
+    onboarding: state.onboarding
   };
 }
 
@@ -141,7 +146,7 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: {
       onboarding: bindActionCreators(OnboardingActions, dispatch),
-      modals: bindActionCreators(ModalsActions, dispatch),
+      modals: bindActionCreators(ModalsActions, dispatch)
     }
   };
 }

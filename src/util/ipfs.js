@@ -15,15 +15,15 @@ const getIpfsNodeInitOpts = (peerId, privateKey) => {
   return {
     EXPERIMENTAL: {
       pubsub: true,
-      ipnsPubsub: true,
+      ipnsPubsub: true
     },
     relay: {
-      enabled: true,
+      enabled: true
     },
     repo: `ipfs/${peerId}`,
-    init: { privateKey },
-  }
-}
+    init: { privateKey }
+  };
+};
 
 // add some logging of what the node is doing. Init'ing,
 // starting, errors, etc...
@@ -36,7 +36,7 @@ const _create = async (options = {}) => {
     if (process.env.NODE_ENV === 'development') {
       // write to window for debugging
       window.ipfs = node;
-    }    
+    }
 
     node.on('ready', () => resolve(node));
     node.on('error', e => reject(e));
@@ -46,23 +46,22 @@ const _create = async (options = {}) => {
 let curNode = null;
 
 export const get = (peerId, privateKey) => {
-  if (
-    peerId !== undefined ||
-    privateKey !== undefined
-  ) {
+  if (peerId !== undefined || privateKey !== undefined) {
     ['peerId', 'privateKey'].forEach(arg => {
       if (typeof arg !== 'string' || !arg) {
-        throw new Error('If providing the peerId or privateKey, both must be provided ' +
-          'as non-empty strings.');
+        throw new Error(
+          'If providing the peerId or privateKey, both must be provided ' +
+            'as non-empty strings.'
+        );
       }
-    });    
+    });
   }
 
   if (peerId) {
     if (
       curNode &&
       curNode.peerId === peerId &&
-      curNode.privateKey === privateKey    
+      curNode.privateKey === privateKey
     ) {
       return curNode.promise;
     } else {
@@ -70,32 +69,32 @@ export const get = (peerId, privateKey) => {
       curNode = {
         peerId,
         privateKey,
-        promise: _create(
-            getIpfsNodeInitOpts(peerId, privateKey)
-          ).catch(e => {
-            if (
-              curNode &&
-              curNode.peerId === peerId &&
-              curNode.privateKey === privateKey
-            ) {
-              curNode = null;
-            }
+        promise: _create(getIpfsNodeInitOpts(peerId, privateKey)).catch(e => {
+          if (
+            curNode &&
+            curNode.peerId === peerId &&
+            curNode.privateKey === privateKey
+          ) {
+            curNode = null;
+          }
 
-            throw e;
-          }),
+          throw e;
+        })
       };
 
-      return curNode.promise;      
+      return curNode.promise;
     }
   } else {
-    return curNode ?
-      curNode.promise :
-      Promise.reject(
-        new Error('There is no current ipfs node. You can create one ' +
-          'by passing in a peerId and private key.')
-      );
+    return curNode
+      ? curNode.promise
+      : Promise.reject(
+          new Error(
+            'There is no current ipfs node. You can create one ' +
+              'by passing in a peerId and private key.'
+          )
+        );
   }
-}
+};
 
 export const destroy = peerId => {
   if (typeof peerId !== 'string' || !peerId) {
@@ -105,9 +104,8 @@ export const destroy = peerId => {
   // What happens if you try to reconnect to a node that is
   // being destroyed?
   if (curNode && curNode.peerId === peerId) {
-    return curNode.promise
-      .then(node => node.stop());
+    return curNode.promise.then(node => node.stop());
   }
 
   return Promise.resolve();
-}
+};

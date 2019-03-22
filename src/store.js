@@ -9,7 +9,7 @@ export const history = createBrowserHistory();
 const middleware = [
   ...getDefaultMiddleware(),
   routerMiddleware(history),
-  subscribeOwnProfile,
+  subscribeOwnProfile
 ];
 
 export default configureStore({

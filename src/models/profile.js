@@ -1,8 +1,5 @@
 import { get as getDB } from 'util/database';
-import {
-  addRequiredError,
-  addInvalidTypeError,  
-} from 'util/formErrors';
+import { addRequiredError, addInvalidTypeError } from 'util/formErrors';
 
 // todo: doc me up
 export const validate = (data = {}) => {
@@ -32,7 +29,7 @@ export const validate = (data = {}) => {
   }
 
   return Object.keys(errors).length ? errors : null;
-}
+};
 
 export const save = (data = {}) => {
   const profileData = {
@@ -40,22 +37,18 @@ export const save = (data = {}) => {
     contactInfo: null,
     colors: null,
     avatarHashes: null,
-    ...data,
-  }
+    ...data
+  };
 
   return new Promise((resolve, reject) => {
     getDB()
-      .then(
-        db => {
-          return db.profile.upsert(profileData);
-        }
-      )
-      .then(
-        profile => resolve(profile),
-      )
+      .then(db => {
+        return db.profile.upsert(profileData);
+      })
+      .then(profile => resolve(profile))
       .catch(e => {
         reject(e);
         throw e;
       });
   });
-}
+};
