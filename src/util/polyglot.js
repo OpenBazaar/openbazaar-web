@@ -20,4 +20,4 @@ export const loadLang = lang => {
 
 
 
-export const get = () => polyglot;
+export const getPoly = () => polyglot;

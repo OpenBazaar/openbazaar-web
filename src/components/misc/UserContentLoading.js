@@ -1,7 +1,6 @@
 // Used when loading a User page or a Listing
 import React from 'react';
-// todo rename in the util not having to do a name import everywhere
-import { get as getPoly } from 'util/polyglot';
+import { getPoly } from 'util/polyglot';
 import Avatar from 'components/ui/Avatar';
 import MdArrowForward from 'react-ionicons/lib/MdArrowForward';
 import LogoTwitter from 'react-ionicons/lib/LogoTwitter';

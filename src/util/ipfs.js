@@ -13,13 +13,13 @@ const getIpfsNodeInitOpts = (peerId, privateKey) => {
   }
 
   return {
-    // EXPERIMENTAL: {
-    //   pubsub: true,
-    //   ipnsPubsub: true,
-    // },
-    // relay: {
-    //   enabled: true,
-    // },
+    EXPERIMENTAL: {
+      pubsub: true,
+      ipnsPubsub: true,
+    },
+    relay: {
+      enabled: true,
+    },
     repo: `ipfs/${peerId}`,
     init: { privateKey },
   }
@@ -31,8 +31,6 @@ const getIpfsNodeInitOpts = (peerId, privateKey) => {
 // too long to be ready...?
 const _create = async (options = {}) => {
   return new Promise((resolve, reject) => {
-    console.log('boom');
-    window.boom = options;
     const node = new IPFS(options);
 
     if (process.env.NODE_ENV === 'development') {

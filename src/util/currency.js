@@ -1,5 +1,5 @@
 import bitcoinConvert from 'bitcoin-convert';
-import { get as getPolyglot } from 'util/polyglot';
+import { getPoly } from 'util/polyglot';
 import { getCurrencyByCode } from 'data/currencies';
 
 // temp until we have a wallet cur module, then this will be baked into
@@ -148,7 +148,7 @@ export function formatCurrency(amount, currency, options) {
     if (opts.includeCryptoCurIdentifier) {
       const translationSubKey = curSymbol === curData.symbol ?
         'curSymbolAmount' : 'curCodeAmount';
-      formattedCurrency = getPolyglot().t(
+      formattedCurrency = getPoly().t(
         `cryptoCurrencyFormat.${translationSubKey}`,
         {
           amount: formattedAmount,
@@ -164,7 +164,7 @@ export function formatCurrency(amount, currency, options) {
     }).format(price);
 
     if (opts.includeCryptoCurIdentifier) {
-      formattedCurrency = getPolyglot().t('cryptoCurrencyFormat.curCodeAmount', {
+      formattedCurrency = getPoly().t('cryptoCurrencyFormat.curCodeAmount', {
         amount: formattedAmount,
         code: cur.length > 8 ?
           `${cur.slice(0, 8)}…` : cur,

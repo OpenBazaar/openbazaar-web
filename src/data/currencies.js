@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { get as polyglot } from 'util/polyglot';
+import { getPoly } from 'util/polyglot';
 // import app from '../app';
 // import {
 //   getCurrencyByCode as getCryptoCurByCode,
@@ -707,12 +707,12 @@ function getCurrencies(options = {}) {
 
   const fiatCurs = currencies
     .map(cur => {
-      const name = polyglot.t(`currencies.${cur.code}`, { _: cur.code });
+      const name = getPoly().t(`currencies.${cur.code}`, { _: cur.code });
 
       return {
         ...cur,
         name,
-        nameWithCode: polyglot.t('currencyWithCode', {
+        nameWithCode: getPoly().t('currencyWithCode', {
           name,
           code: cur.code,
         }),

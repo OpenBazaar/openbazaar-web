@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { GATEWAY_URL } from 'util/constants';
 import { formatCurrency } from 'util/currency';
+import { getPoly } from 'util/polyglot';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as listingCardActions from 'actions/listingCard';
@@ -33,7 +34,13 @@ class Card extends Component {
       `${parseFloat((this.props.averageRating).toFixed(2))}  (${this.props.ratingCount})`;
     rating = (
       <div className="flexVCent">
-        <div>⭐</div>
+        <div>
+          <span
+            role="img"
+            aria-label={getPoly().t('emojis.ratingsStar')}>
+            ⭐
+          </span>
+        </div>
         <div>{rating}</div>
       </div>
     );

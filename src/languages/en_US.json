@@ -163,6 +163,9 @@
     "curSymbolAmount": "%{symbol}%{amount}",
     "curCodeAmount": "%{amount} %{code}"
   },
+  "emojis": {
+    "ratingsStar": "Number of stars based on reviews"
+  },
   "userContentLoading": {
     "connecting": {
         "message": "Connecting…",

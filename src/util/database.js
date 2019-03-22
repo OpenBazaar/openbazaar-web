@@ -17,7 +17,7 @@ RxDB.plugin(pouchDbAdapterIdb);
 RxDB.plugin(pouchDbAdapterHttp); //enable syncing over http
 
 // todo: this should be driven from a config file
-const syncUrl = `http://${window.location.hostname}:5984/`;
+// const syncUrl = `http://${window.location.hostname}:5984/`;
 
 let curDb = null;
 
@@ -38,13 +38,14 @@ const _create = async (name, password) => {
   await Promise.all(collections.map(data => db.collection(data)));
 
   // sync
-  // console.log('DatabaseService: sync');
-  collections
-    .filter(col => col.sync)
-    .map(col => col.name)
-    .map(colName => db[colName].sync({
-      remote: syncUrl + colName + '/'
-    }));
+  // not syncing for for now due to:
+  // https://github.com/pubkey/rxdb/issues/917
+  // collections
+  //   .filter(col => col.sync)
+  //   .map(col => col.name)
+  //   .map(colName => db[colName].sync({
+  //     remote: syncUrl + colName + '/'
+  //   }));
 
   return db;
 };
