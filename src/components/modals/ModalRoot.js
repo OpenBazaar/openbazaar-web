@@ -5,6 +5,11 @@ import * as ModalActions from 'actions/modals';
 import './ModalRoot.scss';
 
 class ModalRoot extends Component {
+  static defaultProps = {
+    rootClass: '',
+    innerWrapClass: '',
+  }
+
   constructor(props) {
     super(props);
     this.state = {};
@@ -72,7 +77,8 @@ class ModalRoot extends Component {
 
     return (
       <section className={`ModalRoot ${this.props.rootClass}`}>
-        <div className="ModalRoot-innerWrap">
+        <div
+          className={`ModalRoot-innerWrap clrP clrBr clrSh3 ${this.props.innerWrapClass}`}>
           {btnClose}
           <this.state.ModalComponent {...modalProps} />
         </div>

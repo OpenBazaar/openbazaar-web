@@ -101,3 +101,29 @@ ol {
     position: absolute;
   }  
 }
+
+// external brand colors. They should not be overwritten by theme colors.
+.twitterColor {
+  color: #00aced;
+  fill: #00aced;
+}
+
+.facebookColor {
+  color: #3b5998;
+  fill: #3b5998;
+}
+
+.pinterestColor {
+  color: #bd081c;
+  fill: #bd081c;
+}
+
+.tumblrColor {
+  color: #35465c;
+  fill: #35465c;
+}
+
+.githubColor, .redditColor {
+  color: #000;
+  fill: #000;
+}

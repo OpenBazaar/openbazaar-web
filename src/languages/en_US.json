@@ -167,11 +167,12 @@
     "ratingsStar": "Number of stars based on reviews"
   },
   "userContentLoading": {
-    "connecting": {
-        "message": "Connecting…",
-        "description": "The salamander says yes siree bobbers."
-    },
+    "connecting": "Connecting…",
     "failedToConnect": "Failed to connect",
-    "socialHeading": "OpenBazaar News &amp; Discussions:"
+    "socialHeading": "OpenBazaar News & Discussions:",
+    "btnCancel": "Cancel",
+    "btnRetry": "Try Again",
+    "loadingText": "Just a minute, loading %{name} from somewhere on this global, peer-to-peer network for you…",
+    "failTextListing": "There was an issue retrieving %{listing}. Please try again."
   }
 }

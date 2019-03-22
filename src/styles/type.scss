@@ -94,6 +94,25 @@ h6,
   @include textSize(1.1rem);
 }
 
+// when you're using an image as an icon and you'd like it to
+// match the sizing of ionic-icons, which are sized via font-size.
+img {
+  &.tx2 {
+    width: $tx2;
+    height: $tx2;
+  }
+
+  &.tx3 {
+    width: $tx3;
+    height: $tx3;
+  }
+
+  &.tx4 {
+    width: $tx4;
+    height: $tx4;
+  }  
+}
+
 @include mq($until: tablet) {
   h1,
   .h1,

@@ -62,6 +62,10 @@
     border-color: $col1;
   }
 
+  .btn {
+    border-color: $col1;
+  }
+
   .btn:hover,
   .btn:focus,
   &.btn:hover,
@@ -78,6 +82,10 @@
       border-color: $col1;
     }
   }
+}
+
+.btnFlx {
+  @extend .btn;
 }
 
 /* default for inputs with no color class */
