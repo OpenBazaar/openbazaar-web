@@ -10,7 +10,10 @@ export default class Grid extends Component {
         {this.props.cards.map(card => {
           const vendorId = this.props.vendorId || card.vendorId;
 
-          return <Card {...card} key={`${vendorId}-${card.slug}`} />;
+          return <Card
+            {...card}
+            key={`${vendorId}-${card.slug}`}
+            baseUrl={this.props.listingBaseUrl} />;
         })}
       </div>
     );
@@ -23,6 +26,7 @@ Grid.defaultProps = {
 
 Grid.propTypes = {
   vendorId: PropTypes.string,
+  listingBaseUrl: PropTypes.string,  
   cards: function(props, propName, componentName) {
     if (!Array.isArray(props.cards)) {
       return new Error('The cards prop must be provided as an array.');
@@ -40,5 +44,5 @@ Grid.propTypes = {
         );
       });
     }
-  }
+  },
 };

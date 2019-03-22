@@ -84,7 +84,7 @@ export function identityKeyFromSeed(mnemonic, bits = 4096) {
               peerId: peerId.toBytes(),
               peerIdB58: peerId.toB58String(),
               publicKey: keypair.public.bytes,
-              privateKey: keypair._key,
+              privateKey: keypair.bytes,
             });
           });
       } else {

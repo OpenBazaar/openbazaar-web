@@ -53,8 +53,8 @@ export default function(props) {
     ) : null;
 
     results = (
-      <div class="flexCent">
-        <div class="txCtr">
+      <div className="flexCent">
+        <div className="txCtr">
           <p>{errorText}</p>
           {retryButton}
         </div>

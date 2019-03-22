@@ -1,3 +1,9 @@
+.box {
+  display: block;
+  box-sizing: border-box;
+  position: relative;
+}
+
 .border {
   // use on wrapping containers that should have a border. The element should also have a clrBr class.
   border-width: 1px;

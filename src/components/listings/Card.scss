@@ -17,6 +17,10 @@
     padding: $pad;
   }
 
+  &.ListingCard-clickable {
+    cursor: pointer;
+  }
+
   @include mq($until: tablet) {
     width: 158px;
     height: 195px;

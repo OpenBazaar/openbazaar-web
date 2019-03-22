@@ -162,5 +162,13 @@
   "cryptoCurrencyFormat": {
     "curSymbolAmount": "%{symbol}%{amount}",
     "curCodeAmount": "%{amount} %{code}"
-  }  
+  },
+  "userContentLoading": {
+    "connecting": {
+        "message": "Connecting…",
+        "description": "The salamander says yes siree bobbers."
+    },
+    "failedToConnect": "Failed to connect",
+    "socialHeading": "OpenBazaar News &amp; Discussions:"
+  }
 }
