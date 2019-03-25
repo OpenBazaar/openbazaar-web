@@ -103,11 +103,14 @@
     // see styleSheet.html for example usage.
     // use for buttons in the new 'flex' style with more padding and use css flex.
     @extend .btn;
+    min-height: 48px;
+    height: auto;    
     padding: 25px;
     border-radius: 0px;
     border-width: 1px;
     border-style: solid;
     flex-grow: 1;
+    flex-basis: 0;
     margin: 0 -1px -1px -1px;
 
     & + .btnFlx {

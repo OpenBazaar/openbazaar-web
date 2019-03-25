@@ -444,3 +444,19 @@ body .tippy-popper {
     }
   }
 }
+
+.flexBtnWrapper .btnFlx {
+  border-color: $border;
+
+  &:hover, &:focus {
+    @include borderColor($border, $border3);
+    z-index: 1;
+  }
+
+  &.underlineOnly:hover,
+  &.underlineOnly:focus,
+  &.underlineOnly.active {
+    border-color: $border;
+    border-bottom-color: $border3;
+  }
+}

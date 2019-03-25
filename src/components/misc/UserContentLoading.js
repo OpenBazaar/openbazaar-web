@@ -15,6 +15,7 @@ import slackIcon from 'img/icons/icon-slack.png';
 import './UserContentLoading.scss';
 
 const UserContentLoading = props => {
+  console.log(props.id);
   let headerContent = null;
   let userName = null;
 
@@ -114,6 +115,7 @@ const UserContentLoading = props => {
         </button>
         <BtnSpinner
           isProcessing={props.isProcessing}
+          baseClassName=""
           className="btnFlx flexExpand clrP"
           onClick={props.onRetryClick}
         >
@@ -129,5 +131,6 @@ export default UserContentLoading;
 UserContentLoading.modalProps = {
   path: 'components/misc/UserContentLoading',
   closeable: false,
-  innerWrapClass: 'pad0'
+  innerWrapClass: 'pad0',
+  rootClass: 'modalM'
 };

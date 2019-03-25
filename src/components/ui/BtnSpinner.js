@@ -3,10 +3,7 @@ import Spinner from 'components/ui/Spinner';
 import 'styles/layout.scss';
 
 const BtnSpinner = props => {
-  const className = (
-    `BtnSpinner ${props.baseClassName} ${props.className}` +
-    (props.isProcessing ? 'processing' : '')
-  ).trim();
+  const className = `BtnSpinner ${props.baseClassName} ${props.className}`;
 
   const btnContent = props.isProcessing ? (
     <span style={{ position: 'relative' }}>
