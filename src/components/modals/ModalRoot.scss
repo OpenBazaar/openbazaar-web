@@ -17,13 +17,10 @@
   }
 
   .ModalRoot-innerWrap {
-    background-color: white;
-    padding: 15px;
     position: fixed;
     top: 50px;
     left: 50%;
     transform: translateX(-50%);
-    border: 1px solid #ccc;
     width: $modalWidthL;
     max-width: 100%;
   }

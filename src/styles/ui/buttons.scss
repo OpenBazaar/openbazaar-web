@@ -160,3 +160,9 @@
     line-height: 0;
   }
 }
+
+.btnHg {
+  @extend .btn;
+  font-size: $tx2b;
+  height: 56px;
+}

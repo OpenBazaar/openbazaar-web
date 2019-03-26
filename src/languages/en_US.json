@@ -178,5 +178,8 @@
       "description": "If the listing title is unknown, this translation will be used in the \"listing\" placeholder of the \"failTextListing\" translation."
     },
     "failTextListing": "There was an issue retrieving %{listing}. Please try again."
+  },
+  "listingDetail": {
+    "btnBuyNow": "Buy Now"
   }
 }

@@ -7,9 +7,6 @@ import 'index.scss';
 import App from 'components/App';
 import * as serviceWorker from 'serviceWorker';
 
-console.log('hey');
-window.hey = store;
-
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>

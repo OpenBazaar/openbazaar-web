@@ -1,20 +1,22 @@
 @import 'styles/variables.scss';
 
-header {
-  height: 80px;
-}
+.UserContentLoading {
+  header {
+    height: 80px;
+  }
 
-h1 {
-  font-size: 1.8rem;
-}
+  h1 {
+    font-size: 1.8rem;
+  }
 
-.contentWrap {
-  // minimize the size of the form jumping as we transition from loading to
-  // error states
-  min-height: 45px;
-}
+  .UserContentLoading-contentWrap {
+    // minimize the size of the form jumping as we transition from loading to
+    // error states
+    min-height: 45px;
+  }
 
-.socialIcons {
-  margin-bottom: 55px;
-  font-size: $tx3;
+  .UserContentLoading-socialIcons {
+    margin-bottom: 55px;
+    font-size: $tx3;
+  }
 }

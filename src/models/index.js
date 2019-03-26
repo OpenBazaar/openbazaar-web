@@ -12,7 +12,8 @@ export const addError = (fieldName, error, errors = {}) => {
 
   if ((typeof error !== 'object' && typeof error !== 'string') || !error) {
     throw new Error(
-      'An error must be provided as a non-empty string or ' + 'as an object.'
+      'An error must be provided as a non-empty string or ' +
+      'as an object.'
     );
   }
 

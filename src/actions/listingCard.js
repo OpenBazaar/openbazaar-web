@@ -22,9 +22,6 @@ export const openListingDetail = (props = {}) => (dispatch, getState) => {
     throw new Error('Please provide a hash in the listing data.');
   }
 
-  // todo: wrap in try block and show error modal on error in case data is
-  // not what we expect
-  // i.e. in general fail gracefully.
   const urlAtOpen = getState()
     .router
     .location
@@ -71,6 +68,7 @@ export const openListingDetail = (props = {}) => (dispatch, getState) => {
       .then(response => {
         const listingDetailId = open({
           Component: ListingDetail,
+          listing: response.data,
         })(dispatch, getState);
 
         listingDetailModals[listingDetailId] = {

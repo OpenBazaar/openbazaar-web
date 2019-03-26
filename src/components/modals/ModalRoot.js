@@ -7,6 +7,7 @@ import './ModalRoot.scss';
 class ModalRoot extends Component {
   static defaultProps = {
     rootClass: '',
+    transparent: false,
     innerWrapClass: ''
   };
 
@@ -75,12 +76,16 @@ class ModalRoot extends Component {
         </button>
       ) : null;
 
+    // todo: namespace and only pass in the props for the embedded modal
+    //  component, not all the top level sugar.
     return (
       <section className={`ModalRoot ${this.props.rootClass}`}>
         <div
-          className={`ModalRoot-innerWrap clrP clrBr clrSh3 ${
+          className={
+            'ModalRoot-innerWrap ' +
+            (!this.props.transparent ? 'clrP clrBr clrSh3 padMd' : '') +
             this.props.innerWrapClass
-          }`}
+          }
         >
           {btnClose}
           <this.state.ModalComponent {...modalProps} />

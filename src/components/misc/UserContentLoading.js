@@ -15,7 +15,6 @@ import slackIcon from 'img/icons/icon-slack.png';
 import './UserContentLoading.scss';
 
 const UserContentLoading = props => {
-  console.log(props.id);
   let headerContent = null;
   let userName = null;
 
@@ -49,9 +48,6 @@ const UserContentLoading = props => {
     ? null
     : getPoly().t('userContentLoading.btnRetry');
 
-  console.log('slick');
-  window.slick = props.onCancelClick;
-
   return (
     <section className="UserContentLoading">
       <div className="padMd">
@@ -65,12 +61,12 @@ const UserContentLoading = props => {
 
           {headingText}
 
-          <div className="rowHg contentWrap">{content}</div>
+          <div className="rowHg UserContentLoading-contentWrap">{content}</div>
 
           <p className="clrT2 tx6 rowSm">
             {getPoly().t('userContentLoading.socialHeading')}
           </p>
-          <div className="flexVCent flexInline gutterHSm socialIcons">
+          <div className="flexVCent flexInline gutterHSm UserContentLoading-socialIcons">
             <a
               href="https://twitter.com/openbazaar"
               target="_blank"

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { GATEWAY_URL } from 'util/constants';
 import { formatCurrency } from 'util/currency';
 import { getPoly } from 'util/polyglot';
+import { listingImgBgStyle } from 'util/urls';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as listingCardActions from 'actions/listingCard';
@@ -10,10 +10,6 @@ import 'styles/containers.scss';
 import 'styles/layout.scss';
 import 'styles/type.scss';
 import 'styles/theme.scss';
-
-// todo: move to more global place
-const listingImgUrl = hash =>
-  `url('${GATEWAY_URL}images/${hash}'), url('../../img/defaultItem.png')`;
 
 class Card extends Component {
   constructor(props) {
@@ -64,7 +60,7 @@ class Card extends Component {
         <div
           className="ListingCard-listingImage"
           style={{
-            backgroundImage: listingImgUrl(cardData.thumbnail.small)
+            backgroundImage: listingImgBgStyle(cardData.thumbnail.small)
           }}
         />
         <div className="ListingCard-content borderTop clrBr">
