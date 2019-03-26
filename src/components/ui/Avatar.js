@@ -19,7 +19,7 @@ const Avatar = props => {
   // todo gateway useCache option
   const baseAvatar =
     props.avatarHashes && props.avatarHashes[props.size]
-      ? `url("${GATEWAY_URL}images/${props.avatarHashes[props.size]}")`
+      ? `url("${GATEWAY_URL}images/${props.avatarHashes[props.size]}?usecache=true")`
       : '';
   const backgroundImage = `${
     baseAvatar ? `${baseAvatar}, ` : ''

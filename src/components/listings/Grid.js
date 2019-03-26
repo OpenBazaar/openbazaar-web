@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Card from './Card';
+import Card from './card/Card';
 import './Grid.scss';
 
 export default class Grid extends Component {
@@ -12,9 +12,9 @@ export default class Grid extends Component {
 
           return (
             <Card
-              {...card}
-              key={`${vendorId}-${card.slug}`}
+              key={`${vendorId}-${card.data.slug}`}
               baseUrl={this.props.listingBaseUrl}
+              listing={card}
             />
           );
         })}

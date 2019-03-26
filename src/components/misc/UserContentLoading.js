@@ -49,6 +49,9 @@ const UserContentLoading = props => {
     ? null
     : getPoly().t('userContentLoading.btnRetry');
 
+  console.log('slick');
+  window.slick = props.onCancelClick;
+
   return (
     <section className="UserContentLoading">
       <div className="padMd">

@@ -56,12 +56,12 @@ const fetchCat = (cat, dispatch) => {
           });
         })
         .catch(error => {
-          reject(error);
           dispatch({
             type: FETCH_CATEGORIES_FAILURE,
             error: error.message,
             category: cat
           });
+          throw(error);
         })
         .then(() => {
           delete catFetches[cat];

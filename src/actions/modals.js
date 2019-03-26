@@ -86,9 +86,6 @@ export const open = (props = {}) => (dispatch, getState) => {
   return id;
 };
 
-console.log('hey');
-window.hey = open;
-
 /*
  * When you have a method that needs to target a modal, it will need either an
  * id (for non-singleton modals) or a path (for singleton modals). This function

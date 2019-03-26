@@ -22,18 +22,22 @@ class Card extends Component {
   }
 
   handleClick() {
-    this.props.actions.card.openListingDetail(this.props);
+    const cardData = { ...this.props };
+    delete cardData.actions;
+    this.props.actions.card.openListingDetail(cardData);
   }
 
   render() {
+    const cardData = this.props.listing.data;
+
     // todo: should probably be made into a component
     // todo: make that parseFloat trick into a toFixedDropZeros function in
     //   a number util module.
     let rating =
-      this.props.averageRating === 0
-        ? `${this.props.averageRating} (${this.props.ratingCount})`
-        : `${parseFloat(this.props.averageRating.toFixed(2))}  (${
-            this.props.ratingCount
+      cardData.averageRating === 0
+        ? `${cardData.averageRating} (${cardData.ratingCount})`
+        : `${parseFloat(cardData.averageRating.toFixed(2))}  (${
+            cardData.ratingCount
           })`;
     rating = (
       <div className="flexVCent">
@@ -48,10 +52,10 @@ class Card extends Component {
 
     let price = null;
 
-    if (this.props.price) {
+    if (cardData.price) {
       price = formatCurrency(
-        this.props.price.amount,
-        this.props.price.currencyCode
+        cardData.price.amount,
+        cardData.price.currencyCode
       );
     }
 
@@ -60,12 +64,12 @@ class Card extends Component {
         <div
           className="ListingCard-listingImage"
           style={{
-            backgroundImage: listingImgUrl(this.props.thumbnail.small)
+            backgroundImage: listingImgUrl(cardData.thumbnail.small)
           }}
         />
         <div className="ListingCard-content borderTop clrBr">
           <div className="ListingCard-title rowTn clamp txB">
-            {this.props.title}
+            {cardData.title}
           </div>
           <div className="flexVCent gutterH noOverflow">
             <div className="flexNoShrink">{rating}</div>
