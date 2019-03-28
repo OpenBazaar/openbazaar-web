@@ -20,7 +20,7 @@ class Card extends Component {
   handleClick() {
     const cardData = { ...this.props };
     delete cardData.actions;
-    this.props.actions.card.openListingDetail(cardData);
+    this.props.actions.listingCardOpenListing(cardData);
   }
 
   render() {
@@ -86,7 +86,7 @@ function mapStateToProps(state, prop) {
 function mapDispatchToProps(dispatch) {
   return {
     actions: {
-      card: bindActionCreators(listingCardActions, dispatch)
+      ...bindActionCreators(listingCardActions, dispatch)
     }
   };
 }

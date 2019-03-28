@@ -3,17 +3,25 @@ import { createBrowserHistory } from 'history';
 import { routerMiddleware } from 'connected-react-router';
 import createRootReducer from 'reducers';
 import subscribeOwnProfile from 'middleware/subscribeOwnProfile';
+import createSagaMiddleware from 'redux-saga'
+import rootSaga from 'sagas';
 
 export const history = createBrowserHistory();
+const sagaMiddleware = createSagaMiddleware()
 
 const middleware = [
   ...getDefaultMiddleware(),
   routerMiddleware(history),
-  subscribeOwnProfile
+  subscribeOwnProfile,
+  sagaMiddleware,
 ];
 
-export default configureStore({
+const store = configureStore({
   reducer: createRootReducer(history),
   middleware,
   devTools: process.env.NODE_ENV !== 'production'
 });
+
+sagaMiddleware.run(rootSaga);
+
+export default store;

@@ -17,13 +17,13 @@ class ListingLoadingModal extends Component {
   }
 
   handleCancelClick() {
-    this.props.actions.listingCard
-      .cancelListingDetailOpen({ id: this.props.id });
+    this.props.actions
+      .listingCardCancelListingOpen({ id: this.props.id });
   }
 
   handleRetryClick() {
-    this.props.actions.listingCard
-      .retryListingDetailOpen({ id: this.props.id });
+    this.props.actions
+      .listingCardRetryListingOpen ({ id: this.props.id });
   }  
 
   render() {
@@ -40,7 +40,7 @@ class ListingLoadingModal extends Component {
 function mapDispatchToProps(dispatch) {
   return {
     actions: {
-      listingCard: bindActionCreators(ListingCardActions, dispatch),
+      ...bindActionCreators(ListingCardActions, dispatch),
     }
   };
 }

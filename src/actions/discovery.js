@@ -9,16 +9,16 @@ const maxConcurrentFetchCats = 4;
 
 export const categories = [
   'bitcoin',
-  'crypto',
-  'music',
-  'books',
-  'games',
-  'art',
-  'handmade',
-  'clothing',
-  'toys',
-  'health',
-  'electronics'
+  // 'crypto',
+  // 'music',
+  // 'books',
+  // 'games',
+  // 'art',
+  // 'handmade',
+  // 'clothing',
+  // 'toys',
+  // 'health',
+  // 'electronics'
 ];
 
 // in-progress category fetches
