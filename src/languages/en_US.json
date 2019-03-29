@@ -181,5 +181,8 @@
   },
   "listingDetail": {
     "btnBuyNow": "Buy Now"
+  },
+  "genericErrors": {
+    "unableToPerformOp": "Unable to perform this operation."
   }
 }

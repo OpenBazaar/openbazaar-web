@@ -3,14 +3,13 @@ import { swallowException } from 'util/index';
 import { ellipsifyAfter } from 'util/string';
 import { getListing } from 'models/listing';
 import {
-  takeEvery,
   take,
   fork,
   put,
   call,
   select,
   cancel,
-  cancelled,
+  race,
 } from 'redux-saga/effects';
 import {
   open,
@@ -24,35 +23,26 @@ import {
 } from 'actions/listingCard';
 import ListingLoadingModal from 'components/listings/card/ListingLoadingModal';
 import ListingDetail from 'components/listings/ListingDetail';
+import SimpleMessage from 'components/modals/SimpleMessage';
 
 const getRouterState = state => state.router;
 const getAuthState = state => state.auth;
 
-const openListingTasks = {};
+const getOpenListingTaskId = (action) => (
+  `${action.payload.listing.vendorId}/` +
+    action.payload.listing.data.slug
+)
 
-// A Map of the listing detail id to the openListingTasks entry.
-const listingDetailModals = {};
-
-function* openListing(action) {
-  const listingCardId = getListingCardId(action);
+function* openListing(task, action) {
   let loadingModalId = null;
   let listingTitle = getPoly().t('userContentLoading.unknownListingTitle.message');
   let urlAtOpen = null;
+  let listingFetch = null;
 
-  openListingTasks[listingCardId].cleanup = function* () {
+  const restoreUrl = () => {
     if (urlAtOpen !== null) {
       window.history.pushState({}, '', urlAtOpen);
-    }
-
-    if (loadingModalId) {
-      yield put({
-        type: MODAL_CLOSE,
-        id: loadingModalId,
-      });
-    }
-
-    delete listingDetailModals[loadingModalId];
-    delete openListingTasks[listingCardId];
+    }    
   }
 
   try {
@@ -102,96 +92,135 @@ function* openListing(action) {
       })
     );
 
-    yield put({
-      type: MODAL_OPEN,
-      id: loadingModalId,
-      contentText: '',
-      isProcessing: true,
-    });
+    let listingDetailId;
 
-    // todo does 'this' === openListingTasks[listingCardId].task???
-    const listingReponse = yield call(getListing, hash);
-    const listingDetailId = openListingTasks[listingCardId].listingDetailId = yield put(
-      open({
-        Component: ListingDetail,
-        listing: listingReponse.data,
-      })
-    );
-    listingDetailModals[listingDetailId] = openListingTasks[listingCardId].task;
+    function wrappedGetListing(hash) {
+      listingFetch = getListing(hash);
+      return listingFetch;
+    }
 
-    yield put({
-      type: MODAL_CLOSE,
-      id: loadingModalId,
-    });
-  } catch (e) {
-    if (loadingModalId) {
+    function* fetchListing() {
       yield put({
         type: MODAL_OPEN,
         id: loadingModalId,
-        contentText:
-          getPoly()
-            .t('userContentLoading.failTextListing', {
-              listing: ellipsifyAfter(listingTitle, 50),
-            }),
-        isProcessing: false,
+        contentText: '',
+        isProcessing: true,
       });
+
+      let listingReponse;
+
+      try {
+        listingReponse = yield call(wrappedGetListing, hash);
+      } catch (e) {
+        yield put({
+          type: MODAL_OPEN,
+          id: loadingModalId,
+          contentText:
+            getPoly()
+              .t('userContentLoading.failTextListing', {
+                listing: ellipsifyAfter(listingTitle, 50),
+              }),
+          isProcessing: false,
+        });
+      }
+
+      if (listingReponse && listingReponse.status === 200) {
+        listingDetailId = yield put(
+          open({
+            Component: ListingDetail,
+            listing: listingReponse.data,
+          })
+        );
+      } else {
+        while (true) {
+          const retryAction = yield take(listingCardRetryListingOpen);
+          if (retryAction.payload.id === loadingModalId) {
+            yield call(fetchListing);
+          }
+        }
+      }
     }
+
+    const { loadCancel } = yield race({
+      fetchListing: call(fetchListing),
+      loadCancel: call(
+        function* () {
+          let canceled = false;
+
+          while (!canceled) {
+            const cancelAction =
+              yield take(listingCardCancelListingOpen);
+            if (cancelAction.payload.id === loadingModalId) {
+              canceled = true;
+              return cancelAction;
+            }
+          }
+        }
+      ),
+    });
+
+    if (loadCancel) {
+      yield cancel(task.get());
+    } else {
+      yield put({
+        type: MODAL_CLOSE,
+        id: loadingModalId,
+      });
+
+      while (listingDetailId) {
+        const modalCloseAction = yield take(MODAL_CLOSE);
+        if (modalCloseAction.id === listingDetailId) {
+          listingDetailId = null;
+          yield call(restoreUrl);
+        }
+      }      
+    }
+  } catch (e) {
+    yield put(
+      open({
+        Component: SimpleMessage,
+        title: getPoly().t('genericErrors.unableToPerformOp'),
+        // todo: remove when simplemessage is refactored to
+        //   only require one-of title and body.
+        body: '',
+      })
+    );
 
     console.error(e);
   } finally {
-    if (yield cancelled()) {
-      yield call(openListingTasks[listingCardId].cleanup);
+    yield call(restoreUrl);
+
+    if (loadingModalId) {
+      yield put({
+        type: MODAL_CLOSE,
+        id: loadingModalId,
+      });
     }
+
+    if (listingFetch && listingFetch.cancel) {
+      listingFetch.cancel();
+    }
+
+    yield call(task.delete);
   }
 }
 
-const getListingCardId = action => (
-  `${action.payload.listing.vendorId}/` +
-    action.payload.listing.data.slug
-)
-
-function* cancelListingOpen(action) {
-  const id = getListingCardId(action);
-
-  if (openListingTasks[id]) {
-    yield cancel(openListingTasks[id].task);
-  }
-};
-
-function* retryListingOpen(action) {
-  const id = getListingCardId(action);
-
-  if (openListingTasks[id]) {
-    yield cancelListingOpen(action);
-    yield fork(openListingWatcher);
-  }
-};
-
-// function* modalClose(action) {
-//   if (action.id)
-// };
+const openListingTasks = {};
 
 export function* openListingWatcher() {
   while (true) {
     const action = yield take(listingCardOpenListing)
-    const id = getListingCardId(action);
+    const id = getOpenListingTaskId(action);
 
     if (!openListingTasks[id]) {
-      openListingTasks[id] = {
-        task: yield fork(openListing, action),
-      };
+      openListingTasks[id] = yield fork(
+        openListing,
+        {
+          get: () => openListingTasks[id],
+          delete: () => delete openListingTasks[id],
+        },
+        action
+      );
     }
   }
 }
-
-export function* cancelListingOpenWatcher() {
-  yield takeEvery(listingCardCancelListingOpen, cancelListingOpen);
-}
-
-export function* retryListingOpenWatcher() {
-  yield takeEvery(listingCardRetryListingOpen, retryListingOpen);
-}
-
-// export function* modalCloseWatcher() {
-//   yield takeEvery(MODAL_CLOSE, modalClose);
-// }
