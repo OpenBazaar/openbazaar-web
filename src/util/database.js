@@ -7,7 +7,12 @@ const collections = [
   {
     name: 'profile',
     schema: profileSchema,
-    sync: true
+    sync: true,
+    hooks: {
+      preSave: (plainData, rxDocument) => {
+        plainData.needIpfsAdd = false;
+      },
+    }
   }
 ];
 
@@ -41,8 +46,6 @@ const _create = async (name, password) => {
     data => db.collection(data)
   ));
 
-  await db.jb.insert({ youLove: true });
-
   // sync
   collections
     .filter(col => col.sync)
@@ -73,7 +76,6 @@ export const get = (name, password) => {
       return curDb.promise;
     } else {
       if (curDb) destroy(name);
-      console.log('chuck the duck likes it');
       curDb = {
         name,
         password,
@@ -110,11 +112,7 @@ export const destroy = name => {
   if (curDb && curDb.name === name) {
     return curDb.promise.then(db => {
       curDb = null;
-      console.log('destroying db');
-      db.destroy()
-        .then(() => {
-          console.log('db destroyed');
-        });
+      db.destroy();
     });
   }
 

@@ -118,6 +118,10 @@ const schema = {
           type: 'string'
         }
       }
+    },
+    needIpfsAdd: {
+      type: 'boolean',
+      default: true
     }
   },
   required: ['peerID', 'name']
