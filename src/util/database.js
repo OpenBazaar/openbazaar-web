@@ -17,11 +17,14 @@ RxDB.plugin(pouchDbAdapterIdb);
 RxDB.plugin(pouchDbAdapterHttp); //enable syncing over http
 
 // todo: this should be driven from a config file
-// const syncUrl = `http://${window.location.hostname}:5984/`;
+const syncUrl = `http://${window.location.hostname}:5984/`;
 
 let curDb = null;
 
 const _create = async (name, password) => {
+  console.log('logging in db');
+  console.log(name);
+  console.log(password);
   const db = await RxDB.create({
     name,
     adapter: 'idb',
@@ -34,17 +37,21 @@ const _create = async (name, password) => {
   }
 
   // create collections
-  await Promise.all(collections.map(data => db.collection(data)));
+  await Promise.all(collections.map(
+    data => db.collection(data)
+  ));
+
+  await db.jb.insert({ youLove: true });
 
   // sync
-  // not syncing for for now due to:
-  // https://github.com/pubkey/rxdb/issues/917
-  // collections
-  //   .filter(col => col.sync)
-  //   .map(col => col.name)
-  //   .map(colName => db[colName].sync({
-  //     remote: syncUrl + colName + '/'
-  //   }));
+  collections
+    .filter(col => col.sync)
+    .map(col => col.name)
+    .map(colName => {
+      return db[colName].sync({
+        remote: `${syncUrl}/${name}/`,
+      })
+    });
 
   return db;
 };
@@ -66,6 +73,7 @@ export const get = (name, password) => {
       return curDb.promise;
     } else {
       if (curDb) destroy(name);
+      console.log('chuck the duck likes it');
       curDb = {
         name,
         password,
@@ -102,7 +110,11 @@ export const destroy = name => {
   if (curDb && curDb.name === name) {
     return curDb.promise.then(db => {
       curDb = null;
-      db.destroy();
+      console.log('destroying db');
+      db.destroy()
+        .then(() => {
+          console.log('db destroyed');
+        });
     });
   }
 

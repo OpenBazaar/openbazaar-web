@@ -8,9 +8,9 @@ const subscribeOwnProfile = store => next => action => {
 
   if (
     [AUTH_LOGIN_SUCCESS, ONBOARDING_SAVE_SUCCESS].includes(action.type) &&
-    action.profile
+    action.profileInstance
   ) {
-    action.profile.$.subscribe(p => {
+    action.profileInstance.$.subscribe(p => {
       if (!p) return;
       const strippedProfile = { ...p };
       delete strippedProfile._rev;
@@ -22,7 +22,7 @@ const subscribeOwnProfile = store => next => action => {
 
     // The profile on this action is an RxDB document. It's not serializable and
     // only intended for this middleware.
-    delete nextAction.profile;
+    delete nextAction.profileInstance;
   }
 
   return next(nextAction);

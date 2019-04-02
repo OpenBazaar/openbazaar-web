@@ -176,7 +176,7 @@ class Login extends Component {
                   !!this.props.auth.mnemonic ? '' : 'disabled'
                 }`}
               >
-                Copy Seed
+                Copy Mnemonic
               </button>
             </CopyToClipboard>
           </div>

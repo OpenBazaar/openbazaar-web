@@ -31,7 +31,7 @@ export const save = (props = {}) => (dispatch, getState) => {
       profile =>
         dispatch({
           type: ONBOARDING_SAVE_SUCCESS,
-          profile
+          profileInstance: profile,
         }),
       e => {
         return new Promise((resolve, reject) => {

@@ -48,7 +48,7 @@ export const login = (props = {}) => (dispatch, getState) => {
           privateKey
         };
 
-        nameHashHex = `a${vals[0].toString('hex')}`;
+        nameHashHex = `ob${vals[0].toString('hex')}`;
 
         return Promise.all([
           getDb(nameHashHex, fromByteArray(vals[1])),
@@ -65,6 +65,7 @@ export const login = (props = {}) => (dispatch, getState) => {
         dispatch({
           type: AUTH_LOGIN_SUCCESS,
           profile: profile ? profile.toJSON() : null,
+          profileInstance: profile,
           identity
         });
 

@@ -10,7 +10,7 @@ const schema = {
     },
     handle: {
       type: 'string',
-      encrypted: true
+      // encrypted: true
     },
     name: {
       type: 'string'
@@ -18,35 +18,35 @@ const schema = {
     },
     location: {
       type: 'string',
-      encrypted: true
+      // encrypted: true
     },
     about: {
       type: 'string',
-      encrypted: true
+      // encrypted: true
     },
     shortDescription: {
       type: 'string',
-      encrypted: true
+      // encrypted: true
     },
     nsfw: {
       type: 'boolean',
-      encrypted: true
+      // encrypted: true
     },
     vendor: {
       type: 'boolean',
-      encrypted: true
+      // encrypted: true
     },
     moderator: {
       type: 'boolean',
-      encrypted: true
+      // encrypted: true
     },
     moderatorInfo: {
       type: ['object', 'null'],
-      encrypted: true
+      // encrypted: true
     },
     contactInfo: {
       type: ['object', 'null'],
-      encrypted: true,
+      // encrypted: true,
       properties: {
         website: {
           type: 'string'
@@ -79,7 +79,7 @@ const schema = {
     },
     colors: {
       type: ['object', 'null'],
-      encrypted: true,
+      // encrypted: true,
       properties: {
         primary: {
           type: 'string'
@@ -100,7 +100,7 @@ const schema = {
     },
     avatarHashes: {
       type: ['object', 'null'],
-      encrypted: true,
+      // encrypted: true,
       properties: {
         tiny: {
           type: 'string'
