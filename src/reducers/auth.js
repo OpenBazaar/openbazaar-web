@@ -6,9 +6,9 @@ import {
   AUTH_GENERATE_MNEMONIC_FAIL,
   AUTH_LOGGING_IN,
   AUTH_LOGIN_FAIL,
-  AUTH_LOGIN_SUCCESS
+  AUTH_LOGIN_SUCCESS,
+  OWN_PROFILE_SET,
 } from 'actions/auth';
-import { SUBSCRIBE_OWN_PROFILE_SET } from 'middleware/subscribeOwnProfile';
 
 const initialState = {
   generatingMnemonic: false,
@@ -81,5 +81,5 @@ export default createReducer(initialState, {
   [AUTH_LOGGING_IN]: loggingIn,
   [AUTH_LOGIN_SUCCESS]: loginSuccess,
   [AUTH_LOGIN_FAIL]: loginFail,
-  [SUBSCRIBE_OWN_PROFILE_SET]: ownProfileSet
+  [OWN_PROFILE_SET]: ownProfileSet
 });

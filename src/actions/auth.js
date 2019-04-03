@@ -15,10 +15,32 @@ export const AUTH_GENERATE_MNEMONIC_FAIL = 'AUTH_GENERATE_MNEMONIC_FAIL';
 export const AUTH_LOGGING_IN = 'AUTH_LOGGING_IN';
 export const AUTH_LOGIN_FAIL = 'AUTH_LOGIN_FAIL';
 export const AUTH_LOGIN_SUCCESS = 'AUTH_LOGIN_SUCCESS';
+export const OWN_PROFILE_SET = 'OWN_PROFILE_SET';
 
 let loggedInDbName = null;
 
 // todo: stop node on logout
+
+export const onOwnProfileObtained = (dispatch, profile) => {
+  console.log('the fat *ass* profile');
+  window.ass = profile;
+  profile.$.subscribe((...hey) => {
+    const [p] = hey;
+    console.log('hey');
+    window.hey = hey;
+    if (!p) return;
+
+    const strippedProfile = { ...p };
+    delete strippedProfile._rev;
+    // TODO: make action creator.
+    dispatch({
+      type: OWN_PROFILE_SET,
+      payload: {
+        profile: strippedProfile,
+      }
+    });
+  });
+}
 
 export const login = (props = {}) => (dispatch, getState) => {
   if (!isValidMenmonic(props.mnemonic)) {
@@ -65,9 +87,12 @@ export const login = (props = {}) => (dispatch, getState) => {
         dispatch({
           type: AUTH_LOGIN_SUCCESS,
           profile: profile ? profile.toJSON() : null,
-          profileInstance: profile,
           identity
         });
+
+        if (profile) {
+          onOwnProfileObtained(dispatch, profile);
+        }
 
         resolve(profile);
       })

@@ -1,4 +1,5 @@
 import { save as profileSave } from 'models/profile';
+import { onOwnProfileObtained } from 'actions/auth';
 
 export const ONBOARDING_SAVING = 'ONBOARDING_SAVING';
 export const ONBOARDING_SAVE_SUCCESS = 'ONBOARDING_SAVE_SUCCESS';
@@ -28,11 +29,10 @@ export const save = (props = {}) => (dispatch, getState) => {
     peerID
   })
     .then(
-      profile =>
-        dispatch({
-          type: ONBOARDING_SAVE_SUCCESS,
-          profileInstance: profile,
-        }),
+      profile => {
+        dispatch({ type: ONBOARDING_SAVE_SUCCESS });
+        onOwnProfileObtained(dispatch, profile);
+      },
       e => {
         return new Promise((resolve, reject) => {
           dispatch({

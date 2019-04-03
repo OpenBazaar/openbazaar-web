@@ -2,17 +2,23 @@ import * as RxDB from 'rxdb';
 import pouchDbAdapterIdb from 'pouchdb-adapter-idb';
 import pouchDbAdapterHttp from 'pouchdb-adapter-http';
 import profileSchema from 'schema/profile';
+import ipfsAddSchema from 'schema/ipfsAdd';
 
 const collections = [
   {
     name: 'profile',
     schema: profileSchema,
     sync: true,
-    hooks: {
-      preSave: (plainData, rxDocument) => {
-        plainData.needIpfsAdd = false;
-      },
-    }
+    // hooks: {
+    //   preSave: (plainData, rxDocument) => {
+    //     plainData.needIpfsAdd = false;
+    //   },
+    // }
+  },
+  {
+    name: 'ipfsAdd',
+    schema: ipfsAddSchema,
+    sync: false,
   }
 ];
 
@@ -43,7 +49,7 @@ const _create = async (name, password) => {
 
   // create collections
   await Promise.all(collections.map(
-    data => db.collection(data)
+    data => db.collection({ ...data })
   ));
 
   // sync
