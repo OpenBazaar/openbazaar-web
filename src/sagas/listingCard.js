@@ -197,7 +197,11 @@ function* openListing(task, action) {
       });
     }
 
+    console.log('the listing fetch is feingold');
+    window.feingold = listingFetch;
+
     if (listingFetch && listingFetch.cancel) {
+      console.log('jason the borg');
       listingFetch.cancel();
     }
 

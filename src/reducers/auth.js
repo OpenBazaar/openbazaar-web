@@ -69,7 +69,7 @@ const loginFail = (state, action) => {
 
 const ownProfileSet = (state, action) => {
   if (state.identity) {
-    state.profile = action.profile;
+    state.profile = action.payload.profile;
   }
 };
 

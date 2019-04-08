@@ -2,24 +2,29 @@ import * as RxDB from 'rxdb';
 import pouchDbAdapterIdb from 'pouchdb-adapter-idb';
 import pouchDbAdapterHttp from 'pouchdb-adapter-http';
 import profileSchema from 'schema/profile';
-import ipfsAddSchema from 'schema/ipfsAdd';
 
 const collections = [
   {
     name: 'profile',
     schema: profileSchema,
     sync: true,
-    // hooks: {
-    //   preSave: (plainData, rxDocument) => {
-    //     plainData.needIpfsAdd = false;
-    //   },
-    // }
   },
   {
-    name: 'ipfsAdd',
-    schema: ipfsAddSchema,
-    sync: false,
-  }
+    name: 'slippy',
+    schema:   {
+      title: 'User profile schema',
+      description: 'Database schema for the profile of a user',
+      version: 0,
+      type: 'object',
+      properties: {
+        hi: {
+          type: 'string',
+          primary: true
+        },
+      },
+    },
+    sync: true,
+  },
 ];
 
 RxDB.QueryChangeDetector.enableDebugging();
@@ -33,11 +38,8 @@ const syncUrl = `http://${window.location.hostname}:5984/`;
 let curDb = null;
 
 const _create = async (name, password) => {
-  console.log('logging in db');
-  console.log(name);
-  console.log(password);
   const db = await RxDB.create({
-    name,
+    name: name.slice(0, 10),
     adapter: 'idb',
     password
   });
@@ -61,6 +63,8 @@ const _create = async (name, password) => {
         remote: `${syncUrl}/${name}/`,
       })
     });
+
+  await db.slippy.upsert({ hi: 'bye' });
 
   return db;
 };

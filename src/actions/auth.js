@@ -22,12 +22,7 @@ let loggedInDbName = null;
 // todo: stop node on logout
 
 export const onOwnProfileObtained = (dispatch, profile) => {
-  console.log('the fat *ass* profile');
-  window.ass = profile;
-  profile.$.subscribe((...hey) => {
-    const [p] = hey;
-    console.log('hey');
-    window.hey = hey;
+  profile.$.subscribe(p => {
     if (!p) return;
 
     const strippedProfile = { ...p };
@@ -119,44 +114,27 @@ export const logout = (props = {}) => {
 };
 
 let generatingMnemonic = null;
-let mnemonicData = null;
 
 export const generateMnemonic = (props = {}) => (dispatch, getState) => {
   if (generatingMnemonic) return generatingMnemonic;
 
   dispatch({ type: AUTH_GENERATING_MNEMONIC });
 
-  let promise;
-
-  if (mnemonicData) {
-    promise = new Promise(resolve => resolve(mnemonicData));
-  } else {
-    promise = generatingMnemonic = generatePeerId();
-  }
-
-  promise
+  return generatePeerId()
     .then(
       data => {
-        mnemonicData = data;
         dispatch({
           type: AUTH_GENERATE_MNEMONIC_SUCCESS,
           data
         });
       },
-      error => {
-        dispatch({
-          type: AUTH_GENERATE_MNEMONIC_FAIL,
-          error
-        });
-      }
     )
-    .catch(() => {})
+    .catch(error => {
+      console.error(error);
+      dispatch({
+        type: AUTH_GENERATE_MNEMONIC_FAIL,
+        error,
+      });      
+    })
     .then(() => (generatingMnemonic = null));
-
-  return promise;
-};
-
-export const refreshMnemonic = (props = {}) => {
-  mnemonicData = null;
-  return generateMnemonic(props);
 };

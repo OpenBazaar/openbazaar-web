@@ -10,43 +10,51 @@ const schema = {
     },
     handle: {
       type: 'string',
-      // encrypted: true
+      encrypted: true,
+      default: '',
     },
     name: {
-      type: 'string'
-      // encrypted: true,
+      type: 'string',
+      encrypted: true,
+      default: '',
     },
     location: {
       type: 'string',
-      // encrypted: true
+      encrypted: true,
+      default: '',
     },
     about: {
       type: 'string',
-      // encrypted: true
+      encrypted: true,
+      default: '',
     },
     shortDescription: {
       type: 'string',
-      // encrypted: true
+      encrypted: true,
+      default: '',
     },
     nsfw: {
       type: 'boolean',
-      // encrypted: true
+      encrypted: true,
+      default: false,
     },
     vendor: {
       type: 'boolean',
-      // encrypted: true
+      encrypted: true,
+      default: false,
     },
     moderator: {
       type: 'boolean',
-      // encrypted: true
+      encrypted: true,
+      default: false,
     },
     moderatorInfo: {
       type: ['object', 'null'],
-      // encrypted: true
+      encrypted: true,
     },
     contactInfo: {
       type: ['object', 'null'],
-      // encrypted: true,
+      encrypted: true,
       properties: {
         website: {
           type: 'string'
@@ -79,7 +87,7 @@ const schema = {
     },
     colors: {
       type: ['object', 'null'],
-      // encrypted: true,
+      encrypted: true,
       properties: {
         primary: {
           type: 'string'
@@ -100,7 +108,7 @@ const schema = {
     },
     avatarHashes: {
       type: ['object', 'null'],
-      // encrypted: true,
+      encrypted: true,
       properties: {
         tiny: {
           type: 'string'
@@ -119,10 +127,6 @@ const schema = {
         }
       }
     },
-    needIpfsAdd: {
-      type: 'boolean',
-      default: true
-    }
   },
   required: ['peerID', 'name']
 };

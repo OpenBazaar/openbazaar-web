@@ -26,6 +26,11 @@ export function generatePeerId(mnemonic) {
       PeerId.createFromPubKey(
         keys.marshalPublicKey(keypair.public),
         (err, key) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+
           resolve({
             mnemonic,
             peerId: key._idB58String
