@@ -1,7 +1,13 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './Error.scss';
 
-const Error = props => {
+/*
+ * Will render an error or list of errors. The error can be passed in
+ * as a string or an object which contains an error key containing a
+ * string error.
+ */
+const FormError = props => {
   let errors = [];
 
   if (Array.isArray(props.error)) {
@@ -32,12 +38,39 @@ const Error = props => {
   return error;
 };
 
-export default Error;
+export default FormError;
 
-// todo validate that props.error is string or array of strings
-// or object with an error prop as a string or an array of objects
-// with error props as a string.
-Error.defaultProps = {
+FormError.defaultProps = {
   error: [],
   clrClass: 'clrTErr'
+};
+
+FormError.propTypes = {
+  clrClass: PropTypes.string,
+  error: function(props, propName, componentName) {
+    if (typeof props[propName] === 'undefined') return;
+
+    if (
+      typeof props[propName] !== 'string' &&
+      !Array.isArray(props[propName])
+    ) {
+      return new Error('error must be provided as a string or an array');
+    }
+
+    if (Array.isArray(props[propName])) {
+      try {
+        props[propName].forEach(err => {
+          if (
+            typeof err !== 'string' &&
+            !Array.isArray(err) 
+          ) {
+            throw new Error('If providing an array, each item must be either ' +
+              'a string or an object containing an "error" key as a string.');
+          }
+        });
+      } catch (e) {
+        return e;
+      }
+    }
+  }
 };

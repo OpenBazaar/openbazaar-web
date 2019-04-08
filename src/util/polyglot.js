@@ -19,7 +19,3 @@ export const loadLang = lang => {
 };
 
 export const getPoly = () => polyglot;
-
-export default () => {
-  console.log('canyou handle it punk?');
-}

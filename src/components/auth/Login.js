@@ -8,6 +8,7 @@ import SimpleMessage from 'components/modals/SimpleMessage';
 import CopyToClipboard from 'components/ui/CopyToClipboard';
 import WrappedForm from 'components/ui/form/WrappedForm';
 import BtnSpinner from 'components/ui/BtnSpinner';
+import FormError from 'components/ui/form/Error';
 import GetMnemonicContent from './GetMnemonicContent';
 import 'styles/ui/form.scss';
 
@@ -111,10 +112,8 @@ class Login extends Component {
     let formContent;
     let footerContent;
     let footerStyle;
-    const menmonicError = this.state.errors.mnemonic ? (
-      // todo: form error should be a reusable component
-      <p className="clrTErr">{this.state.errors.mnemonic}</p>
-    ) : null;
+    const menmonicError =
+      <FormError error={this.state.errors.mnemonic} />;
 
     if (this.state.screen === SCREEN_ENTER_SEED) {
       formContent = (

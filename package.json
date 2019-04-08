@@ -23,7 +23,7 @@
     "pouchdb-adapter-idb": "^6.4.3",
     "pouchdb-server": "^4.1.0",
     "prettier": "^1.16.1",
-    "prop-types": "^15.7.1",
+    "prop-types": "15.5.9",
     "query-string": "^6.2.0",
     "react": "^16.8.3",
     "react-copy-to-clipboard": "^5.0.1",
