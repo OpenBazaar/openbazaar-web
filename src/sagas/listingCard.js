@@ -68,7 +68,7 @@ function* openListing(task, action) {
 
     swallowException(() => {
       vendor = action
-        .props
+        .payload
         .listing
         .relationships
         .vendor
