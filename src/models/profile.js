@@ -40,9 +40,6 @@ export const save = (data = {}) => {
     ...data
   };
 
-  console.log('slippy');
-  console.dir(profileData);
-
   return new Promise((resolve, reject) => {
     getDB()
       .then(db => {

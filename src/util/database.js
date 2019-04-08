@@ -8,23 +8,7 @@ const collections = [
     name: 'profile',
     schema: profileSchema,
     sync: true,
-  },
-  {
-    name: 'slippy',
-    schema:   {
-      title: 'User profile schema',
-      description: 'Database schema for the profile of a user',
-      version: 0,
-      type: 'object',
-      properties: {
-        hi: {
-          type: 'string',
-          primary: true
-        },
-      },
-    },
-    sync: true,
-  },
+  }
 ];
 
 RxDB.QueryChangeDetector.enableDebugging();
@@ -63,8 +47,6 @@ const _create = async (name, password) => {
         remote: `${syncUrl}/${name}/`,
       })
     });
-
-  await db.slippy.upsert({ hi: 'bye' });
 
   return db;
 };
