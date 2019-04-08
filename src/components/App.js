@@ -5,7 +5,7 @@ import * as ModalActions from 'actions/modals';
 import * as ResponsiveActions from 'actions/responsive';
 import { Route } from 'react-router';
 import { Link } from 'react-router-dom';
-import chilly, { loadLang } from 'util/polyglot';
+import { loadLang } from 'util/polyglot';
 import ModalRoot from 'components/modals/ModalRoot';
 import Discovery from 'components/pages/Discovery';
 import Modals from 'components/pages/Modals';
@@ -17,11 +17,6 @@ import './App.scss';
 import 'styles/layout.scss';
 import 'styles/ui/buttons.scss';
 import logo from 'img/ob-logo.png';
-import sizzle from 'util/axios';
-
-console.log('chilly sizzle');
-window.chilly = chilly;
-window.sizzle = sizzle;
 
 class App extends Component {
   state = {

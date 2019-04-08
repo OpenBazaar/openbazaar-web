@@ -1,5 +1,7 @@
-// import { get } from 'util/axios';
-import { get } from 'axios';
+import {
+  get,
+  CancelToken,
+} from 'axios';
 import { GATEWAY_URL } from 'util/constants';
 
 const getsByHash = {};
@@ -14,9 +16,13 @@ export const getListing = hash => {
   let fetch = getsByHash[hash];
 
   if (!fetch) {
-    fetch = getsByHash[hash] =
-      get(`${GATEWAY_URL}listing/ipfs/${hash}`);
+    const source = CancelToken.source();
+    fetch = get(`${GATEWAY_URL}listing/ipfs/${hash}`, {
+      cancelToken: source.token,
+    });
     fetch.then(() => (delete getsByHash[hash]));
+    // todo: maybe we wrap axios to infuse such a cancel method?
+    fetch.cancel = msg => source.cancel(msg);
   }
 
   return fetch;
