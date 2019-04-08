@@ -17,9 +17,9 @@ import {
   MODAL_OPEN,
 } from 'actions/modals';
 import {
-  listingCardOpenListing,
-  listingCardCancelListingOpen,
-  listingCardRetryListingOpen,
+  LISTING_CARD_OPEN_LISTING,
+  LISTING_CARD_CANCEL_OPEN_LISTING,
+  LISTING_CARD_RETRY_OPEN_LISTING,
 } from 'actions/listingCard';
 import ListingLoadingModal from 'components/listings/card/ListingLoadingModal';
 import ListingDetail from 'components/listings/ListingDetail';
@@ -133,7 +133,7 @@ function* openListing(task, action) {
         );
       } else {
         while (true) {
-          const retryAction = yield take(listingCardRetryListingOpen);
+          const retryAction = yield take(LISTING_CARD_RETRY_OPEN_LISTING);
           if (retryAction.payload.id === loadingModalId) {
             yield call(fetchListing);
           }
@@ -149,7 +149,7 @@ function* openListing(task, action) {
 
           while (!canceled) {
             const cancelAction =
-              yield take(listingCardCancelListingOpen);
+              yield take(LISTING_CARD_CANCEL_OPEN_LISTING);
             if (cancelAction.payload.id === loadingModalId) {
               canceled = true;
               return cancelAction;
@@ -209,7 +209,7 @@ const openListingTasks = {};
 
 export function* openListingWatcher() {
   while (true) {
-    const action = yield take(listingCardOpenListing)
+    const action = yield take(LISTING_CARD_OPEN_LISTING)
     const id = getOpenListingTaskId(action);
 
     if (!openListingTasks[id]) {

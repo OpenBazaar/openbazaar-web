@@ -20,7 +20,7 @@ class Card extends Component {
   handleClick() {
     const cardData = { ...this.props };
     delete cardData.actions;
-    this.props.actions.listingCardOpenListing(cardData);
+    this.props.actions.openListing(cardData);
   }
 
   render() {

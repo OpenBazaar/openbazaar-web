@@ -1,4 +1,3 @@
-// import { get } from 'util/axios';
 import { get } from 'axios';
 import { SEARCH_RANDOM_URL } from 'util/constants';
 
