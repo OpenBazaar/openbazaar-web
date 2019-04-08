@@ -1,3 +1,4 @@
+import { isCancel } from 'axios';
 import { getPoly } from 'util/polyglot';
 import { swallowException } from 'util/index';
 import { ellipsifyAfter } from 'util/string';
@@ -112,6 +113,8 @@ function* openListing(task, action) {
       try {
         listingReponse = yield call(wrappedGetListing, hash);
       } catch (e) {
+        if (isCancel(e)) return;
+
         yield put({
           type: MODAL_OPEN,
           id: loadingModalId,

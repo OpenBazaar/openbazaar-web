@@ -1,4 +1,8 @@
-import { get } from 'axios';
+import {
+  get,
+  CancelToken,
+  isCancel,
+} from 'axios';
 import { SEARCH_RANDOM_URL } from 'util/constants';
 
 export const FETCH_CATEGORIES_REQUEST = 'FETCH_CATEGORIES_REQUEST';
@@ -35,17 +39,20 @@ const fetchCat = (cat, dispatch) => {
 
   if (catFetches[cat]) return catFetches[cat];
 
+  const source = CancelToken.source();
+
   catFetches[cat] = new Promise((resolve, reject) => {
     let catFetched = false;
     let catFetching = false;
 
     const _fetchCat = catToFetch => {
       catFetching = true;
-      catFetches[catToFetch] = get(SEARCH_RANDOM_URL, {
+      get(SEARCH_RANDOM_URL, {
         params: {
           q: cat,
           size: 8
-        }
+        },
+        cancelToken: source.token,
       })
         .then(response => {
           resolve(response.data);
@@ -56,12 +63,13 @@ const fetchCat = (cat, dispatch) => {
           });
         })
         .catch(error => {
+          if (isCancel(error)) return;
+          console.error(error);
           dispatch({
             type: FETCH_CATEGORIES_FAILURE,
             error: error.message,
             category: cat
           });
-          throw(error);
         })
         .then(() => {
           delete catFetches[cat];
@@ -93,6 +101,8 @@ const fetchCat = (cat, dispatch) => {
     category: cat
   });
 
+  catFetches[cat].cancel = msg => source.cancel(msg);
+
   return catFetches[cat];
 };
 
@@ -107,3 +117,8 @@ export const fetchCategory = (props = {}) => (dispatch, getState) => {
 
   return fetchCat(props.category, dispatch);
 };
+
+export const leavePage = (props = {}) => (dispatch, getState) => {
+  Object.keys(catFetches)
+    .forEach(cat => catFetches[cat].cancel());
+}
