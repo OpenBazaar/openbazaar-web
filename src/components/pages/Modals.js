@@ -14,23 +14,6 @@ class Modals extends Component {
     );
   }
 
-  componentDidMount() {
-    this.props.actions.modals.open({
-      Component: UserContentLoading,
-      userName: 'big sammy',
-      userAvatarHashes: {
-        tiny: 'zb2rhmFNLT7tSzuQteSd3NaUp7vKwTAwen9XWZuiFcSXgNtVi',
-        small: 'zb2rhmFNLT7tSzuQteSd3NaUp7vKwTAwen9XWZuiFcSXgNtVi'
-      },
-      ownAvatarHashes: {
-        tiny: 'zb2rhgxBnSKA4vqsF3ucBEHFmsgzg7TUELzazuuvwvFSpnj59',
-        small: 'zb2rhgxBnSKA4vqsF3ucBEHFmsgzg7TUELzazuuvwvFSpnj59'
-      },
-      isProcessing: true,
-      contentText: 'sugah on the ho rizen'
-    });
-  }
-
   handleSimpleModalClick(e) {
     this.props.actions.modals.open({
       Component: SimpleMessage,

@@ -10,6 +10,7 @@ import ModalRoot from 'components/modals/ModalRoot';
 import Discovery from 'components/pages/Discovery';
 import Modals from 'components/pages/Modals';
 import About from 'components/pages/About';
+import NoMatch from 'components/pages/NoMatch';
 import NavMenu from 'components/misc/navMenu/NavMenu';
 import Onboarding from 'components/onboarding/Onboarding';
 import Spinner from 'components/ui/Spinner';
@@ -64,6 +65,7 @@ class App extends Component {
             <Route exact path="/" component={Discovery} />
             <Route exact path="/modals" component={Modals} />
             <Route exact path="/about" component={About} />
+            <Route component={NoMatch} />
           </div>
         </div>
         <div className="App-modalContainer">
