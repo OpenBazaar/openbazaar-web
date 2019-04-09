@@ -11,8 +11,6 @@ import 'styles/containers.scss';
 import 'styles/type.scss';
 import 'styles/ui/buttons.scss';
 import './ListingDetail.scss';
-// import PropTypes from 'prop-types';
-// import './Grid.scss';
 
 class ListingDetail extends Component {
   static modalProps = {
@@ -124,30 +122,11 @@ class ListingDetail extends Component {
   }
 }
 
-// Grid.defaultProps = {
-//   cards: []
-// };
-
-// Grid.propTypes = {
-//   vendorId: PropTypes.string,
-// };
-
 function mapStateToProps(state, prop) {
   return {
     responsive: state.responsive,
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    // actions: {
-    //   modals: bindActionCreators(ModalActions, dispatch),
-    // }
-  };
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ListingDetail);
+export default connect(mapStateToProps)(ListingDetail);
 

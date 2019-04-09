@@ -1,5 +1,5 @@
 import { get as getDB } from 'util/database';
-import { addRequiredError, addInvalidTypeError } from 'util/formErrors';
+import { addRequiredError, addInvalidTypeError } from './';
 
 // todo: doc me up
 export const validate = (data = {}) => {

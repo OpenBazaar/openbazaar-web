@@ -62,7 +62,8 @@ FormError.propTypes = {
         props[propName].forEach(err => {
           if (
             typeof err !== 'string' &&
-            !Array.isArray(err) 
+            typeof err !== 'object' &&
+            typeof err.error !== 'string'
           ) {
             throw new Error('If providing an array, each item must be either ' +
               'a string or an object containing an "error" key as a string.');

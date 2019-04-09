@@ -53,7 +53,6 @@ class Onboarding extends Component {
 
     if (formErrors && Object.keys(formErrors).length) {
       this.setState({ formErrors });
-      console.dir(formErrors);
     } else {
       this.setState({ formErrors: null });
 
