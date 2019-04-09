@@ -1,18 +1,22 @@
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import Tooltip from 'components/ui/Tooltip';
+
 /*
  * This component will wrap the trigger component your provide so when the
  * showCopiedText prop is to true and "copied" tooltip will appear beneath it.
  */
-
-import React, { Component } from 'react';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import Tooltip from 'components/ui/Tooltip';
-
 export default class extends Component {
   static defaultProps = {
     copiedText: 'Copied',
-    // TODO: make this a required prop with no default
     copyContent: ''
   };
+
+  static propTypes = {
+    copiedText: PropTypes.string,
+    copyContent: PropTypes.string.isRequired,
+  }
 
   constructor(props) {
     super(props);

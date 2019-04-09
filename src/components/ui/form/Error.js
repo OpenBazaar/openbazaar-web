@@ -14,7 +14,7 @@ const FormError = props => {
     errors = props.error.map(err =>
       typeof err === 'string' ? err : err.error
     );
-  } else {
+  } else if (props.error) {
     errors =
       typeof props.error === 'string' ? [props.error] : [props.error.error];
   }

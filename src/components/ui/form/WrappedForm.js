@@ -1,7 +1,14 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import BtnSpinner from 'components/ui/BtnSpinner';
 import './WrappedForm.scss';
 
+/*
+ * A wrapped form is a style of form that we commonly used on the desktop
+ * where the form is prefaced with a label and a horizontal ruler and followed
+ * by a horizontal ruler and a button bar - either is optional. An example:
+ * https://imgur.com/a/WNWEi97.
+ */
 const WrappedForm = props => {
   const HeadingTag = props.headingTagName;
   const headerRightContent =
@@ -54,27 +61,28 @@ const WrappedForm = props => {
 
 export default WrappedForm;
 
-// ====> ensure types
-// props.headingTagName, optional, h1
-// props.heading, required
-// props.headingClass, optional, ''
-// props.mainContent, optional, null
-// props.headerRightContent, optional, <BtnProceessing>Save</BtnProceessing>
-// props.headerLeftContent, optional,
-// props.footerContent, optional, <BtnProceessing>Save</BtnProceessing>
-// props.showFooterHr, optional, true
-// props.footerStyle, optional, {} (no def needed?)
-// ^^^ style props to other content objects?
-
-// todo: need onSaveClick prop
-
 WrappedForm.defaultProps = {
   headingTagName: 'h1',
   showFooterHr: true,
-  // headingBaseClass: 'f2lexExpand t2xCtr',
-  // headingClass: 'h3',
-
-  // todo note about these two below
   isSaving: false,
   saveable: true
 };
+
+WrappedForm.propTypes = {
+  // Will set isProcessing on the Save button(s). This won't apply if you are
+  // overwriting the headerRightContent or footerContent since then there
+  // would not be a Save button that this component manages.
+  isSaving: PropTypes.bool,
+  // If false, will disable the Save button(s). This won't apply if you are
+  // overwriting the headerRightContent or footerContent - see note above.
+  saveable: PropTypes.bool,
+  headingTagName: PropTypes.string,
+  heading: PropTypes.string.isRequired,
+  mainContent: PropTypes.element,
+  headerRightContent: PropTypes.element,
+  headerLeftContent: PropTypes.element,
+  footerContent: PropTypes.element,
+  showFooterHr: PropTypes.boolean,
+  // Sets the style prop on the footer element.
+  footerStyle: PropTypes.element,
+}

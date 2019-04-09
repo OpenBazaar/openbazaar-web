@@ -1,7 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Spinner from 'components/ui/Spinner';
 import 'styles/layout.scss';
 
+/*
+ * This is a button that will have a spinner in lui of the label when
+ * isProcssing is true.
+ */
 const BtnSpinner = props => {
   const className = `BtnSpinner ${props.baseClassName} ${props.className}`;
 
@@ -36,3 +41,9 @@ BtnSpinner.defaultProps = {
   className: '',
   isProcessing: false
 };
+
+BtnSpinner.propTypes = {
+  baseClassName: PropTypes.string,
+  className: PropTypes.string,
+  isProcessing: PropTypes.bool,  
+}
