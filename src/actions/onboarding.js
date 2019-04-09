@@ -1,3 +1,4 @@
+import { getRandomAvatar } from 'data/sampleAvatars';
 import { save as profileSave } from 'models/profile';
 import { onOwnProfileObtained } from 'actions/auth';
 
@@ -25,6 +26,7 @@ export const save = (props = {}) => (dispatch, getState) => {
   }
 
   return profileSave({
+    avatarHashes: getRandomAvatar(),
     ...props.data,
     peerID
   })
