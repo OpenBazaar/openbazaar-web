@@ -32,7 +32,6 @@ export const validate = (data = {}) => {
 };
 
 export const save = (data = {}) => {
-  console.dir(data);
   const profileData = {
     moderatorInfo: null,
     contactInfo: null,
