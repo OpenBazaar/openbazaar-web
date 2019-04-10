@@ -10,17 +10,13 @@ import {
   call,
   select,
   cancel,
-  race,
+  race
 } from 'redux-saga/effects';
-import {
-  open,
-  MODAL_CLOSE,
-  MODAL_OPEN,
-} from 'actions/modals';
+import { open, MODAL_CLOSE, MODAL_OPEN } from 'actions/modals';
 import {
   LISTING_CARD_OPEN_LISTING,
   LISTING_CARD_CANCEL_OPEN_LISTING,
-  LISTING_CARD_RETRY_OPEN_LISTING,
+  LISTING_CARD_RETRY_OPEN_LISTING
 } from 'actions/listingCard';
 import ListingLoadingModal from 'components/listings/card/ListingLoadingModal';
 import ListingDetail from 'components/listings/ListingDetail';
@@ -29,22 +25,22 @@ import SimpleMessage from 'components/modals/SimpleMessage';
 const getRouterState = state => state.router;
 const getAuthState = state => state.auth;
 
-const getOpenListingTaskId = (action) => (
-  `${action.payload.listing.vendorId}/` +
-    action.payload.listing.data.slug
-)
+const getOpenListingTaskId = action =>
+  `${action.payload.listing.vendorId}/` + action.payload.listing.data.slug;
 
 function* openListing(task, action) {
   let loadingModalId = null;
-  let listingTitle = getPoly().t('userContentLoading.unknownListingTitle.message');
+  let listingTitle = getPoly().t(
+    'userContentLoading.unknownListingTitle.message'
+  );
   let urlAtOpen = null;
   let listingFetch = null;
 
   const restoreUrl = () => {
     if (urlAtOpen !== null) {
       window.history.pushState({}, '', urlAtOpen);
-    }    
-  }
+    }
+  };
 
   try {
     let hash = null;
@@ -56,9 +52,7 @@ function* openListing(task, action) {
     }
 
     const routerState = yield select(getRouterState);
-    urlAtOpen = routerState
-      .location
-      .pathname;
+    urlAtOpen = routerState.location.pathname;
 
     window.history.pushState({}, '', `/listing/${hash}`);
 
@@ -68,18 +62,13 @@ function* openListing(task, action) {
     let ownAvatarHashes = {};
 
     swallowException(() => {
-      vendor = action
-        .payload
-        .listing
-        .relationships
-        .vendor
-        .data;
+      vendor = action.payload.listing.relationships.vendor.data;
     });
 
     swallowException(() => (userName = vendor.name));
     swallowException(() => (userAvatarHashes = vendor.avatarHashes));
-    swallowException(function* () {
-      ownAvatarHashes = yield select(getAuthState).profile.avatarHashes
+    swallowException(function*() {
+      ownAvatarHashes = yield select(getAuthState).profile.avatarHashes;
     });
     swallowException(() => (listingTitle = action.payload.listing.data.title));
 
@@ -89,7 +78,7 @@ function* openListing(task, action) {
         isProcessing: true,
         userName,
         userAvatarHashes,
-        ownAvatarHashes,
+        ownAvatarHashes
       })
     );
 
@@ -105,7 +94,7 @@ function* openListing(task, action) {
         type: MODAL_OPEN,
         id: loadingModalId,
         contentText: '',
-        isProcessing: true,
+        isProcessing: true
       });
 
       let listingReponse;
@@ -118,12 +107,10 @@ function* openListing(task, action) {
         yield put({
           type: MODAL_OPEN,
           id: loadingModalId,
-          contentText:
-            getPoly()
-              .t('userContentLoading.failTextListing', {
-                listing: ellipsifyAfter(listingTitle, 50),
-              }),
-          isProcessing: false,
+          contentText: getPoly().t('userContentLoading.failTextListing', {
+            listing: ellipsifyAfter(listingTitle, 50)
+          }),
+          isProcessing: false
         });
       }
 
@@ -131,7 +118,7 @@ function* openListing(task, action) {
         listingDetailId = yield put(
           open({
             Component: ListingDetail,
-            listing: listingReponse.data,
+            listing: listingReponse.data
           })
         );
       } else {
@@ -146,20 +133,17 @@ function* openListing(task, action) {
 
     const { loadCancel } = yield race({
       fetchListing: call(fetchListing),
-      loadCancel: call(
-        function* () {
-          let canceled = false;
+      loadCancel: call(function*() {
+        let canceled = false;
 
-          while (!canceled) {
-            const cancelAction =
-              yield take(LISTING_CARD_CANCEL_OPEN_LISTING);
-            if (cancelAction.payload.id === loadingModalId) {
-              canceled = true;
-              return cancelAction;
-            }
+        while (!canceled) {
+          const cancelAction = yield take(LISTING_CARD_CANCEL_OPEN_LISTING);
+          if (cancelAction.payload.id === loadingModalId) {
+            canceled = true;
+            return cancelAction;
           }
         }
-      ),
+      })
     });
 
     if (loadCancel) {
@@ -167,7 +151,7 @@ function* openListing(task, action) {
     } else {
       yield put({
         type: MODAL_CLOSE,
-        id: loadingModalId,
+        id: loadingModalId
       });
 
       while (listingDetailId) {
@@ -176,7 +160,7 @@ function* openListing(task, action) {
           listingDetailId = null;
           yield call(restoreUrl);
         }
-      }      
+      }
     }
   } catch (e) {
     yield put(
@@ -185,7 +169,7 @@ function* openListing(task, action) {
         title: getPoly().t('genericErrors.unableToPerformOp'),
         // todo: remove when simplemessage is refactored to
         //   only require one-of title and body.
-        body: '',
+        body: ''
       })
     );
 
@@ -196,7 +180,7 @@ function* openListing(task, action) {
     if (loadingModalId) {
       yield put({
         type: MODAL_CLOSE,
-        id: loadingModalId,
+        id: loadingModalId
       });
     }
 
@@ -212,7 +196,7 @@ const openListingTasks = {};
 
 export function* openListingWatcher() {
   while (true) {
-    const action = yield take(LISTING_CARD_OPEN_LISTING)
+    const action = yield take(LISTING_CARD_OPEN_LISTING);
     const id = getOpenListingTaskId(action);
 
     if (!openListingTasks[id]) {
@@ -220,7 +204,7 @@ export function* openListingWatcher() {
         openListing,
         {
           get: () => openListingTasks[id],
-          delete: () => delete openListingTasks[id],
+          delete: () => delete openListingTasks[id]
         },
         action
       );

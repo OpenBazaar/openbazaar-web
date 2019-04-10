@@ -1,8 +1,4 @@
-import {
-  get,
-  CancelToken,
-  isCancel,
-} from 'axios';
+import { get, CancelToken, isCancel } from 'axios';
 import { SEARCH_RANDOM_URL } from 'util/constants';
 
 export const FETCH_CATEGORIES_REQUEST = 'FETCH_CATEGORIES_REQUEST';
@@ -52,7 +48,7 @@ const fetchCat = (cat, dispatch) => {
           q: cat,
           size: 8
         },
-        cancelToken: source.token,
+        cancelToken: source.token
       })
         .then(response => {
           resolve(response.data);
@@ -119,6 +115,5 @@ export const fetchCategory = (props = {}) => (dispatch, getState) => {
 };
 
 export const leavePage = (props = {}) => (dispatch, getState) => {
-  Object.keys(catFetches)
-    .forEach(cat => catFetches[cat].cancel());
-}
+  Object.keys(catFetches).forEach(cat => catFetches[cat].cancel());
+};

@@ -9,6 +9,5 @@ export function ellipsifyAfter(str, pos = 9999) {
     throw new Error('pos must be provided as a number.');
   }
 
-  return str.length > pos ?
-    `${str.slice(0, pos)}…` : str;
+  return str.length > pos ? `${str.slice(0, pos)}…` : str;
 }

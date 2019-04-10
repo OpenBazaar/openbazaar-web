@@ -7,7 +7,7 @@ import {
   AUTH_LOGGING_IN,
   AUTH_LOGIN_FAIL,
   AUTH_LOGIN_SUCCESS,
-  OWN_PROFILE_SET,
+  OWN_PROFILE_SET
 } from 'actions/auth';
 
 const initialState = {

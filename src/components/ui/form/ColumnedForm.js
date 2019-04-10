@@ -51,18 +51,20 @@ ColumnedForm.propTypes = {
   labelColCount: PropTypes.number,
   // The number of columns in the field column.
   fieldColCount: PropTypes.number,
-  rows: PropTypes.arrayOf(PropTypes.shape({
-    // An element for the label column.
-    labelColContent: PropTypes.element,
-    // An element for the field column.
-    fieldColContent: PropTypes.element,
-    // An element for the helper which would go underneath the label. Could
-    // also be provided as a string (see below).
-    helperContent: PropTypes.element,
-    // A string for the helper text which would appear under the label. Could
-    // also be provided as a component (see above).
-    helperText: PropTypes.string,
-    // A unique string to be used as a key for the row.
-    key: PropTypes.string.isRequired,
-  })),
-}
+  rows: PropTypes.arrayOf(
+    PropTypes.shape({
+      // An element for the label column.
+      labelColContent: PropTypes.element,
+      // An element for the field column.
+      fieldColContent: PropTypes.element,
+      // An element for the helper which would go underneath the label. Could
+      // also be provided as a string (see below).
+      helperContent: PropTypes.element,
+      // A string for the helper text which would appear under the label. Could
+      // also be provided as a component (see above).
+      helperText: PropTypes.string,
+      // A unique string to be used as a key for the row.
+      key: PropTypes.string.isRequired
+    })
+  )
+};

@@ -65,8 +65,10 @@ FormError.propTypes = {
             typeof err !== 'object' &&
             typeof err.error !== 'string'
           ) {
-            throw new Error('If providing an array, each item must be either ' +
-              'a string or an object containing an "error" key as a string.');
+            throw new Error(
+              'If providing an array, each item must be either ' +
+                'a string or an object containing an "error" key as a string.'
+            );
           }
         });
       } catch (e) {

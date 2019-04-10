@@ -53,9 +53,9 @@ const fetchCatSucceess = (state, action) => {
       delete cardData.type;
       return {
         vendorId: cardData.relationships.vendor.data.peerID,
-        ...cardData,
+        ...cardData
       };
-    }),
+    })
   };
 };
 

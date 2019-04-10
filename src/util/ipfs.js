@@ -105,8 +105,7 @@ export const destroy = peerId => {
   // being destroyed?
   if (curNode && curNode.peerId === peerId) {
     curNode = null;
-    return curNode.promise
-      .then(node => node.stop());
+    return curNode.promise.then(node => node.stop());
   }
 
   return Promise.resolve();

@@ -84,5 +84,5 @@ WrappedForm.propTypes = {
   footerContent: PropTypes.element,
   showFooterHr: PropTypes.bool,
   // Sets the style prop on the footer element.
-  footerStyle: PropTypes.object,
-}
+  footerStyle: PropTypes.object
+};

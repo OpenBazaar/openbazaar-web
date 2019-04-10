@@ -45,5 +45,5 @@ BtnSpinner.defaultProps = {
 BtnSpinner.propTypes = {
   baseClassName: PropTypes.string,
   className: PropTypes.string,
-  isProcessing: PropTypes.bool,  
-}
+  isProcessing: PropTypes.bool
+};

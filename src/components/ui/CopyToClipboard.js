@@ -15,8 +15,8 @@ export default class extends Component {
 
   static propTypes = {
     copiedText: PropTypes.string,
-    copyContent: PropTypes.string.isRequired,
-  }
+    copyContent: PropTypes.string.isRequired
+  };
 
   constructor(props) {
     super(props);

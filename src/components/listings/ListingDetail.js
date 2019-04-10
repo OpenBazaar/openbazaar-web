@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import { swallowException } from 'util/index';
 import { formatCurrency } from 'util/currency';
-import {
-  listingImgUrl,
-  listingImgBgStyle,
-} from 'util/urls';
+import { listingImgUrl, listingImgBgStyle } from 'util/urls';
 import { getPoly } from 'util/polyglot';
 import { connect } from 'react-redux';
 import 'styles/containers.scss';
@@ -21,32 +18,18 @@ class ListingDetail extends Component {
 
   render() {
     let innerListing = {};
-    swallowException(() => (
-      innerListing = this.props.listing.listing
-    ));
+    swallowException(() => (innerListing = this.props.listing.listing));
 
     let title = '';
-    swallowException(() => (
-      title = innerListing
-        .item
-        .title
-    ));
+    swallowException(() => (title = innerListing.item.title));
 
     let price = '';
-    swallowException(() => (
-      price = formatCurrency(
-        innerListing.item.price,
-        'USD'
-      )
-    ));
+    swallowException(
+      () => (price = formatCurrency(innerListing.item.price, 'USD'))
+    );
 
     let mainImageUrl = null;
-    swallowException(() => (
-      mainImageUrl = innerListing
-        .item
-        .images[0]
-        .large
-    ));
+    swallowException(() => (mainImageUrl = innerListing.item.images[0].large));
 
     const buyNowPanelHeight = 100;
 
@@ -62,13 +45,13 @@ class ListingDetail extends Component {
               </div>
               <div className="flexNoShrink">
                 <h2 className="txUnb">{price}</h2>
-              </div>  
+              </div>
             </div>
             <div className="flex gutterHLg">
               <div
                 className="ListingDetail-mainImage"
                 style={{ backgroundImage: listingImgBgStyle(mainImageUrl) }}
-              ></div>
+              />
               <div className="flexExpand txCtr">
                 <button
                   className="btnHg txUp clrBAttGrad clrBrDec1 clrTOnEmph"
@@ -106,12 +89,12 @@ class ListingDetail extends Component {
           >
             <div className="flexExpand">{price}</div>
             <div>
-                <button
-                  className="btn txUp clrBAttGrad clrBrDec1 clrTOnEmph"
-                  onClick={() => alert('not yet slick willy.')}
-                >
-                  {getPoly().t('listingDetail.btnBuyNow')}
-                </button>
+              <button
+                className="btn txUp clrBAttGrad clrBrDec1 clrTOnEmph"
+                onClick={() => alert('not yet slick willy.')}
+              >
+                {getPoly().t('listingDetail.btnBuyNow')}
+              </button>
             </div>
           </div>
         </div>
@@ -124,9 +107,8 @@ class ListingDetail extends Component {
 
 function mapStateToProps(state, prop) {
   return {
-    responsive: state.responsive,
+    responsive: state.responsive
   };
 }
 
 export default connect(mapStateToProps)(ListingDetail);
-

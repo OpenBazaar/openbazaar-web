@@ -31,11 +31,11 @@ export const onOwnProfileObtained = (dispatch, profile) => {
     dispatch({
       type: OWN_PROFILE_SET,
       payload: {
-        profile: strippedProfile,
+        profile: strippedProfile
       }
     });
   });
-}
+};
 
 export const login = (props = {}) => (dispatch, getState) => {
   if (!isValidMenmonic(props.mnemonic)) {
@@ -121,20 +121,18 @@ export const generateMnemonic = (props = {}) => (dispatch, getState) => {
   dispatch({ type: AUTH_GENERATING_MNEMONIC });
 
   return generatePeerId()
-    .then(
-      data => {
-        dispatch({
-          type: AUTH_GENERATE_MNEMONIC_SUCCESS,
-          data
-        });
-      },
-    )
+    .then(data => {
+      dispatch({
+        type: AUTH_GENERATE_MNEMONIC_SUCCESS,
+        data
+      });
+    })
     .catch(error => {
       console.error(error);
       dispatch({
         type: AUTH_GENERATE_MNEMONIC_FAIL,
-        error,
-      });      
+        error
+      });
     })
     .then(() => (generatingMnemonic = null));
 };

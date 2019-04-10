@@ -112,8 +112,7 @@ class Login extends Component {
     let formContent;
     let footerContent;
     let footerStyle;
-    const menmonicError =
-      <FormError error={this.state.errors.mnemonic} />;
+    const menmonicError = <FormError error={this.state.errors.mnemonic} />;
 
     if (this.state.screen === SCREEN_ENTER_SEED) {
       formContent = (

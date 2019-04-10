@@ -448,7 +448,8 @@ body .tippy-popper {
 .flexBtnWrapper .btnFlx {
   border-color: $border;
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     @include borderColor($border, $border3);
     z-index: 1;
   }

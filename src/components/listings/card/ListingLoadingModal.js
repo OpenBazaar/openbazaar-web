@@ -7,8 +7,8 @@ import * as ListingCardActions from 'actions/listingCard';
 class ListingLoadingModal extends Component {
   static modalProps = {
     ...UserContentLoading.modalProps,
-    path: 'components/listings/card/ListingLoadingModal',
-  }
+    path: 'components/listings/card/ListingLoadingModal'
+  };
 
   constructor(props) {
     super(props);
@@ -17,21 +17,19 @@ class ListingLoadingModal extends Component {
   }
 
   handleCancelClick() {
-    this.props.actions.card
-      .cancelOpenListing({ id: this.props.id });
+    this.props.actions.card.cancelOpenListing({ id: this.props.id });
   }
 
   handleRetryClick() {
-    this.props.actions.card
-      .retryOpenListing({ id: this.props.id });
-  }  
+    this.props.actions.card.retryOpenListing({ id: this.props.id });
+  }
 
   render() {
     return (
       <UserContentLoading
         onCancelClick={this.handleCancelClick}
         onRetryClick={this.handleRetryClick}
-        { ...this.props }
+        {...this.props}
       />
     );
   }
@@ -40,7 +38,7 @@ class ListingLoadingModal extends Component {
 function mapDispatchToProps(dispatch) {
   return {
     actions: {
-      card: bindActionCreators(ListingCardActions, dispatch),
+      card: bindActionCreators(ListingCardActions, dispatch)
     }
   };
 }

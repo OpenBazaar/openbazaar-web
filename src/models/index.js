@@ -25,16 +25,14 @@ export const addError = (fieldName, fieldError, errors = {}) => {
   }
 
   if (
-      (
-        typeof fieldError !== 'object' &&
-        typeof fieldError !== 'string'
-      ) || !fieldError
+    (typeof fieldError !== 'object' && typeof fieldError !== 'string') ||
+    !fieldError
   ) {
     // TODO: also check in the case of an object that it has a
     // non-empty string error key.
     throw new Error(
       'An fieldError must be provided as a non-empty string or ' +
-      'as an object.'
+        'as an object.'
     );
   }
 

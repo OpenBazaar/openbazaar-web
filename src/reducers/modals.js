@@ -20,10 +20,9 @@ const open = (state, action) => {
   let openModals = state.openModals;
 
   const curModal = openModals.find(
-    modal => (
+    modal =>
       (singletonModals.includes(action.path) && modal.path === action.path) ||
-      (modal.id === action.id)
-    )
+      modal.id === action.id
   );
 
   if (curModal) {

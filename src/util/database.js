@@ -7,7 +7,7 @@ const collections = [
   {
     name: 'profile',
     schema: profileSchema,
-    sync: true,
+    sync: true
   }
 ];
 
@@ -34,9 +34,7 @@ const _create = async (name, password) => {
   }
 
   // create collections
-  await Promise.all(collections.map(
-    data => db.collection({ ...data })
-  ));
+  await Promise.all(collections.map(data => db.collection({ ...data })));
 
   // sync
   collections
@@ -44,8 +42,8 @@ const _create = async (name, password) => {
     .map(col => col.name)
     .map(colName => {
       return db[colName].sync({
-        remote: `${syncUrl}/${name}/`,
-      })
+        remote: `${syncUrl}/${name}/`
+      });
     });
 
   return db;

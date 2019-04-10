@@ -11,46 +11,46 @@ const schema = {
     handle: {
       type: 'string',
       encrypted: true,
-      default: '',
+      default: ''
     },
     name: {
       type: 'string',
       encrypted: true,
-      default: '',
+      default: ''
     },
     location: {
       type: 'string',
       encrypted: true,
-      default: '',
+      default: ''
     },
     about: {
       type: 'string',
       encrypted: true,
-      default: '',
+      default: ''
     },
     shortDescription: {
       type: 'string',
       encrypted: true,
-      default: '',
+      default: ''
     },
     nsfw: {
       type: 'boolean',
       encrypted: true,
-      default: false,
+      default: false
     },
     vendor: {
       type: 'boolean',
       encrypted: true,
-      default: false,
+      default: false
     },
     moderator: {
       type: 'boolean',
       encrypted: true,
-      default: false,
+      default: false
     },
     moderatorInfo: {
       type: ['object', 'null'],
-      encrypted: true,
+      encrypted: true
     },
     contactInfo: {
       type: ['object', 'null'],
@@ -126,7 +126,7 @@ const schema = {
           type: 'string'
         }
       }
-    },
+    }
   },
   required: ['peerID', 'name']
 };
