@@ -5,7 +5,7 @@ import Tooltip from 'components/ui/Tooltip';
 
 /*
  * This component will wrap the trigger component you provide so when the
- * showCopiedText prop is to true and "copied" tooltip will appear beneath it.
+ * showCopiedText prop is set to true a "copied" tooltip will appear beneath it.
  */
 export default class extends Component {
   static defaultProps = {
