@@ -85,7 +85,7 @@
   // have columns stack on mobile
   @include mq($until: tablet) {
     &::not(.flexBtnWrapper) {
-      display: block;
+      flex-direction: column;
     }
   }
 }

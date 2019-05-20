@@ -5,9 +5,7 @@ const getsByHash = {};
 
 export const getListing = hash => {
   if (typeof hash !== 'string' || !hash) {
-    throw new Error(
-      'Please provide a listing hash as a non-empty ' + 'string.'
-    );
+    throw new Error('Please provide a listing hash as a non-empty string.');
   }
 
   let fetch = getsByHash[hash];

@@ -29,21 +29,19 @@ export const save = (props = {}) => (dispatch, getState) => {
     avatarHashes: getRandomAvatar(),
     ...props.data,
     peerID
-  })
-    .then(
-      profile => {
-        dispatch({ type: ONBOARDING_SAVE_SUCCESS });
-        onOwnProfileObtained(dispatch, profile);
-      },
-      e => {
-        return new Promise((resolve, reject) => {
-          dispatch({
-            type: ONBOARDING_SAVE_FAILED,
-            error: e.message
-          });
-          throw e;
+  }).then(
+    profile => {
+      dispatch({ type: ONBOARDING_SAVE_SUCCESS });
+      onOwnProfileObtained(dispatch, profile);
+    },
+    e => {
+      return new Promise((resolve, reject) => {
+        dispatch({
+          type: ONBOARDING_SAVE_FAILED,
+          error: e.message
         });
-      }
-    )
-    .then(() => {});
+        throw e;
+      });
+    }
+  );
 };

@@ -22,17 +22,13 @@ const FormError = props => {
   let error = null;
 
   if (errors.length) {
-    error = <p className={`FormError ${props.clrClass}`}>{errors[0]}</p>;
-
-    if (errors.length > 1) {
-      error = (
-        <ul className={`FormError ${props.clrClass}`}>
-          {errors.map(err => (
-            <li>{err}</li>
-          ))}
-        </ul>
-      );
-    }
+    error = (
+      <ul className={`FormError ${props.clrClass}`}>
+        {errors.map((err, index) => (
+          <li key={index}>{err}</li>
+        ))}
+      </ul>
+    );
   }
 
   return error;

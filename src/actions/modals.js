@@ -23,7 +23,6 @@ export const MODAL_BRING_TO_TOP = 'MODAL_BRING_TO_TOP';
  *   props passed into this action creator.
  * @param {string} props.Component.modalProps.rootClass - The class that will be
  *   applied to the ModalRoot element.
-closeable: false 
  * @param {string} [props.Component.modalProps.closeable=true] - Determines whether
  *   the modal is closeable via the user (close button and esc press). This setting
  *   overrides the closeableViaCloseButton and closeableViaEsc props.
