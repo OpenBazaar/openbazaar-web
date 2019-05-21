@@ -16,8 +16,7 @@ RxDB.QueryChangeDetector.enableDebugging();
 RxDB.plugin(pouchDbAdapterIdb);
 RxDB.plugin(pouchDbAdapterHttp); //enable syncing over http
 
-// todo: this should be driven from a config file
-const syncUrl = `http://${window.location.hostname}:5984/`;
+const syncUrl = process.env.REACT_APP_DB_SYNC_URL;
 
 let curDb = null;
 
