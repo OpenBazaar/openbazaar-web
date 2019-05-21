@@ -1,3 +1,4 @@
+@import 'sass-mq/mq';
 @import './variables.scss';
 @import './mixins.scss';
 
@@ -80,6 +81,13 @@
   @extend .flex;
   //use this to contain columns
   align-items: stretch; //this stretches the items to 100% height
+
+  // have columns stack on mobile
+  @include mq($until: tablet) {
+    &::not(.flexBtnWrapper) {
+      flex-direction: column;
+    }
+  }
 }
 
 .flexInline {
@@ -228,6 +236,10 @@
   box-sizing: border-box;
   position: relative;
   flex: 0 0 auto; //do not shrink or grow columns
+
+  @include mq($until: tablet) {
+    width: 100%;
+  }
 }
 
 .col12 {
@@ -355,6 +367,18 @@
     &:last-child:not(:only-child) {
       padding-right: 0;
     }
+
+    @include mq($until: tablet) {
+      padding-left: 0;
+
+      // when the cols are stacked on mobile, we'll let's transfer
+      // the horizontal gutter to be vertical
+      padding-bottom: $colPad / 2;
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
   }
 }
 
@@ -396,6 +420,46 @@
   @extend .gutterHFlush;
   margin-right: 20px;
   @include colHGutter(20px);
+}
+
+.gutterVFlush {
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.gutterVTn > * {
+  @extend .gutterVFlush;
+  margin-bottom: $padTn;
+}
+
+.gutterVSm > * {
+  @extend .gutterVFlush;
+  margin-bottom: $padSm;
+}
+
+.gutterV > * {
+  @extend .gutterVFlush;
+  margin-bottom: $pad;
+}
+
+.gutterVMd > * {
+  @extend .gutterVFlush;
+  margin-bottom: $padMd;
+}
+
+.gutterVMd2 > * {
+  @extend .gutterVFlush;
+  margin-bottom: $padMd2;
+}
+
+.gutterVLg > * {
+  @extend .gutterVFlush;
+  margin-bottom: $padLg;
 }
 
 //containers should have one of the standard padding sizes
@@ -450,4 +514,42 @@
 .padStackAll > * {
   //like padStack, but even the last child will collapse
   padding-bottom: 0;
+}
+
+#OBWEB {
+  .pad0 {
+    padding: 0;
+  }
+
+  .padTop0 {
+    padding-top: 0;
+  }
+
+  .padBot0 {
+    padding-bottom: 0;
+  }
+
+  .padTopBot0 {
+    @extend .padTop0;
+    @extend .padBot0;
+  }
+
+  .padLeft0 {
+    padding-left: 0;
+  }
+
+  .padRight0 {
+    padding-right: 0;
+  }
+
+  .padLeftRight0 {
+    @extend .padLeft0;
+    @extend .padRight0;
+  }
+}
+
+.center {
+  // Creates a container with content vertically and horizontally
+  // center. Requires the parent to have a non-static positioning.
+  @include center();
 }

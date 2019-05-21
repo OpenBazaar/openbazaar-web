@@ -10,7 +10,10 @@ const SimpleMessage = props => {
   );
 };
 
-SimpleMessage.modulePath = 'components/modals/SimpleMessage';
+SimpleMessage.modalProps = {
+  path: 'components/modals/SimpleMessage',
+  rootClass: 'modalS'
+};
 
 // todo: probably only title should be required or maybe one-of title or body.
 SimpleMessage.propTypes = {

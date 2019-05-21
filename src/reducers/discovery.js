@@ -48,10 +48,14 @@ const fetchCatSucceess = (state, action) => {
     fetching: false,
     fetchFailed: false,
     fetchError: '',
-    cards: action.response.results.results.map(result => ({
-      vendorId: result.relationships.vendor.peerID,
-      ...result.data
-    }))
+    cards: action.response.results.results.map(result => {
+      const cardData = { ...result };
+      delete cardData.type;
+      return {
+        vendorId: cardData.relationships.vendor.data.peerID,
+        ...cardData
+      };
+    })
   };
 };
 

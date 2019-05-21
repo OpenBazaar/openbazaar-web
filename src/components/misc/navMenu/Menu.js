@@ -10,27 +10,28 @@ let menuContainer;
 const Menu = props => {
   menuContainer = menuContainer || document.getElementById('navMenuContainer');
   let avatarRow = null;
+  const profile = props.profile;
 
-  if (props.authUser) {
-    const userHref = `/${props.authUser.peerID}`;
+  if (profile) {
+    const userHref = `/${profile.peerID}`;
     avatarRow = (
       <li className="borderBottom clrBr flexVCent gutterH">
         <Avatar
           size="small"
-          avatarHashes={props.authUser.avatarHashes}
-          href={`/${props.authUser.peerID}`}
+          avatarHashes={profile.avatarHashes}
+          href={`/${profile.peerID}`}
         />
         <Link
           to={userHref}
           onClick={() => props.onLinkClick({ href: userHref })}
         >
-          {props.authUser.name}
+          {profile.name}
         </Link>
       </li>
     );
   }
 
-  const loginLink = props.authUser ? (
+  const loginLink = props.loggedIn ? (
     <div className="link" onClick={props.onLogoutClick}>
       Logout
     </div>

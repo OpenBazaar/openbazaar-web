@@ -1,0 +1,28 @@
+@import 'styles/base.scss';
+@import 'styles/type.scss';
+
+.WrappedForm {
+  header {
+    display: grid;
+    grid-template-columns: 1fr fit-content(300px) 1fr;
+    align-items: center;
+
+    .WrappedForm-heading {
+      text-align: center;
+      @extend .h3;
+      @extend .unleaded;
+    }
+
+    .WrappedForm-headerRightContent {
+      justify-self: end;
+    }
+  }
+
+  footer {
+    display: grid;
+
+    .WrappedForm-footerContent {
+      justify-self: end;
+    }
+  }
+}

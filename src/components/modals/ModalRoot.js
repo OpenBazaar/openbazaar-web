@@ -2,9 +2,15 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as ModalActions from 'actions/modals';
-import './ModalRoot.css';
+import './ModalRoot.scss';
 
 class ModalRoot extends Component {
+  static defaultProps = {
+    rootClass: '',
+    transparent: false,
+    innerWrapClass: ''
+  };
+
   constructor(props) {
     super(props);
     this.state = {};
@@ -28,7 +34,13 @@ class ModalRoot extends Component {
   }
 
   handleEscKeyUp(e) {
-    if (e.keyCode !== 27) return;
+    if (
+      !this.props.closeable ||
+      !this.props.closeableViaEsc ||
+      e.keyCode !== 27
+    ) {
+      return;
+    }
 
     const topModal = this.props.modals.openModals[
       this.props.modals.openModals.length - 1
@@ -57,12 +69,25 @@ class ModalRoot extends Component {
     const modalProps = { ...this.props };
     delete modalProps.type;
 
+    const btnClose =
+      this.props.closeable && this.props.closeableViaCloseButton ? (
+        <button className="ModalRoot-close" onClick={this.handleCloseClick}>
+          X
+        </button>
+      ) : null;
+
+    // todo: namespace and only pass in the props for the embedded modal
+    //  component, not all the top level sugar.
     return (
-      <section className="ModalRoot">
-        <div className="ModalRoot-innerWrap">
-          <button className="ModalRoot-close" onClick={this.handleCloseClick}>
-            X
-          </button>
+      <section className={`ModalRoot ${this.props.rootClass}`}>
+        <div
+          className={
+            'ModalRoot-innerWrap ' +
+            (!this.props.transparent ? 'clrP clrBr clrSh3 padMd' : '') +
+            this.props.innerWrapClass
+          }
+        >
+          {btnClose}
           <this.state.ModalComponent {...modalProps} />
         </div>
       </section>

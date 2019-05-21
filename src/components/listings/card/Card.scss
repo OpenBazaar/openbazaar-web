@@ -1,9 +1,10 @@
-@import 'node_modules/sass-mq/mq';
-@import '../../styles/variables.scss';
+@import 'sass-mq/mq';
+@import 'styles/variables.scss';
 
 .ListingCard {
   width: 225px;
   height: 280px;
+  cursor: pointer;
 
   .ListingCard-listingImage {
     width: 223px;
@@ -15,6 +16,10 @@
 
   .ListingCard-content {
     padding: $pad;
+  }
+
+  &.ListingCard-clickable {
+    cursor: pointer;
   }
 
   @include mq($until: tablet) {

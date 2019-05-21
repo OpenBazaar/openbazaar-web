@@ -1,0 +1,163 @@
+@import '../variables.scss';
+
+form,
+.form {
+  margin: 0;
+  font-size: $tx5;
+
+  label {
+    line-height: $formElementHeight;
+    font-weight: 500;
+    -webkit-user-select: none;
+    display: flex;
+    align-items: center;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+}
+
+input::-webkit-input-placeholder,
+select::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder,
+.txPlaceholder {
+  // use txPlaceholder for non-placeholder text that needs to match the placeholder style
+  color: inherit;
+  opacity: 0.35;
+}
+
+input,
+select,
+textarea {
+  border: none;
+  outline: none;
+  outline-color: transparent;
+  background: none;
+  color: inherit;
+  border-radius: 3px;
+  font: {
+    family: 'Noto Sans', sans-serif;
+    size: $tx5;
+  }
+}
+
+input[type='reset'] {
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+select {
+  width: 100%;
+}
+
+input[type='text'],
+input[type='number'],
+input[type='password'],
+input[type='email'],
+input[type='url'],
+textarea {
+  border-style: solid;
+  border-width: 1px;
+  //use the color class to set the border color
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 $pad;
+  line-height: $inputHeight;
+
+  &.btnHeight {
+    // use to make form elements match the size of a button
+    line-height: $buttonHeight;
+    height: $buttonHeight;
+  }
+}
+
+textarea {
+  background: none;
+  outline: none;
+  -webkit-appearance: none;
+  resize: none;
+  line-height: 1.2em;
+  padding: $pad;
+  overflow: hidden;
+
+  &:focus {
+    overflow: auto;
+  }
+
+  &.resizable {
+    resize: vertical;
+  }
+}
+
+// .errorList {
+//   color: $error;
+//   word-wrap: break-word;
+//   hyphens: auto;
+
+//   li {
+//     i {
+//       margin-right: 5px;
+//     }
+
+//     margin-bottom: 5px;
+//   }
+
+//   margin-bottom: 10px;
+//}
+
+label {
+  &.error {
+    input,
+    textarea {
+      border: 1px solid red;
+    }
+  }
+}
+
+.required::after {
+  content: '*';
+  display: inline;
+  font-size: 130%;
+}
+
+input[type='radio']:checked + label {
+  font-weight: 700;
+}
+
+input[type='checkbox'] {
+  display: none;
+
+  & + label {
+    display: flex;
+    align-items: baseline;
+    cursor: pointer;
+
+    &:before {
+      content: '\f372';
+      font-family: Ionicons;
+      line-height: inherit;
+      font-size: 1.5em;
+      position: relative;
+      top: 0.15em;
+      margin-right: 0.25em;
+
+      .flexVCent & {
+        top: 0; // don't adjust position if it's flex centered
+      }
+    }
+  }
+
+  &:checked + label:before {
+    content: '\f373';
+  }
+
+  &.centerLabel + label {
+    align-items: center;
+
+    &:before {
+      top: 0;
+    }
+  }
+}

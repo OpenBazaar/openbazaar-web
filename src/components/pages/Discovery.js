@@ -16,6 +16,10 @@ class Discovery extends Component {
     this.props.actions.discovery.fetchCategories();
   }
 
+  componentWillUnmount() {
+    this.props.actions.discovery.leavePage();
+  }
+
   handleRetryClick(e) {
     this.props.actions.discovery.fetchCategory({ category: e.category });
   }

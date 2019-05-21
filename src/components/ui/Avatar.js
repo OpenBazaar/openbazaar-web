@@ -12,13 +12,20 @@ const sizes = {
   original: '60px'
 };
 
-export default function(props) {
+const Avatar = props => {
   const fallbackAvatar = `url(${defaultAvatar})`;
   // Using gateway url for now. If we want we could switch to
   // pulling it from js-ipfs later.
-  const backgroundImage = `url("${GATEWAY_URL}images/${
-    props.avatarHashes[props.size]
-  }"), ${fallbackAvatar}`;
+  // todo gateway useCache option
+  const baseAvatar =
+    props.avatarHashes && props.avatarHashes[props.size]
+      ? `url("${GATEWAY_URL}images/${
+          props.avatarHashes[props.size]
+        }?usecache=true")`
+      : '';
+  const backgroundImage = `${
+    baseAvatar ? `${baseAvatar}, ` : ''
+  }${fallbackAvatar}`;
   const style = {
     backgroundImage,
     backgroundSize: 'contain',
@@ -58,4 +65,5 @@ export default function(props) {
     );
   }
   return component;
-}
+};
+export default Avatar;

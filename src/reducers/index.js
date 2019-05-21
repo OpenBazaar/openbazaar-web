@@ -4,6 +4,7 @@ import responsive from './responsive';
 import discovery from './discovery';
 import auth from './auth';
 import navMenu from './navMenu';
+import onboarding from './onboarding';
 
 export default history => ({
   router: connectRouter(history),
@@ -11,5 +12,6 @@ export default history => ({
   responsive,
   discovery,
   auth,
-  navMenu
+  navMenu,
+  onboarding
 });

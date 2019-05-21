@@ -49,21 +49,21 @@
   /* generates the border color rules */
   border-color: $col1;
 
-  &:hover,
-  &:focus {
-    border-color: $col1;
-  }
-
   input,
   select,
   textarea,
   button {
-    &:focus:not(.disabled) {
+    &:focus:not(.disabled),
+    &:hover:not(.disabled) {
       border-color: $col2;
     }
   }
 
   hr {
+    border-color: $col1;
+  }
+
+  .btn {
     border-color: $col1;
   }
 
@@ -83,6 +83,10 @@
       border-color: $col1;
     }
   }
+}
+
+.btnFlx {
+  @extend .btn;
 }
 
 /* default for inputs with no color class */
@@ -355,7 +359,7 @@ input[type='range'][class~='clrS'] {
   color: $error;
 }
 
-#OBWEB .NavMenu {
+.NavMenu {
   .NavMenu-hamburgerIcon {
     &::after {
       background: black;
@@ -366,5 +370,94 @@ input[type='range'][class~='clrS'] {
   .NavMenu-closeIcon {
     color: transparent;
     text-shadow: 0 0 0 black;
+  }
+}
+
+body .tippy-popper {
+  .tippy-tooltip {
+    &.clrP-theme {
+      background-color: $primary;
+    }
+
+    &.clrS-theme {
+      background-color: $secondary;
+    }
+
+    &.clrT-theme {
+      @extend .clrT;
+    }
+
+    &.clrT2-theme {
+      @extend .clrT2;
+    }
+
+    &.clrT3-theme {
+      @extend .clrT3;
+    }
+
+    &.clrBr-theme {
+      @extend .clrBr;
+    }
+
+    &.clrSh1-theme {
+      @extend .clrSh1;
+    }
+  }
+
+  &[x-placement='bottom'] {
+    .arrow-regular[x-arrow] {
+      border-bottom-color: $border;
+
+      &::before {
+        border-bottom-color: $primary;
+      }
+    }
+  }
+
+  &[x-placement='top'] {
+    .arrow-regular[x-arrow] {
+      border-top-color: $border;
+
+      &::before {
+        border-top-color: $primary;
+      }
+    }
+  }
+
+  &[x-placement='left'] {
+    .arrow-regular[x-arrow] {
+      border-left-color: $border;
+
+      &::before {
+        border-left-color: $primary;
+      }
+    }
+  }
+
+  &[x-placement='right'] {
+    .arrow-regular[x-arrow] {
+      border-right-color: $border;
+
+      &::before {
+        border-right-color: $primary;
+      }
+    }
+  }
+}
+
+.flexBtnWrapper .btnFlx {
+  border-color: $border;
+
+  &:hover,
+  &:focus {
+    @include borderColor($border, $border3);
+    z-index: 1;
+  }
+
+  &.underlineOnly:hover,
+  &.underlineOnly:focus,
+  &.underlineOnly.active {
+    border-color: $border;
+    border-bottom-color: $border3;
   }
 }

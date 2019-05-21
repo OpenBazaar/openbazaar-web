@@ -14,9 +14,9 @@ const getCurBreakpoint = () => {
   const bps = Object.keys(breakpoints);
 
   bps.some((bp, index) => {
-    let mq = `(min-width: ${breakpoints[bp]}px) and (max-width: ${
-      breakpoints[bps[index + 1]]
-    }px)`;
+    let mq = `(min-width: ${breakpoints[bp]}px) and (max-width: ${breakpoints[
+      bps[index + 1]
+    ] - 1}px)`;
 
     if (index === bps.length - 1) {
       mq = `(min-width: ${breakpoints[bp]}px)`;

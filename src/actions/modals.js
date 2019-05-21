@@ -10,13 +10,27 @@ export const MODAL_BRING_TO_TOP = 'MODAL_BRING_TO_TOP';
  *
  * @param {object} props - The props the modal will be created with or set with if
  *   it's an already open singleton modal.
- * @param {object} props.Component - The component you want to render inside the modal. The
- *   component must implement a modulePath property, which should be a static getter if its
- *   a class, otherwise a property directly on the function if it's a functional component.
- *   (The reason we're forcing this in is because we want the modal opener to have to import
- *    the component so the ModalRoot gets it from cache rather than forcing it to always
- *    be lazy-loaded. This way the modal opener or something higher up can determine what
- *    chunk it's ending up in.)
+ * @param {object} props.Component - The component you want to render inside the
+ *   modal.
+ * @param {object} props.Component.modalProps - This should be implemented as a
+ *   static getter if its a class, otherwise a property directly on the function if
+ *   it's a functional component.
+ * @param {string} props.Component.modalProps.path - The path to the Component
+ *   on disk which ModalRoot will dynamically import. Since you're passing in the
+ *   Component, it will already be in cache.
+ * @param {string} props.Component.modalProps.modalProps - Default props that will
+ *   be applied to all instances of your Component. They will be merged with any
+ *   props passed into this action creator.
+ * @param {string} props.Component.modalProps.rootClass - The class that will be
+ *   applied to the ModalRoot element.
+ * @param {string} [props.Component.modalProps.closeable=true] - Determines whether
+ *   the modal is closeable via the user (close button and esc press). This setting
+ *   overrides the closeableViaCloseButton and closeableViaEsc props.
+ * @param {string} [props.Component.modalProps.closeableViaCloseButton=true] -
+ *   Determines whether the modal is closeable via the close button. The close button
+ *   will not be rendered if this value is false.
+ * @param {string} [props.Component.modalProps.closeableViaEsc=true] - Determines
+ *   whether the modal can be close via an Esc key press.
  *
  * @returns {string} - The ID of the opened modal. This will be necessary if you want to
  *   close a non-singleton modal.
@@ -27,34 +41,44 @@ export const open = (props = {}) => (dispatch, getState) => {
   }
 
   if (
-    typeof props.Component.modulePath !== 'string' ||
-    !props.Component.modulePath.length
+    typeof props.Component.modalProps !== 'object' ||
+    (typeof props.Component.modalProps.path !== 'string' ||
+      !props.Component.modalProps.path)
   ) {
     throw new Error(
-      'The component must implement a modulePath as a static getter or ' +
-        'a function property.'
+      'The component must implement a modalProps object as a static getter or ' +
+        'a function property. At a minimum it must contain a path property ' +
+        'as a string.'
     );
   }
 
-  if (props.Component.modulePath.includes(' ')) {
-    throw new Error('The modulePath should not contain any spaces.');
+  // todo: a more robust path validator..?
+  if (props.Component.modalProps.path.includes(' ')) {
+    throw new Error('The path should not contain any spaces.');
   }
 
-  const path = props.Component.modulePath;
+  const modalProps = {
+    rootClass: '',
+    closeable: true,
+    closeableViaCloseButton: true,
+    closeableViaEsc: true,
+    ...props.Component.modalProps,
+    ...props
+  };
+
+  delete modalProps.Component;
+
   const curModal = getState().modals.openModals.find(
-    modal => singletonModals.includes(path) && modal.path === path
+    modal =>
+      singletonModals.includes(modalProps.path) &&
+      modal.path === modalProps.path
   );
 
   const id = curModal ? curModal.id : uuidv4();
-  const actionProps = {
-    ...props,
-    path
-  };
-  delete actionProps.Component;
 
   dispatch({
     type: MODAL_OPEN,
-    ...actionProps,
+    ...modalProps,
     id
   });
 

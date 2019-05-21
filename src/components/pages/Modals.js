@@ -3,11 +3,15 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as ModalActions from 'actions/modals';
 import SimpleMessage from 'components/modals/SimpleMessage';
+import UserContentLoading from 'components/misc/UserContentLoading';
 
 class Modals extends Component {
   constructor(props) {
     super(props);
     this.handleSimpleModalClick = this.handleSimpleModalClick.bind(this);
+    this.handleUserContentLoadingClick = this.handleUserContentLoadingClick.bind(
+      this
+    );
   }
 
   handleSimpleModalClick(e) {
@@ -19,12 +23,23 @@ class Modals extends Component {
     });
   }
 
+  handleUserContentLoadingClick(e) {
+    this.props.actions.modals.open({
+      Component: UserContentLoading
+    });
+  }
+
   render() {
     return (
       <div className="Modals pageWidth pagePadTopBottom">
-        <button class="btn" onClick={this.handleSimpleModalClick}>
-          Simple Modal
-        </button>
+        <div className="flex gutterH">
+          <button className="btn" onClick={this.handleSimpleModalClick}>
+            Simple Modal
+          </button>
+          <button className="btn" onClick={this.handleUserContentLoadingClick}>
+            User Content Loading Modal
+          </button>
+        </div>
       </div>
     );
   }

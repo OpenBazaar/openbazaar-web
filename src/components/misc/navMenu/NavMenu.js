@@ -3,8 +3,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as NavMenuActions from 'actions/navMenu';
 import * as AuthActions from 'actions/auth';
+import * as ModalActions from 'actions/modals';
 import Menu from './Menu';
 import Avatar from 'components/ui/Avatar';
+import Login from 'components/auth/Login';
 import '../../../styles/theme.scss';
 
 let menuContainer;
@@ -54,7 +56,8 @@ class NavMenu extends Component {
   }
 
   handleLoginClick() {
-    this.props.actions.auth.login();
+    // this.props.actions.auth.login();
+    this.props.actions.modals.open({ Component: Login });
     this.props.actions.navMenu.closeMenu();
   }
 
@@ -72,11 +75,11 @@ class NavMenu extends Component {
   render() {
     let trigger = null;
 
-    if (this.props.auth.authUser) {
+    if (this.props.auth.profile) {
       trigger = (
         <Avatar
           size="medium"
-          avatarHashes={this.props.auth.authUser.avatarHashes}
+          avatarHashes={this.props.auth.profile.avatarHashes}
           onClick={this.handleTriggerClick}
         />
       );
@@ -110,7 +113,8 @@ class NavMenu extends Component {
     if (this.props.menuOpen) {
       menu = (
         <Menu
-          authUser={this.props.auth.authUser}
+          loggedIn={this.props.auth.loggedIn}
+          profile={this.props.auth.profile}
           breakpoint={this.props.responsive.breakpoint}
           onLoginClick={this.handleLoginClick}
           onLogoutClick={this.handleLogoutClick}
@@ -142,7 +146,8 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: {
       navMenu: bindActionCreators(NavMenuActions, dispatch),
-      auth: bindActionCreators(AuthActions, dispatch)
+      auth: bindActionCreators(AuthActions, dispatch),
+      modals: bindActionCreators(ModalActions, dispatch)
     }
   };
 }

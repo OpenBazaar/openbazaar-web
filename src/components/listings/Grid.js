@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Card from './Card';
+import Card from './card/Card';
 import './Grid.scss';
 
 export default class Grid extends Component {
@@ -10,7 +10,13 @@ export default class Grid extends Component {
         {this.props.cards.map(card => {
           const vendorId = this.props.vendorId || card.vendorId;
 
-          return <Card {...card} key={`${vendorId}-${card.slug}`} />;
+          return (
+            <Card
+              key={`${vendorId}-${card.data.slug}`}
+              baseUrl={this.props.listingBaseUrl}
+              listing={card}
+            />
+          );
         })}
       </div>
     );
@@ -23,6 +29,7 @@ Grid.defaultProps = {
 
 Grid.propTypes = {
   vendorId: PropTypes.string,
+  listingBaseUrl: PropTypes.string,
   cards: function(props, propName, componentName) {
     if (!Array.isArray(props.cards)) {
       return new Error('The cards prop must be provided as an array.');
