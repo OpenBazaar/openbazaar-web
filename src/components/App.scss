@@ -1,4 +1,6 @@
 @import '../styles/base.scss';
+@import '../styles/mixins.scss';
+@import '../styles/variables.scss';
 
 .App {
   .App-header {
@@ -35,5 +37,14 @@
     .App-btnSettings {
       // background-image: url('../img/icon-gear.png');
     }
+  }
+
+  .App-mainContent {
+    @include chatOpenTransition(width);
+    width: 100%;
+  }
+
+  &.Chat-chatOpen .App-mainContent {
+    width: calc(100% - #{$chatWidth});
   }
 }

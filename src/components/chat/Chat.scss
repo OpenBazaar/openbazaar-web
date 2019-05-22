@@ -1,0 +1,16 @@
+@import '../styles/mixins.scss';
+@import '../styles/variables.scss';
+
+.Chat {
+  position: absolute;
+  background-color: orange;
+  width: $chatWidth;
+  right: 0;
+  top: 63px;
+  transform: translateX(100%);
+  @include chatOpenTransition(transform);
+
+  .Chat-chatOpen & {
+    transform: translateX(0);
+  }
+}

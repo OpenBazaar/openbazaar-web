@@ -77,6 +77,9 @@ ol {
 }
 
 #OBWEB {
+  position: relative;
+  overflow: hidden;
+  
   .block {
     display: block;
   }
