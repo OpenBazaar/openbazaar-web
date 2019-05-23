@@ -113,68 +113,6 @@ img {
   }
 }
 
-@include mq($until: tablet) {
-  h1,
-  .h1,
-  .tx1,
-  .btn.tx1 {
-    @include textSize($tx2);
-  }
-
-  h2,
-  .h2,
-  .tx2,
-  .btn.tx2 {
-    @include textSize($tx3);
-  }
-
-  .tx2b,
-  .btn.tx2b {
-    @include textSize($tx3b);
-  }
-
-  h3,
-  .h3,
-  .tx3,
-  .btn.tx3 {
-    @include textSize($tx4);
-  }
-
-  h4,
-  .h4,
-  .tx4,
-  .btn.tx4 {
-    @include textSize($tx5);
-  }
-
-  h5,
-  .h5,
-  .tx5,
-  .btn.tx5 {
-    @include textSize($tx6);
-  }
-
-  .tx5b,
-  .btn.tx5b {
-    @include textSize($tx7);
-  }
-
-  h6,
-  .h6,
-  .tx6,
-  .btn.tx6 {
-    @include textSize($tx7);
-  }
-
-  .txBg {
-    @include textSize($tx1);
-  }
-
-  .txTn {
-    @include textSize($tx7);
-  }
-}
-
 .txBase {
   @include textSize(1rem);
 }

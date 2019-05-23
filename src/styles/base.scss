@@ -76,6 +76,14 @@ ol {
   }
 }
 
+.App-chatContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: calc(100vw - #{$chatWidth});
+}
+
 #OBWEB {
   position: relative;
   overflow: hidden;

@@ -1,16 +1,41 @@
-@import '../styles/mixins.scss';
-@import '../styles/variables.scss';
+@import 'styles/mixins.scss';
+@import 'styles/variables.scss';
 
 .Chat {
   position: absolute;
-  background-color: orange;
   width: $chatWidth;
   right: 0;
-  top: 63px;
+  top: 100px;
+  bottom: 0;
+  overflow: hidden;
   transform: translateX(100%);
   @include chatOpenTransition(transform);
 
+  &:hover {
+    overflow-y: auto;
+  }
+
   .Chat-chatOpen & {
     transform: translateX(0);
+  }
+
+  .ChatHead {
+    cursor: pointer;
+
+    .ChatHead-textContent {
+      height: 35px;
+
+      .ChatHead-name {
+        max-width: 50px;
+      }
+    }
+  }
+
+  .Chat-btnClose {
+    position: absolute;
+    top: 0;
+    right: -1px;
+    transform: translateY(calc(-100% + 1px));
+    border-bottom-width: 0;
   }
 }

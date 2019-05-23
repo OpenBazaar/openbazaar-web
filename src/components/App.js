@@ -32,11 +32,40 @@ class App extends Component {
     console.log('moo');
     window.moo = () => {
       this.props.actions.chat[
-        this.props.chat.chatOpen ?
-          'closeChat' : 'openChat'
+        this.props.chat.chatOpen ? 'close' : 'open'
       ]();
     }
 
+    this.props.actions.chat.convosSuccess([
+      {
+        lastMessage: 'hey boo',
+        outgoing: false,
+        peerId: 'Qmbr7QtmKCVZ5g5mePNZHaetCKF9gryXxiLcyrdBPbMbnd',
+        lastMessageReceivedAt: '2017-08-17T04:52:19Z',
+        unread: 3
+      },
+      {
+        lastMessage: 'hip hip ho to the rah maldives beaver',
+        outgoing: false,
+        peerId: 'QmYTXDyMNjdUSvqNc88T2VeVF3KdG7PMefnGQKrp9NZ5Tp',
+        lastMessageReceivedAt: '2016-01-17T04:52:19Z',
+        unread: 0
+      },
+      {
+        lastMessage: 'pooper scopper no more',
+        outgoing: true,
+        peerId: 'QmQGpXWj6y4Sgmc4F8hvFFo3srhaPrv4oY3QsJ2FyGUh9K',
+        lastMessageReceivedAt: '2017-01-17T04:52:19Z',
+        unread: 0
+      },
+      {
+        lastMessage: 'charlie says meatballs and banana peals',
+        outgoing: true,
+        peerId: 'QmU5ZSKVz2GhsqE6EmBGVCtrui4YhUXny6rbvsSf5h2xvH',
+        lastMessageReceivedAt: '2017-08-111T01:41:19Z',
+        unread: 12
+      },
+    ]);
 
     // hard-coded for now
     const lang = 'en_US';
