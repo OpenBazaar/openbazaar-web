@@ -1,32 +1,49 @@
 @import 'styles/mixins.scss';
 @import 'styles/variables.scss';
+@import 'sass-mq/mq';
 
 .Chat {
   position: absolute;
   width: $chatWidth;
   right: 0;
-  top: 100px;
+  top: 0;
   bottom: 0;
-  overflow: hidden;
   transform: translateX(100%);
+  padding-top: 35px;
   @include chatOpenTransition(transform);
 
-  &:hover {
-    overflow-y: auto;
+  @include mq($until: mobileLandscape) {
+    width: 100%;
   }
 
   .Chat-chatOpen & {
     transform: translateX(0);
   }
 
-  .ChatHead {
-    cursor: pointer;
+  .Chat-chatHeads {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    
+    // devices where mouse is primary pointing device
+    @media (hover: hover) and (pointer: fine) {
+      // only show the chat scroll on hover
+      overflow: hidden;
 
-    .ChatHead-textContent {
-      height: 35px;
+      &:hover {
+        overflow-y: auto;
+      }
+    }
 
-      .ChatHead-name {
-        max-width: 50px;
+    .ChatHead {
+      cursor: pointer;
+
+      .ChatHead-textContent {
+        height: 35px;
+
+        .ChatHead-name {
+          max-width: 50px;
+        }
       }
     }
   }
@@ -35,7 +52,7 @@
     position: absolute;
     top: 0;
     right: -1px;
-    transform: translateY(calc(-100% + 1px));
     border-bottom-width: 0;
+    cursor: pointer;
   }
 }

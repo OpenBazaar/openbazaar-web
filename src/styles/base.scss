@@ -78,10 +78,14 @@ ol {
 
 .App-chatContainer {
   position: fixed;
-  top: 0;
+  top: $chatTop;
   right: 0;
   bottom: 0;
   left: calc(100vw - #{$chatWidth});
+
+  @include mq($until: mobileLandscape) {
+    left: 0;
+  }  
 }
 
 #OBWEB {

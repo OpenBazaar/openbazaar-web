@@ -23,25 +23,27 @@ class Chat extends Component {
 
   render() {
     return (
-      <div className="Chat tx6 border padSm clrBr clrP">
+      <div className="Chat tx6">
         <button
           className="Chat-btnClose border clrBr clrP"
           onClick={this.handleCloseClick}
         >
           <IosClose fontSize="30px" />
         </button>
-        <div className="gutterVSm">
-          {
-            this.props.convos
-              .concat(this.props.convos)
-              .concat(this.props.convos)
-              .concat(this.props.convos)
-              .concat(this.props.convos)
-              .concat(this.props.convos)
-              .concat(this.props.convos)
-              .concat(this.props.convos)
-              .map(convo => <ChatHead {...convo} key={convo.peerId} />)
-          }
+        <div className="Chat-chatHeads border padSm clrBr clrP">
+          <div className="gutterVSm">
+            {
+              this.props.convos
+                .concat(this.props.convos)
+                .concat(this.props.convos)
+                .concat(this.props.convos)
+                .concat(this.props.convos)
+                .concat(this.props.convos)
+                .concat(this.props.convos)
+                .concat(this.props.convos)
+                .map(convo => <ChatHead {...convo} key={convo.peerId} />)
+            }
+          </div>
         </div>
       </div>
     );

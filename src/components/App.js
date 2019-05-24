@@ -120,7 +120,7 @@ class App extends Component {
         </div>
         <div className="App-chatContainer">
           <Chat />
-        </div>        
+        </div>
         <div id="navMenuContainer" />
       </div>
     );
