@@ -5,12 +5,21 @@ import {
   close,
   convosRequest,
   convosSuccess,
+  convosFail,
+  convoActivated,
+  convoMessagesRequest,
+  convoMessagesSuccess,
+  convoMessagesFail,
+  deactivateConvo,
 } from 'actions/chat';
 
 const initialState = {
   chatOpen: false,
   fetchingConvos: false,
+  fetchingConvosFailed: false,
+  fetchingConvosError: null,
   convos: [],
+  activeConvo: null,
 };
 
 const openChat = (state, action) => {
@@ -23,11 +32,66 @@ const closeChat = (state, action) => {
 
 const reduceConvosRequest = (state, action) => {
   state.fetchingConvos = true;
+  state.convosFetchFailed = false;
+  state.convosFetchError = null;
 }
 
 const reduceConvosSuccess = (state, action) => {
   state.fetchingConvos = false;
+  state.convosFetchFailed = false;
+  state.convosFetchError = null;
   state.convos = action.payload;
+}
+
+const reduceConvosFail = (state, action) => {
+  state.fetchingConvos = false;
+  state.convosFetchFailed = true;
+  state.convosFetchError = action.payload;
+}
+
+const reduceConvoActivated = (state, action) => {
+  state.activeConvo = {
+    peerId: action.payload.peerId,
+    messages: action.payload.messages || [],
+    fetchingMessages: false,
+    messageFetchFailed: false,
+    messageFetchError: null,    
+  };
+}
+
+const reduceConvoMessagesRequest = (state, action) => {
+  if (state.activeConvo && action.payload === state.activeConvo.peerId) {
+    state.activeConvo = {
+      ...state.activeConvo,
+      fetchingMessages: true,
+      messageFetchFailed: false,
+      messageFetchError: null,    
+    };
+  }
+}
+
+const reduceConvoMessagesSuccess = (state, action) => {
+  state.activeConvo = {
+    ...state.activeConvo,
+    fetchingMessages: false,
+    messageFetchFailed: false,
+    messageFetchError: null,    
+  };
+}
+
+const reduceConvoMessagesFail = (state, action) => {
+  state.activeConvo = {
+    ...state.activeConvo,
+    fetchingMessages: false,
+    messageFetchFailed: action.payload.canceled,
+    messageFetchError: action.payload.canceled ?
+      null :
+      action.payload.error || null,
+  };
+}
+
+const reduceDeactivateConvo = state => {
+  state.activeConvo = null;
 }
 
 export default createReducer(initialState, {
@@ -35,6 +99,12 @@ export default createReducer(initialState, {
   [close]: closeChat,
   [convosRequest]: reduceConvosRequest,
   [convosSuccess]: reduceConvosSuccess,
+  [convosFail]: reduceConvosFail,
+  [convoActivated]: reduceConvoActivated,
+  [convoMessagesRequest]: reduceConvoMessagesRequest,
+  [convoMessagesSuccess]: reduceConvoMessagesSuccess,
+  [convoMessagesFail]: reduceConvoMessagesFail,
+  [deactivateConvo]: reduceDeactivateConvo,
 });
 
 // selectors

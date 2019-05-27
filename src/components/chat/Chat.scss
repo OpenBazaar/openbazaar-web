@@ -36,7 +36,9 @@
     }
 
     .ChatHead {
-      cursor: pointer;
+      &:not(.active) {
+        cursor: pointer;
+      }
 
       .ChatHead-textContent {
         height: 35px;
@@ -54,5 +56,20 @@
     right: -1px;
     border-bottom-width: 0;
     cursor: pointer;
+  }
+
+  .Chat-chatConvoWrap {
+    position: absolute;
+    bottom: 0;
+    transform: translateY(100%);
+    transition: transform 2500ms;
+
+    &.open {
+      transform: translateY(0);
+    }
+
+    .ChatConvo {
+      height: 300px;
+    }
   }
 }

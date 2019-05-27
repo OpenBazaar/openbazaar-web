@@ -184,5 +184,10 @@
   },
   "genericErrors": {
     "unableToPerformOp": "Unable to perform this operation."
+  },
+  "chat": {
+    "fetchConvosErrorGeneric": "There was an error retrieving the chat conversations.",
+    "fetchConvosError": "There was an error retrieving the chat conversations: %{error}",
+    "btnRetryConvos": "Retry"
   }
 }
