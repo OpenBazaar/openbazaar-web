@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as ChatActions from 'actions/chat';
+import * as ProfileActions from 'actions/profile';
 import { getConvos } from 'reducers/chat';
 import IosClose from 'react-ionicons/lib/IosClose';
 import ChatHead from 'components/chat/ChatHead';
@@ -23,8 +24,12 @@ class Chat extends Component {
   }
 
   componentDidMount() {
-    if (!this.props.activeConvo && this.props.convos.length) {
-      this.activateFirstConvo();
+    if (this.props.convos.length) {
+      this.getConvoProfiles();
+
+      if (!this.props.activeConvo) {
+        this.activateFirstConvo();
+      }
     }
 
     this.props.actions.convosRequest();
@@ -32,12 +37,14 @@ class Chat extends Component {
 
   componentDidUpdate(prevProps) {
     if (
-      (
-        !prevProps.convos ||
-        !prevProps.convos.length
-      ) &&
-      !this.props.activeConvo) {
-      this.activateFirstConvo();
+      !prevProps.convos ||
+      !prevProps.convos.length
+    ) {
+      this.getConvoProfiles();
+      
+      if (!this.props.activeConvo) {
+        this.activateFirstConvo();
+      }
     }
 
     if (
@@ -75,6 +82,11 @@ class Chat extends Component {
     if (this.props.convos && this.props.convos.length) {
       this.props.actions.activateConvo(this.props.convos[0].peerId);
     }
+  }
+
+  getConvoProfiles() {
+    this.props.convos.forEach(convo =>
+      this.props.actions.profile.requestCached({ peerId: convo.peerId }))
   }
 
   render() {
@@ -119,6 +131,7 @@ class Chat extends Component {
                     key={convo.peerId}
                     selected={selected}
                     onClick={() => this.handleChatHeadClick(convo.peerId)}
+                    profile={this.props.profile[convo.peerId] || null} 
                   />
                 );
               })
@@ -128,12 +141,14 @@ class Chat extends Component {
     }
 
     let chatConvo;
+    const convoData = this.props.activeConvo || this.state.oldActiveConvo;
 
     if (this.props.activeConvo || this.state.oldActiveConvo) {
       chatConvo = (
         <ChatConvo
-          {...this.props.activeConvo || this.state.oldActiveConvo}
+          {...convoData}
           onClick={this.props.activeConvo ? this.handleConvoCloseClick : null}
+          profile={this.props.profile[convoData.peerId]}
         />
       );
     }
@@ -161,13 +176,15 @@ function mapStateToProps(state, prop) {
   return {
     ...state.chat,
     convos: getConvos(state.chat),
+    profile: state.profile,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     actions: {
-      ...bindActionCreators(ChatActions, dispatch)
+      ...bindActionCreators(ChatActions, dispatch),
+      profile: bindActionCreators(ProfileActions, dispatch),
     }
   };
 }

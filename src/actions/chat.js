@@ -1,3 +1,7 @@
+// TODO: make a createAction where args could be validated
+// TODO: make a createAction where args could be validated
+// TODO: make a createAction where args could be validated
+// TODO: make a createAction where args could be validated
 import { createAction } from 'redux-starter-kit';
 
 export const open = createAction('CHAT_OPEN');

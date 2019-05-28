@@ -1,0 +1,15 @@
+.ChatConvo {
+  height: 100%;
+
+  .ChatConvo-btnClose {
+    padding: 0 5px;
+    border: 0;
+    background-color: transparent;
+  }
+
+  & > header {
+    height: 55px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+  }
+}

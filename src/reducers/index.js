@@ -6,6 +6,7 @@ import auth from './auth';
 import navMenu from './navMenu';
 import onboarding from './onboarding';
 import chat from './chat';
+import profile from './profile';
 
 export default history => ({
   router: connectRouter(history),
@@ -16,4 +17,5 @@ export default history => ({
   navMenu,
   onboarding,
   chat,
+  profile,
 });

@@ -1,20 +1,28 @@
+import { getName } from 'models/profile';
 import React from 'react';
 import IosClose from 'react-ionicons/lib/IosClose';
-// import Avatar from 'components/ui/Avatar';
+import Avatar from 'components/ui/Avatar';
+import './ChatConvo.scss';
 
 export default function(props) {
   return (
-    <div className="ChatConvo pad clrP border clrBr">
-      <div className="row">
-        <div className="flexExpand"></div>
+    <section className="ChatConvo clrP border clrBr">
+      <header className="flexVCent padSm clrBr gutterHSm">
+        <Avatar
+          size="medium"
+          avatarHashes={props.profile ? props.profile.avatarHashes : null}
+          href={`/${props.peerId}`}
+        />
+        <div className="ChatConvo-headerName flexExpand clamp txB">
+          {props.profile ? getName(props.profile) : ''}
+        </div>
         <button
-          className="btn ChatConvo-btnClose clrP"
+          className="btn ChatConvo-btnClose"
           onClick={props.onClick}
         >
-          <IosClose fontSize="22px" />
+          <IosClose fontSize="26px" />
         </button>
-      </div>
-      {JSON.stringify(props)}
-    </div>
+      </header>
+    </section>
   );
 }

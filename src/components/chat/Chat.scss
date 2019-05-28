@@ -71,12 +71,8 @@
       transform: translateY(0);
     }
 
-    .ChatConvo {
+    @include mq($until: mobileLandscape) {
       height: 100%;
-
-      .ChatConvo-btnClose {
-        padding: 0 10px;
-      }
     }
   }
 }

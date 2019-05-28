@@ -115,10 +115,6 @@ export default createReducer(initialState, {
 
 export const getConvos = createSelector(
   ['convos'], convos =>
-    orderBy(convos, ['unread', 'lastMessageReceivedAt'], ['desc', 'desc'])
-      .map(convo => ({
-        ...convo,
-        name: convo.name || convo.peerId,
-      }))
+    (orderBy(convos, ['unread', 'lastMessageReceivedAt'], ['desc', 'desc']))
 );
 
