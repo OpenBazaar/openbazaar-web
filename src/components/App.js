@@ -36,8 +36,6 @@ class App extends Component {
       ]();
     }
 
-    this.props.actions.chat.open();
-
     // hard-coded for now
     const lang = 'en_US';
     loadLang(lang)

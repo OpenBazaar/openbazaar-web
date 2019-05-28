@@ -461,6 +461,17 @@ body .tippy-popper {
     border-bottom-color: $border3;
   }
 }
+
+.Chat {
+  .Chat-chatHeads {
+    background-color: transparent;
+  }
+
+  .Chat-chatOpen & {
+    background-color: $primary;
+  }
+}
+
 .ChatConvo > header {
   background-color: #ecf0f1;
 }

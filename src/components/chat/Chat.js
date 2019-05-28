@@ -72,6 +72,9 @@ class Chat extends Component {
 
   handleChatHeadClick(peerId) {
     this.props.actions.activateConvo(peerId);
+    if (!this.props.chatOpen) {
+      this.props.actions.open();
+    }
   }
 
   handleConvoCloseClick() {
@@ -163,7 +166,7 @@ class Chat extends Component {
         >
           <IosClose fontSize="30px" />
         </button>
-        <div className="Chat-chatHeads border padSm clrBr clrP">{convos}</div>
+        <div className="Chat-chatHeads border padSm clrBr">{convos}</div>
         <div className={`Chat-chatConvoWrap ${chatConvoWrapOpenClass}`}>
           {chatConvo}
         </div>
