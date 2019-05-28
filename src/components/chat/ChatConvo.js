@@ -8,7 +8,7 @@ export default function(props) {
       <div className="row">
         <div className="flexExpand"></div>
         <button
-          className="ChatConvo-btnClose"
+          className="btn ChatConvo-btnClose clrP"
           onClick={props.onClick}
         >
           <IosClose fontSize="22px" />

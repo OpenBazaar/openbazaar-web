@@ -10,6 +10,10 @@ import ChatConvo from 'components/chat/ChatConvo';
 import './Chat.scss';
 
 class Chat extends Component {
+  state = {
+    oldActiveConvo: null,
+  };
+
   constructor(props) {
     super(props);
     this.handleCloseClick = this.handleCloseClick.bind(this);
@@ -34,6 +38,20 @@ class Chat extends Component {
       ) &&
       !this.props.activeConvo) {
       this.activateFirstConvo();
+    }
+
+    if (
+      prevProps.activeConvo &&
+      !this.props.activeConvo &&
+      !(
+        this.state.oldActiveConvo &&
+        this.state.oldActiveConvo.peerId ===
+          prevProps.peerId
+      )
+    ) {
+      // The oldActiveConvo is kept around so that the chat convo
+      // component will visually remain in the UI as it slides down.
+      this.setState({ oldActiveConvo: prevProps.activeConvo });
     }
   }
 
@@ -111,17 +129,16 @@ class Chat extends Component {
 
     let chatConvo;
 
-    if (this.props.activeConvo) {
+    if (this.props.activeConvo || this.state.oldActiveConvo) {
       chatConvo = (
         <ChatConvo
-          {...this.props.activeConvo}
-          onClick={this.handleConvoCloseClick}
+          {...this.props.activeConvo || this.state.oldActiveConvo}
+          onClick={this.props.activeConvo ? this.handleConvoCloseClick : null}
         />
       );
     }
 
-    const chatConvoWrapClass = this.props.activeConvo ?
-      'Chat-chatConvoWrap open' : 'Chat-chatConvoWrap';
+    const chatConvoWrapOpenClass = this.props.activeConvo ? 'open' : '';
 
     return (
       <div className="Chat tx6">
@@ -132,7 +149,7 @@ class Chat extends Component {
           <IosClose fontSize="30px" />
         </button>
         <div className="Chat-chatHeads border padSm clrBr clrP">{convos}</div>
-        <div className={chatConvoWrapClass}>
+        <div className={`Chat-chatConvoWrap ${chatConvoWrapOpenClass}`}>
           {chatConvo}
         </div>
       </div>

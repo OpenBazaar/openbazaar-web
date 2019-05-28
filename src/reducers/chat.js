@@ -71,23 +71,27 @@ const reduceConvoMessagesRequest = (state, action) => {
 }
 
 const reduceConvoMessagesSuccess = (state, action) => {
-  state.activeConvo = {
-    ...state.activeConvo,
-    fetchingMessages: false,
-    messageFetchFailed: false,
-    messageFetchError: null,    
-  };
+  if (state.activeConvo && action.payload === state.activeConvo.peerId) {
+    state.activeConvo = {
+      ...state.activeConvo,
+      fetchingMessages: false,
+      messageFetchFailed: false,
+      messageFetchError: null,    
+    };
+  }
 }
 
 const reduceConvoMessagesFail = (state, action) => {
-  state.activeConvo = {
-    ...state.activeConvo,
-    fetchingMessages: false,
-    messageFetchFailed: action.payload.canceled,
-    messageFetchError: action.payload.canceled ?
-      null :
-      action.payload.error || null,
-  };
+  if (state.activeConvo && action.payload === state.activeConvo.peerId) {
+    state.activeConvo = {
+      ...state.activeConvo,
+      fetchingMessages: false,
+      messageFetchFailed: action.payload.canceled,
+      messageFetchError: action.payload.canceled ?
+        null :
+        action.payload.error || null,
+    };
+  }
 }
 
 const reduceDeactivateConvo = state => {

@@ -72,6 +72,14 @@ function* getConvos(action) {
 
 const messageCache = {};
 
+// TODO: cancel existing async tasks on deactivate convo
+// TODO: cancel existing async tasks on deactivate convo
+// TODO: cancel existing async tasks on deactivate convo
+// TODO: cancel existing async tasks on deactivate convo
+// TODO: cancel existing async tasks on deactivate convo
+// TODO: cancel existing async tasks on deactivate convo
+// TODO: cancel existing async tasks on deactivate convo
+
 // stub until the db part is done and we get the message from there.
 // Please note: For now, just fetching all the messages. Later, we'll probably
 // want to do some form of pagination since the number of messages can get
