@@ -29,13 +29,6 @@ class App extends Component {
   componentDidMount() {
     this.props.actions.responsive.trackBreakpoints();
 
-    console.log('moo');
-    window.moo = () => {
-      this.props.actions.chat[
-        this.props.chat.chatOpen ? 'close' : 'open'
-      ]();
-    }
-
     // hard-coded for now
     const lang = 'en_US';
     loadLang(lang)

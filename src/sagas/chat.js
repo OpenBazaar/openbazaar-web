@@ -88,19 +88,19 @@ const getMessages = async peerId => {
   return await setAsyncTimeout(
     () => ([
       {
-          "message": "🐙🔗🍶",
+          "message": "🐙🔗🍶 How do you say? Is it on the ben gay thrust it up the slick donkey blue maria. No doubt he went over there for more than ta and crumpets. Right up her alley, eh?",
           "messageId": "QmV9TuiCWjBXT9W1bg4zM4jEJDpfUCZoi6q8gB6gViGUgk",
           "outgoing": false,
-          "peerId": "QmcUDmZK8PsPYWw5FRHKNZFjszm2K6e68BQSTpnJYUsML7",
+          "peerId": "QmYTXDyMNjdUSvqNc88T2VeVF3KdG7PMefnGQKrp9NZ5Tp",
           "read": true,
           "subject": "",
           "timestamp": "2019-05-24T14:17:28-06:00"
       },
       {
-          "message": "Thee salamander said no more. No less. Never again!",
+          "message": "Thee salamander said no more. No less. Never again! How far will you go if the show is all about that snow? Will you still go? I once went to the rafters of the green billy ripken on the show. Oh oh oh no.",
           "messageId": "QmURVEiL4BKcuQMGChpe2aq13rUMFV7uZTZMLR8NHdMxqH",
           "outgoing": true,
-          "peerId": "QmcUDmZK8PsPYWw5FRHKNZFjszm2K6e68BQSTpnJYUsML7",
+          "peerId": "QmU5ZSKVz2GhsqE6EmBGVCtrui4YhUXny6rbvsSf5h2xvH",
           "read": true,
           "subject": "",
           "timestamp": "2019-05-24T10:42:41-06:00"

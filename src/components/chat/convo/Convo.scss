@@ -1,5 +1,7 @@
 .ChatConvo {
   height: 100%;
+  position: relative;
+  margin-bottom: 50px;
 
   .ChatConvo-btnClose {
     padding: 0 5px;
@@ -11,5 +13,19 @@
     height: 55px;
     border-bottom-width: 1px;
     border-bottom-style: solid;
+  }
+
+  .ChatConvo-messages {
+    padding: 10px 5px;
+  }
+
+  .ChatConvo-messageInput {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
   }
 }

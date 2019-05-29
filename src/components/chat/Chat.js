@@ -14,6 +14,7 @@ import './Chat.scss';
 class Chat extends Component {
   state = {
     oldActiveConvo: null,
+    messageInputValues: {},
   };
 
   constructor(props) {
@@ -22,6 +23,7 @@ class Chat extends Component {
     this.handleRetryConvosClick = this.handleRetryConvosClick.bind(this);
     this.handleChatHeadClick = this.handleChatHeadClick.bind(this);
     this.handleConvoCloseClick = this.handleConvoCloseClick.bind(this);
+    this.handleMessageInputChange = this.handleMessageInputChange.bind(this);
   }
 
   componentDidMount() {
@@ -80,6 +82,12 @@ class Chat extends Component {
 
   handleConvoCloseClick() {
     this.props.actions.deactivateConvo();
+  }
+
+  handleMessageInputChange(e) {
+    const messageInputValues = this.state.messageInputValues;
+    messageInputValues[this.props.activeConvo.peerId] = e.target.value;
+    this.setState({ messageInputValues })
   }
 
   activateFirstConvo() {
@@ -160,12 +168,17 @@ class Chat extends Component {
     let chatConvo;
     const convoData = this.props.activeConvo || this.state.oldActiveConvo;
 
-    if (this.props.activeConvo || this.state.oldActiveConvo) {
+    if (convoData) {
       chatConvo = (
         <ChatConvo
           {...convoData}
-          onClick={this.props.activeConvo ? this.handleConvoCloseClick : null}
+          key={convoData.peerId}
           profile={this.props.profile[convoData.peerId]}
+          onClick={this.props.activeConvo ? this.handleConvoCloseClick : null}
+          messageInputValue={this.state.messageInputValues[convoData.peerId] || ''}
+          onMessageInputChange={
+            this.props.activeConvo ? this.handleMessageInputChange : null
+          }
         />
       );
     }
