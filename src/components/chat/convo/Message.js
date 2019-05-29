@@ -1,6 +1,8 @@
+import moment from 'moment';
 import React from 'react';
 import Avatar from 'components/ui/Avatar';
 import 'styles/layout.scss';
+import 'styles/type.scss';
 
 export default function(props) {
   const avatar = (
@@ -11,7 +13,19 @@ export default function(props) {
     />
   );
 
-  const msgText = <div className="padSm border clrBr clrS">{props.message}</div>;
+  const timestamp = (
+    <div 
+      className={`ChatMessage-timestamp clrT2 txTn ${!props.outgoing ? 'txRgt' : ''}`}>
+      {moment().format()}
+    </div>    
+  );
+
+  const msgText = (
+    <div className="padSm border clrBr clrS flexCol gutterVSm">
+      <div>{props.message}</div>
+      {timestamp}
+    </div>
+  );
 
   let msg;
 
@@ -33,7 +47,7 @@ export default function(props) {
   }
 
   return (
-    <div className="Chat-Message">
+    <div className="ChatMessage">
       {msg}
     </div>
   )

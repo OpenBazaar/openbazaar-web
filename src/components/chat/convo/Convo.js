@@ -26,17 +26,19 @@ export default function(props) {
           <IosClose fontSize="26px" />
         </button>
       </header>
-      <div className="ChatConvo-messages gutterV">
-        {props.messages.map(message => (
-          <Message
-            {...message}
-            key={message.messageId}
-            avatarHashes={props.profile ? props.profile.avatarHashes : null}
-          />
-        ))}
+      <div className="ChatConvo-messagesWrap">
+        <div className="ChatConvo-messages gutterV">
+          {props.messages.map(message => (
+            <Message
+              {...message}
+              key={message.messageId}
+              avatarHashes={props.profile ? props.profile.avatarHashes : null}
+            />
+          ))}
+        </div>
       </div>
       <input
-        className="ChatConvo-messageInput clrBr"
+        className="ChatConvo-messageInput clrBr clrP"
         type="text"
         placeholder={getPoly().t('chat.placeholderMessageInput')}
         value={props.messageInputValue}
