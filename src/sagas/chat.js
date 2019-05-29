@@ -121,7 +121,12 @@ function* getConvoMessages(action) {
     return;
   }
 
-  yield put(convoMessagesSuccess(messages));
+  yield put(
+    convoMessagesSuccess({
+      peerId,
+      messages,
+    })
+  );
 }
 
 function* activateConvo(action) {

@@ -71,12 +71,13 @@ const reduceConvoMessagesRequest = (state, action) => {
 }
 
 const reduceConvoMessagesSuccess = (state, action) => {
-  if (state.activeConvo && action.payload === state.activeConvo.peerId) {
+  if (state.activeConvo && action.payload.peerId === state.activeConvo.peerId) {
     state.activeConvo = {
       ...state.activeConvo,
       fetchingMessages: false,
       messageFetchFailed: false,
-      messageFetchError: null,    
+      messageFetchError: null,  
+      messages: action.payload.messages,  
     };
   }
 }

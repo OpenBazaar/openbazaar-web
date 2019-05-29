@@ -6,8 +6,9 @@ import * as ChatActions from 'actions/chat';
 import * as ProfileActions from 'actions/profile';
 import { getConvos } from 'reducers/chat';
 import IosClose from 'react-ionicons/lib/IosClose';
-import ChatHead from 'components/chat/ChatHead';
-import ChatConvo from 'components/chat/ChatConvo';
+import IosAlertOutline from 'react-ionicons/lib/IosAlertOutline';
+import ChatHead from './ChatHead';
+import ChatConvo from './convo/Convo.js';
 import './Chat.scss';
 
 class Chat extends Component {
@@ -96,22 +97,35 @@ class Chat extends Component {
     let convos = null;
 
     if (this.props.convosFetchFailed) {
-      convos = (
-        <div className="row">
-          <div className="clrTErr row">
-            {
-              this.props.convosFetchError ?
-                getPoly().t('chat.fetchConvosError', { error: this.props.convosFetchError }) :
-                getPoly().t('chat.fetchConvosErrorGeneric')
-            }
+      if (this.props.chatOpen) {
+        convos = (
+          <div className="row">
+            <div className="clrTErr row">
+              {
+                this.props.convosFetchError ?
+                  getPoly().t('chat.fetchConvosError', { error: this.props.convosFetchError }) :
+                  getPoly().t('chat.fetchConvosErrorGeneric')
+              }
+            </div>
+            <div className="txCtr">
+              <button className="btn clrP" onClick={this.handleRetryConvosClick}>
+                {getPoly().t('chat.btnRetryConvos')}
+              </button>
+            </div>
           </div>
-          <div className="txCtr">
-            <button className="btn clrP" onClick={this.handleRetryConvosClick}>
-              {getPoly().t('chat.btnRetryConvos')}
-            </button>
+        );
+      } else {
+        convos = (
+          <div className="icon clrTErr">
+            <IosAlertOutline
+              fontSize="42px"
+              // color="red"
+              onClick={() => this.props.actions.open()}
+              style={{ cursor: 'pointer' }}
+            />
           </div>
-        </div>
-      );
+        );
+      }
     } else {
       convos = (
         <div className="gutterVSm">

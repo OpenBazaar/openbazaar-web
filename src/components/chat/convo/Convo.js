@@ -2,7 +2,9 @@ import { getName } from 'models/profile';
 import React from 'react';
 import IosClose from 'react-ionicons/lib/IosClose';
 import Avatar from 'components/ui/Avatar';
-import './ChatConvo.scss';
+import Message from './Message';
+import 'styles/layout.scss';
+import './Convo.scss';
 
 export default function(props) {
   return (
@@ -23,6 +25,9 @@ export default function(props) {
           <IosClose fontSize="26px" />
         </button>
       </header>
+      <div className="ChatConvo-messages">
+        {props.messages.map(message => (<Message />))}
+      </div>
     </section>
   );
 }

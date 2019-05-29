@@ -43,6 +43,10 @@
   input[type='checkbox']:checked + label:before {
     color: $col1;
   }
+
+  &.icon > svg {
+    fill: $col1;
+  }
 }
 
 @mixin borderColor($col1, $col2: $border2) {
