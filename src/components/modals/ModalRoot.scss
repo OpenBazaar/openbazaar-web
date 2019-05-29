@@ -9,7 +9,6 @@
   left: 0;
   bottom: 0;
   @include chatOpenTransition(right);
-  background-color: pink;
 
   .Chat-chatOpen & {
     right: $chatWidth;

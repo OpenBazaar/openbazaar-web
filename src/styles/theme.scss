@@ -472,7 +472,9 @@ body .tippy-popper {
   }
 
   .Chat-chatOpen & {
-    background-color: $primary;
+    .Chat-chatHeads {
+      background-color: $primary;
+    }
   }
 }
 
