@@ -15,14 +15,14 @@ export default function(props) {
 
   const timestamp = (
     <div 
-      className={`ChatMessage-timestamp clrT2 txTn ${!props.outgoing ? 'txRgt' : ''}`}>
+      className={`ChatMessage-timestamp clrT2 txTn ${!props.outgoing ? 'flexHRight' : ''}`}>
       {moment().format()}
     </div>    
   );
 
   const msgText = (
-    <div className="padSm border clrBr clrS flexCol gutterVSm">
-      <div>{props.message}</div>
+    <div className="flexCol gutterVTn">
+      <div className="padSm border clrBr clrS">{props.message}</div>
       {timestamp}
     </div>
   );
