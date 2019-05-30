@@ -1,5 +1,5 @@
 import { createReducer, createSelector } from 'redux-starter-kit';
-import { orderBy } from 'lodash' ;
+import { orderBy } from 'lodash';
 import {
   open,
   close,
@@ -10,7 +10,7 @@ import {
   convoMessagesRequest,
   convoMessagesSuccess,
   convoMessagesFail,
-  deactivateConvo,
+  deactivateConvo
 } from 'actions/chat';
 import { AUTH_LOGOUT } from 'actions/auth';
 
@@ -20,7 +20,7 @@ const initialState = {
   convosFetchFailed: false,
   convosFetchError: null,
   convos: [],
-  activeConvo: null,
+  activeConvo: null
 };
 
 const openChat = (state, action) => {
@@ -35,74 +35,74 @@ const reduceConvosRequest = (state, action) => {
   state.fetchingConvos = true;
   state.convosFetchFailed = false;
   state.convosFetchError = null;
-}
+};
 
 const reduceConvosSuccess = (state, action) => {
   state.fetchingConvos = false;
   state.convosFetchFailed = false;
   state.convosFetchError = null;
   state.convos = action.payload;
-}
+};
 
 const reduceConvosFail = (state, action) => {
   state.fetchingConvos = false;
   state.convosFetchFailed = true;
   state.convosFetchError = action.payload;
-}
+};
 
 const reduceConvoActivated = (state, action) => {
   state.activeConvo = {
-    peerId: action.payload.peerId,
+    peerID: action.payload.peerID,
     messages: action.payload.messages || [],
     fetchingMessages: false,
     messageFetchFailed: false,
-    messageFetchError: null,    
+    messageFetchError: null
   };
-}
+};
 
 const reduceConvoMessagesRequest = (state, action) => {
-  if (state.activeConvo && action.payload === state.activeConvo.peerId) {
+  if (state.activeConvo && action.payload === state.activeConvo.peerID) {
     state.activeConvo = {
       ...state.activeConvo,
       fetchingMessages: true,
       messageFetchFailed: false,
-      messageFetchError: null,    
+      messageFetchError: null
     };
   }
-}
+};
 
 const reduceConvoMessagesSuccess = (state, action) => {
-  if (state.activeConvo && action.payload.peerId === state.activeConvo.peerId) {
+  if (state.activeConvo && action.payload.peerID === state.activeConvo.peerID) {
     state.activeConvo = {
       ...state.activeConvo,
       fetchingMessages: false,
       messageFetchFailed: false,
-      messageFetchError: null,  
-      messages: action.payload.messages,  
+      messageFetchError: null,
+      messages: action.payload.messages
     };
   }
-}
+};
 
 const reduceConvoMessagesFail = (state, action) => {
-  if (state.activeConvo && action.payload === state.activeConvo.peerId) {
+  if (state.activeConvo && action.payload === state.activeConvo.peerID) {
     state.activeConvo = {
       ...state.activeConvo,
       fetchingMessages: false,
       messageFetchFailed: action.payload.canceled,
-      messageFetchError: action.payload.canceled ?
-        null :
-        action.payload.error || null,
+      messageFetchError: action.payload.canceled
+        ? null
+        : action.payload.error || null
     };
   }
-}
+};
 
 const reduceDeactivateConvo = state => {
   state.activeConvo = null;
-}
+};
 
 const reduceAuthLogout = state => {
   return initialState;
-}
+};
 
 export default createReducer(initialState, {
   [open]: openChat,
@@ -115,13 +115,12 @@ export default createReducer(initialState, {
   [convoMessagesSuccess]: reduceConvoMessagesSuccess,
   [convoMessagesFail]: reduceConvoMessagesFail,
   [deactivateConvo]: reduceDeactivateConvo,
-  [AUTH_LOGOUT]: reduceAuthLogout,
+  [AUTH_LOGOUT]: reduceAuthLogout
 });
 
 // selectors
 
 export const getConvos = createSelector(
-  ['convos'], convos =>
-    (orderBy(convos, ['unread', 'lastMessageReceivedAt'], ['desc', 'desc']))
+  ['convos'],
+  convos => orderBy(convos, ['unread', 'timestamp'], ['desc', 'desc'])
 );
-

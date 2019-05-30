@@ -8,5 +8,5 @@ const reduceRequestCachedSuccess = (state, action) => {
 };
 
 export default createReducer(initialState, {
-  [requestCachedSuccess]: reduceRequestCachedSuccess,
+  [requestCachedSuccess]: reduceRequestCachedSuccess
 });

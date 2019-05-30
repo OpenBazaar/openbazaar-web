@@ -17,5 +17,5 @@ export default history => ({
   navMenu,
   onboarding,
   chat,
-  profile,
+  profile
 });

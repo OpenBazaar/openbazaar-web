@@ -9,15 +9,18 @@ export default function(props) {
     <Avatar
       size="small"
       avatarHashes={props.avatarHashes || null}
-      href={`/${props.peerId}`}
+      href={`/${props.peerID}`}
     />
   );
 
   const timestamp = (
-    <div 
-      className={`ChatMessage-timestamp clrT2 txTn ${!props.outgoing ? 'flexHRight' : ''}`}>
-      {moment(props.receivedAt).fromNow()}
-    </div>    
+    <div
+      className={`ChatMessage-timestamp clrT2 txTn ${
+        !props.outgoing ? 'flexHRight' : ''
+      }`}
+    >
+      {moment(props.timestamp).fromNow()}
+    </div>
   );
 
   const msgText = (
@@ -36,19 +39,15 @@ export default function(props) {
         {msgText}
         <div className="flexNoShrink">{avatar}</div>
       </div>
-    )
+    );
   } else {
     msg = (
       <div className="flex gutterHSm">
         <div className="flexNoShrink">{avatar}</div>
         {msgText}
       </div>
-    )    
+    );
   }
 
-  return (
-    <div className="ChatMessage">
-      {msg}
-    </div>
-  )
+  return <div className="ChatMessage">{msg}</div>;
 }

@@ -4,8 +4,6 @@ export function getName(profile) {
   }
 
   return (
-      (profile.handle && `@${profile.handle}`) ||
-        profile.name ||
-        profile.peerId
-    );
+    (profile.handle && `@${profile.handle}`) || profile.name || profile.peerID
+  );
 }

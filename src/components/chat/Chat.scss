@@ -21,7 +21,7 @@
     overflow-x: hidden;
     overflow-y: auto;
     border-width: 0;
-    
+
     // devices where mouse is primary pointing device
     @media (hover: hover) and (pointer: fine) {
       // only show the chat scroll on hover

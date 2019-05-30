@@ -2,10 +2,10 @@ import IPFS from 'ipfs';
 
 // todo: doc me up including:
 // todo: more robust arg checking here possible?
-// need base58 peerId, base64 privateKey
-const getIpfsNodeInitOpts = (peerId, privateKey) => {
-  if (typeof peerId !== 'string') {
-    throw new Error('Please provide a peerId as a string.');
+// need base58 peerID, base64 privateKey
+const getIpfsNodeInitOpts = (peerID, privateKey) => {
+  if (typeof peerID !== 'string') {
+    throw new Error('Please provide a peerID as a string.');
   }
 
   if (typeof privateKey !== 'string') {
@@ -20,7 +20,7 @@ const getIpfsNodeInitOpts = (peerId, privateKey) => {
     relay: {
       enabled: true
     },
-    repo: `ipfs/${peerId}`,
+    repo: `ipfs/${peerID}`,
     init: { privateKey }
   };
 };
@@ -45,34 +45,34 @@ const _create = async (options = {}) => {
 
 let curNode = null;
 
-export const get = (peerId, privateKey) => {
-  if (peerId !== undefined || privateKey !== undefined) {
-    ['peerId', 'privateKey'].forEach(arg => {
+export const get = (peerID, privateKey) => {
+  if (peerID !== undefined || privateKey !== undefined) {
+    ['peerID', 'privateKey'].forEach(arg => {
       if (typeof arg !== 'string' || !arg) {
         throw new Error(
-          'If providing the peerId or privateKey, both must be provided ' +
+          'If providing the peerID or privateKey, both must be provided ' +
             'as non-empty strings.'
         );
       }
     });
   }
 
-  if (peerId) {
+  if (peerID) {
     if (
       curNode &&
-      curNode.peerId === peerId &&
+      curNode.peerID === peerID &&
       curNode.privateKey === privateKey
     ) {
       return curNode.promise;
     } else {
-      if (curNode) destroy(peerId);
+      if (curNode) destroy(peerID);
       curNode = {
-        peerId,
+        peerID,
         privateKey,
-        promise: _create(getIpfsNodeInitOpts(peerId, privateKey)).catch(e => {
+        promise: _create(getIpfsNodeInitOpts(peerID, privateKey)).catch(e => {
           if (
             curNode &&
-            curNode.peerId === peerId &&
+            curNode.peerID === peerID &&
             curNode.privateKey === privateKey
           ) {
             curNode = null;
@@ -90,20 +90,20 @@ export const get = (peerId, privateKey) => {
       : Promise.reject(
           new Error(
             'There is no current ipfs node. You can create one ' +
-              'by passing in a peerId and private key.'
+              'by passing in a peerID and private key.'
           )
         );
   }
 };
 
-export const destroy = peerId => {
-  if (typeof peerId !== 'string' || !peerId) {
-    throw new Error('Please provide a peerId as a non-empty string.');
+export const destroy = peerID => {
+  if (typeof peerID !== 'string' || !peerID) {
+    throw new Error('Please provide a peerID as a non-empty string.');
   }
 
   // What happens if you try to reconnect to a node that is
   // being destroyed?
-  if (curNode && curNode.peerId === peerId) {
+  if (curNode && curNode.peerID === peerID) {
     curNode = null;
     return curNode.promise.then(node => node.stop());
   }

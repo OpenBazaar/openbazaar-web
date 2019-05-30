@@ -1,12 +1,19 @@
+import { getRandomInt } from 'util/number';
 import * as RxDB from 'rxdb';
 import pouchDbAdapterIdb from 'pouchdb-adapter-idb';
 import pouchDbAdapterHttp from 'pouchdb-adapter-http';
 import profileSchema from 'schema/profile';
+import chatConversationSchema from 'schema/chatConversation';
 
 const collections = [
   {
     name: 'profile',
     schema: profileSchema,
+    sync: true
+  },
+  {
+    name: 'chatconversation',
+    schema: chatConversationSchema,
     sync: true
   }
 ];
@@ -36,14 +43,42 @@ const _create = async (name, password) => {
   await Promise.all(collections.map(data => db.collection({ ...data })));
 
   // sync
-  collections
-    .filter(col => col.sync)
-    .map(col => col.name)
-    .map(colName => {
-      return db[colName].sync({
-        remote: `${syncUrl}/${name}/`
-      });
+  collections.filter(col => col.sync).map(col => col.name);
+  // .map(colName => {
+  //   return db[colName].sync({
+  //     remote: `${syncUrl}/${name}_${colName}`
+  //   });
+  // });
+
+  const peerIDs = [
+    'Qmbr7QtmKCVZ5g5mePNZHaetCKF9gryXxiLcyrdBPbMbnd',
+    'QmYTXDyMNjdUSvqNc88T2VeVF3KdG7PMefnGQKrp9NZ5Tp',
+    'QmQGpXWj6y4Sgmc4F8hvFFo3srhaPrv4oY3QsJ2FyGUh9K',
+    'QmU5ZSKVz2GhsqE6EmBGVCtrui4YhUXny6rbvsSf5h2xvH'
+  ];
+
+  const getRandomPeer = () => peerIDs[getRandomInt(0, peerIDs.length - 1)];
+
+  const messages = [
+    'how am I supposed to live without you?',
+    "don't pee on my leg and tell me its raining",
+    'human love is very fleeting and unreliable',
+    'Well I come from Alabami with a banji on me knee. I come from ' +
+      "west end Talee Hoo with a moop moop peek-a-boo. Ole Susani, oh don't " +
+      'you cry yo ass for me, for I come from Alabami with a banji on me knee.'
+  ];
+
+  const getRandomMessage = () => messages[getRandomInt(0, messages.length - 1)];
+
+  window.hey = (peerID = getRandomPeer()) => {
+    db.chatconversation.upsert({
+      peerID,
+      lastMessage: getRandomMessage(),
+      outgoing: true,
+      timestamp: Date.now().toString(),
+      unread: Math.floor(Math.random() * 150)
     });
+  };
 
   return db;
 };

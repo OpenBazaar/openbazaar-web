@@ -8,7 +8,7 @@ export default function(props) {
 
   return (
     <div
-      className={ `ChatHead flexVCent gutterHSm ${activeClass}` }
+      className={`ChatHead flexVCent gutterHSm ${activeClass}`}
       onClick={props.onClick}
     >
       <div className="flexNoShrink">
@@ -18,9 +18,11 @@ export default function(props) {
         />
       </div>
       <div className="flexExpand">
-        <div className={`ChatHead-textContent flexVCent gutterHSm border padSm clrP ${borderColor}`}>
+        <div
+          className={`ChatHead-textContent flexVCent gutterHSm border padSm clrP ${borderColor}`}
+        >
           <div className="ChatHead-name flexNoShrink clamp">
-            {props.profile ? getName(props.profile) : props.peerId}
+            {props.profile ? getName(props.profile) : props.peerID}
           </div>
           <div className="clamp flexExpand">{props.lastMessage}</div>
         </div>

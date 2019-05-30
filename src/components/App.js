@@ -45,9 +45,15 @@ class App extends Component {
 
   render() {
     const chatOpenClass =
-      this.props.chat.chatOpen && this.props.auth.loggedIn ? 'Chat-chatOpen' : '';
+      this.props.chat.chatOpen && this.props.auth.loggedIn
+        ? 'Chat-chatOpen'
+        : '';
 
-    const chat = this.props.auth.loggedIn ? <Chat /> : null;
+    const chat = this.props.auth.loggedIn ? (
+      <div className="App-chatContainer">
+        <Chat />
+      </div>
+    ) : null;
 
     const Content = !this.state.langLoaded ? (
       <div className="flexCent">
@@ -82,9 +88,7 @@ class App extends Component {
             <ModalRoot key={modal.id} {...modal} />
           ))}
         </div>
-        <div className="App-chatContainer">
-          {chat}
-        </div>
+        {chat}
         <div id="navMenuContainer" />
       </div>
     );
@@ -100,7 +104,7 @@ function mapStateToProps(state, prop) {
     router: state.router,
     responsive: state.responsive,
     auth: state.auth,
-    chat: state.chat,
+    chat: state.chat
   };
 }
 
@@ -109,7 +113,7 @@ function mapDispatchToProps(dispatch) {
     actions: {
       modals: bindActionCreators(ModalActions, dispatch),
       responsive: bindActionCreators(ResponsiveActions, dispatch),
-      chat: bindActionCreators(ChatActions, dispatch),
+      chat: bindActionCreators(ChatActions, dispatch)
     }
   };
 }

@@ -9,7 +9,7 @@ import ed2curve from 'ed2curve';
 import { randomBytes } from 'crypto';
 
 /*
- * Generates a peerId from the given menmonic. If not providing a menonic,
+ * Generates a peerID from the given menmonic. If not providing a menonic,
  * then this function will genrate one for you.
  */
 export function generatePeerId(mnemonic) {
@@ -33,7 +33,7 @@ export function generatePeerId(mnemonic) {
 
           resolve({
             mnemonic,
-            peerId: key._idB58String
+            peerID: key._idB58String
           });
         }
       );
@@ -81,7 +81,7 @@ export function identityKeyFromSeed(mnemonic, bits = 4096) {
       if (!err) {
         PeerId.createFromPubKey(
           keys.marshalPublicKey(keypair.public),
-          (err, peerId) => {
+          (err, peerID) => {
             if (err) {
               reject(err);
               return;
@@ -89,8 +89,8 @@ export function identityKeyFromSeed(mnemonic, bits = 4096) {
 
             // todo: strip the 'Key' suffix from pub and priv
             resolve({
-              peerId: peerId.toBytes(),
-              peerIdB58: peerId.toB58String(),
+              peerID: peerID.toBytes(),
+              peerIDB58: peerID.toB58String(),
               publicKey: keypair.public.bytes,
               privateKey: keypair.bytes
             });

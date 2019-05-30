@@ -4,7 +4,7 @@ import { openListingWatcher } from './listingCard';
 import {
   activateConvoWatcher,
   convoMessagesRequestWatcher,
-  convosRequestWatcher,
+  convosRequestWatcher
 } from './chat';
 import { getCachedProfileWatcher } from './profile';
 

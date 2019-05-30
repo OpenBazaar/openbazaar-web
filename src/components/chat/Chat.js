@@ -14,7 +14,7 @@ import './Chat.scss';
 class Chat extends Component {
   state = {
     oldActiveConvo: null,
-    messageInputValues: {},
+    messageInputValues: {}
   };
 
   constructor(props) {
@@ -39,12 +39,9 @@ class Chat extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (
-      !prevProps.convos ||
-      !prevProps.convos.length
-    ) {
+    if (!prevProps.convos || !prevProps.convos.length) {
       this.getConvoProfiles();
-      
+
       if (!this.props.activeConvo) {
         this.activateFirstConvo();
       }
@@ -55,8 +52,7 @@ class Chat extends Component {
       !this.props.activeConvo &&
       !(
         this.state.oldActiveConvo &&
-        this.state.oldActiveConvo.peerId ===
-          prevProps.peerId
+        this.state.oldActiveConvo.peerID === prevProps.peerID
       )
     ) {
       // The oldActiveConvo is kept around so that the chat convo
@@ -73,8 +69,8 @@ class Chat extends Component {
     this.props.actions.close();
   }
 
-  handleChatHeadClick(peerId) {
-    this.props.actions.activateConvo(peerId);
+  handleChatHeadClick(peerID) {
+    this.props.actions.activateConvo(peerID);
     if (!this.props.chatOpen) {
       this.props.actions.open();
     }
@@ -86,19 +82,20 @@ class Chat extends Component {
 
   handleMessageInputChange(e) {
     const messageInputValues = this.state.messageInputValues;
-    messageInputValues[this.props.activeConvo.peerId] = e.target.value;
-    this.setState({ messageInputValues })
+    messageInputValues[this.props.activeConvo.peerID] = e.target.value;
+    this.setState({ messageInputValues });
   }
 
   activateFirstConvo() {
     if (this.props.convos && this.props.convos.length) {
-      this.props.actions.activateConvo(this.props.convos[0].peerId);
+      this.props.actions.activateConvo(this.props.convos[0].peerID);
     }
   }
 
   getConvoProfiles() {
     this.props.convos.forEach(convo =>
-      this.props.actions.profile.requestCached({ peerId: convo.peerId }))
+      this.props.actions.profile.requestCached({ peerID: convo.peerID })
+    );
   }
 
   render() {
@@ -109,14 +106,17 @@ class Chat extends Component {
         convos = (
           <div className="row">
             <div className="clrTErr row">
-              {
-                this.props.convosFetchError ?
-                  getPoly().t('chat.fetchConvosError', { error: this.props.convosFetchError }) :
-                  getPoly().t('chat.fetchConvosErrorGeneric')
-              }
+              {this.props.convosFetchError
+                ? getPoly().t('chat.fetchConvosError', {
+                    error: this.props.convosFetchError
+                  })
+                : getPoly().t('chat.fetchConvosErrorGeneric')}
             </div>
             <div className="txCtr">
-              <button className="btn clrP" onClick={this.handleRetryConvosClick}>
+              <button
+                className="btn clrP"
+                onClick={this.handleRetryConvosClick}
+              >
                 {getPoly().t('chat.btnRetryConvos')}
               </button>
             </div>
@@ -137,31 +137,30 @@ class Chat extends Component {
     } else {
       convos = (
         <div className="gutterVSm">
-          {
-            this.props.convos
-              // .concat(this.props.convos)
-              // .concat(this.props.convos)
-              // .concat(this.props.convos)
-              // .concat(this.props.convos)
-              // .concat(this.props.convos)
-              // .concat(this.props.convos)
-              // .concat(this.props.convos)
-              .map(convo => {
-                const selected =
-                  this.props.activeConvo &&
-                  this.props.activeConvo.peerId=== convo.peerId;
+          {this.props.convos
+            // .concat(this.props.convos)
+            // .concat(this.props.convos)
+            // .concat(this.props.convos)
+            // .concat(this.props.convos)
+            // .concat(this.props.convos)
+            // .concat(this.props.convos)
+            // .concat(this.props.convos)
+            .map(convo => {
+              const selected =
+                this.props.activeConvo &&
+                this.props.activeConvo.peerID === convo.peerID;
 
-                return (
-                  <ChatHead {...convo}
-                    key={convo.peerId}
-                    selected={selected}
-                    onClick={() => this.handleChatHeadClick(convo.peerId)}
-                    profile={this.props.profile[convo.peerId] || null} 
-                  />
-                );
-              })
-          }
-        </div>        
+              return (
+                <ChatHead
+                  {...convo}
+                  key={convo.peerID}
+                  selected={selected}
+                  onClick={() => this.handleChatHeadClick(convo.peerID)}
+                  profile={this.props.profile[convo.peerID] || null}
+                />
+              );
+            })}
+        </div>
       );
     }
 
@@ -172,10 +171,12 @@ class Chat extends Component {
       chatConvo = (
         <ChatConvo
           {...convoData}
-          key={convoData.peerId}
-          profile={this.props.profile[convoData.peerId]}
+          key={convoData.peerID}
+          profile={this.props.profile[convoData.peerID]}
           onClick={this.props.activeConvo ? this.handleConvoCloseClick : null}
-          messageInputValue={this.state.messageInputValues[convoData.peerId] || ''}
+          messageInputValue={
+            this.state.messageInputValues[convoData.peerID] || ''
+          }
           onMessageInputChange={
             this.props.activeConvo ? this.handleMessageInputChange : null
           }
@@ -206,7 +207,7 @@ function mapStateToProps(state, prop) {
   return {
     ...state.chat,
     convos: getConvos(state.chat),
-    profile: state.profile,
+    profile: state.profile
   };
 }
 
@@ -214,7 +215,7 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: {
       ...bindActionCreators(ChatActions, dispatch),
-      profile: bindActionCreators(ProfileActions, dispatch),
+      profile: bindActionCreators(ProfileActions, dispatch)
     }
   };
 }

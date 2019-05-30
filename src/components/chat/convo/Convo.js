@@ -14,15 +14,12 @@ export default function(props) {
         <Avatar
           size="medium"
           avatarHashes={props.profile ? props.profile.avatarHashes : null}
-          href={`/${props.peerId}`}
+          href={`/${props.peerID}`}
         />
         <div className="ChatConvo-headerName flexExpand clamp txB">
           {props.profile ? getName(props.profile) : ''}
         </div>
-        <button
-          className="btn ChatConvo-btnClose"
-          onClick={props.onClick}
-        >
+        <button className="btn ChatConvo-btnClose" onClick={props.onClick}>
           <IosClose fontSize="26px" />
         </button>
       </header>

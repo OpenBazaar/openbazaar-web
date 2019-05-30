@@ -13,8 +13,5 @@ export function swallowException(fn) {
 
 // todo: doc me up and validate args
 export function setAsyncTimeout(fn, ms) {
-  return new Promise(
-    resolve =>
-      setTimeout(() => resolve(fn()), ms)
-  );
+  return new Promise(resolve => setTimeout(() => resolve(fn()), ms));
 }

@@ -85,13 +85,13 @@ ol {
 
   @include mq($until: mobileLandscape) {
     left: 0;
-  }  
+  }
 }
 
 #OBWEB {
   position: relative;
   overflow: hidden;
-  
+
   .block {
     display: block;
   }
