@@ -3,6 +3,7 @@ import { createBrowserHistory } from 'history';
 import { routerMiddleware } from 'connected-react-router';
 import createRootReducer from 'reducers';
 import createSagaMiddleware from 'redux-saga';
+import noAuthNoChat from 'middleware/noAuthNoChat';
 import rootSaga from 'sagas';
 
 export const history = createBrowserHistory();
@@ -11,7 +12,8 @@ const sagaMiddleware = createSagaMiddleware();
 const middleware = [
   ...getDefaultMiddleware(),
   routerMiddleware(history),
-  sagaMiddleware
+  sagaMiddleware,
+  noAuthNoChat,
 ];
 
 const store = configureStore({

@@ -12,12 +12,13 @@ import {
   convoMessagesFail,
   deactivateConvo,
 } from 'actions/chat';
+import { AUTH_LOGOUT } from 'actions/auth';
 
 const initialState = {
   chatOpen: false,
   fetchingConvos: false,
-  fetchingConvosFailed: false,
-  fetchingConvosError: null,
+  convosFetchFailed: false,
+  convosFetchError: null,
   convos: [],
   activeConvo: null,
 };
@@ -99,6 +100,10 @@ const reduceDeactivateConvo = state => {
   state.activeConvo = null;
 }
 
+const reduceAuthLogout = state => {
+  return initialState;
+}
+
 export default createReducer(initialState, {
   [open]: openChat,
   [close]: closeChat,
@@ -110,6 +115,7 @@ export default createReducer(initialState, {
   [convoMessagesSuccess]: reduceConvoMessagesSuccess,
   [convoMessagesFail]: reduceConvoMessagesFail,
   [deactivateConvo]: reduceDeactivateConvo,
+  [AUTH_LOGOUT]: reduceAuthLogout,
 });
 
 // selectors

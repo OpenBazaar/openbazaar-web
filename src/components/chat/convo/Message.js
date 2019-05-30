@@ -16,7 +16,7 @@ export default function(props) {
   const timestamp = (
     <div 
       className={`ChatMessage-timestamp clrT2 txTn ${!props.outgoing ? 'flexHRight' : ''}`}>
-      {moment().format()}
+      {moment(props.receivedAt).fromNow()}
     </div>    
   );
 

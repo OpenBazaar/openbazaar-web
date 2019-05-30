@@ -45,7 +45,9 @@ class App extends Component {
 
   render() {
     const chatOpenClass =
-      this.props.chat.chatOpen ? 'Chat-chatOpen' : '';
+      this.props.chat.chatOpen && this.props.auth.loggedIn ? 'Chat-chatOpen' : '';
+
+    const chat = this.props.auth.loggedIn ? <Chat /> : null;
 
     const Content = !this.state.langLoaded ? (
       <div className="flexCent">
@@ -81,7 +83,7 @@ class App extends Component {
           ))}
         </div>
         <div className="App-chatContainer">
-          <Chat />
+          {chat}
         </div>
         <div id="navMenuContainer" />
       </div>

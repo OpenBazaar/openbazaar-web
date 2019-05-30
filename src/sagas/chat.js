@@ -72,13 +72,11 @@ function* getConvos(action) {
 
 const messageCache = {};
 
-// TODO: cancel existing async tasks on deactivate convo
-// TODO: cancel existing async tasks on deactivate convo
-// TODO: cancel existing async tasks on deactivate convo
-// TODO: cancel existing async tasks on deactivate convo
-// TODO: cancel existing async tasks on deactivate convo
-// TODO: cancel existing async tasks on deactivate convo
-// TODO: cancel existing async tasks on deactivate convo
+// TODO: cancel existing async tasks on deactivate convo and logout
+// TODO: cancel existing async tasks on deactivate convo and logout
+// TODO: cancel existing async tasks on deactivate convo and logout
+// TODO: cancel existing async tasks on deactivate convo and logout
+// this might make the noAuthNoChat middleware moot.
 
 // stub until the db part is done and we get the message from there.
 // Please note: For now, just fetching all the messages. Later, we'll probably
@@ -94,7 +92,7 @@ const getMessages = async peerId => {
           "peerId": "QmYTXDyMNjdUSvqNc88T2VeVF3KdG7PMefnGQKrp9NZ5Tp",
           "read": true,
           "subject": "",
-          "timestamp": "2019-05-24T14:17:28-06:00"
+          "receivedAt": "2019-05-24T14:17:28-06:00"
       },
       {
           "message": "Thee salamander said no more. No less. Never again! How far will you go if the show is all about that snow? Will you still go? I once went to the rafters of the green billy ripken on the show. Oh oh oh no.",
@@ -103,10 +101,11 @@ const getMessages = async peerId => {
           "peerId": "QmU5ZSKVz2GhsqE6EmBGVCtrui4YhUXny6rbvsSf5h2xvH",
           "read": true,
           "subject": "",
-          "timestamp": "2019-05-24T10:42:41-06:00"
+          "receivedAt": "2019-05-24T10:42:41-06:00"
       }
     ]),
-    getRandomArbitrary(100, 3000)
+    // getRandomArbitrary(100, 3000)
+    getRandomArbitrary(3000, 8000)
   );
 }
 
