@@ -69,8 +69,6 @@ function* getConvos(action) {
   try {
     const db = yield call(getDb);
     const convos = yield call(getConvoList, db);
-    console.log('jrob');
-    window.jrob = convos;
     yield put(convosSuccess(convos));
   } catch (e) {
     yield put(convosFail(e.message || ''));

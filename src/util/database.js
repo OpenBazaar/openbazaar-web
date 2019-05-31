@@ -23,7 +23,7 @@ RxDB.QueryChangeDetector.enableDebugging();
 RxDB.plugin(pouchDbAdapterIdb);
 RxDB.plugin(pouchDbAdapterHttp); //enable syncing over http
 
-const syncUrl = process.env.REACT_APP_DB_SYNC_URL;
+// const syncUrl = process.env.REACT_APP_DB_SYNC_URL;
 
 let curDb = null;
 
@@ -54,7 +54,13 @@ const _create = async (name, password) => {
     'Qmbr7QtmKCVZ5g5mePNZHaetCKF9gryXxiLcyrdBPbMbnd',
     'QmYTXDyMNjdUSvqNc88T2VeVF3KdG7PMefnGQKrp9NZ5Tp',
     'QmQGpXWj6y4Sgmc4F8hvFFo3srhaPrv4oY3QsJ2FyGUh9K',
-    'QmU5ZSKVz2GhsqE6EmBGVCtrui4YhUXny6rbvsSf5h2xvH'
+    'QmU5ZSKVz2GhsqE6EmBGVCtrui4YhUXny6rbvsSf5h2xvH',
+    'QmT16YssMhbDT8MjS7UrFV8BKjvbALA8R4kLMJywma3aDu',
+    'QmVpB6diQwCq3r7KV7BzVwgkVLLGtyLErN36So3yg5Z5aZ',
+    'QmTiyLne8hCzAJVJzADposCQs8w7UqosvC9sK1wqtgmD5d',
+    'QmQ8g6HkawoosFrKNcjLhykRmvj3ra4QTSmeDcNTHrXWAJ',
+    'QmQinqZKXsLzzjTyTyNpZ8eNUUZNaRqtJ43cGa7hV7MscV',
+    'QmYUBFiztxr35LUnAksFiZdzdGEJBNuzcXutmeeZAazFB6',
   ];
 
   const getRandomPeer = () => peerIDs[getRandomInt(0, peerIDs.length - 1)];
