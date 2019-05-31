@@ -40,7 +40,8 @@
     "rxjs": "^6.2.1",
     "sass-mq": "^5.0.0",
     "tweetnacl": "^1.0.1",
-    "tweetnacl-util": "^0.15.0"
+    "tweetnacl-util": "^0.15.0",
+    "uuid": "^3.3.2"
   },
   "husky": {
     "hooks": {

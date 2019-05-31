@@ -4,7 +4,8 @@ import { openListingWatcher } from './listingCard';
 import {
   activateConvoWatcher,
   convoMessagesRequestWatcher,
-  convosRequestWatcher
+  convosRequestWatcher,
+  messageChangeWatcher,
 } from './chat';
 import { getCachedProfileWatcher } from './profile';
 
@@ -14,4 +15,5 @@ export default function* root() {
   yield spawn(convoMessagesRequestWatcher);
   yield spawn(convosRequestWatcher);
   yield spawn(getCachedProfileWatcher);
+  yield spawn(messageChangeWatcher);
 }

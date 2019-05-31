@@ -1,7 +1,7 @@
 import { getRandomArbitrary } from 'util/number';
 import { setAsyncTimeout } from 'util/index';
 import { get as getDb } from 'util/database';
-import { takeEvery, put, call } from 'redux-saga/effects';
+import { takeEvery, put, call, select } from 'redux-saga/effects';
 import {
   convosRequest,
   convosSuccess,
@@ -10,54 +10,12 @@ import {
   convoActivated,
   convoMessagesRequest,
   convoMessagesSuccess,
-  convoMessagesFail
+  convoMessagesFail,
+  messageChange,
 } from 'actions/chat';
-
-// const getConvosList = async () => {
-//   // randomly throw an error
-//   if (getRandomInt(0, 1)) {
-//     throw new Error('The pickles must come off the barbie!');
-//   }
-
-//   return await setAsyncTimeout(
-//     () => ([
-//       {
-//         lastMessage: 'hey boo',
-//         outgoing: false,
-//         peerID: 'Qmbr7QtmKCVZ5g5mePNZHaetCKF9gryXxiLcyrdBPbMbnd',
-//         timestamp: '2017-08-17T04:52:19Z',
-//         unread: 3
-//       },
-//       {
-//         lastMessage: 'hip hip ho to the rah maldives beaver',
-//         outgoing: false,
-//         peerID: 'QmYTXDyMNjdUSvqNc88T2VeVF3KdG7PMefnGQKrp9NZ5Tp',
-//         timestamp: '2016-01-17T04:52:19Z',
-//         unread: 0
-//       },
-//       {
-//         lastMessage: 'pooper scopper no more',
-//         outgoing: true,
-//         peerID: 'QmQGpXWj6y4Sgmc4F8hvFFo3srhaPrv4oY3QsJ2FyGUh9K',
-//         timestamp: '2017-01-17T04:52:19Z',
-//         unread: 0
-//       },
-//       {
-//         lastMessage: 'charlie says meatballs and banana peals',
-//         outgoing: true,
-//         peerID: 'QmU5ZSKVz2GhsqE6EmBGVCtrui4YhUXny6rbvsSf5h2xvH',
-//         timestamp: '2017-08-111T01:41:19Z',
-//         unread: 12
-//       }
-//     ]),
-//     getRandomArbitrary(100, 3000)
-//   );
-// }
 
 const getConvoList = async db => {
   const convos = await db.chatconversation.find().exec();
-  console.log('sweet');
-  window.sweet = convos;
   return convos.map(c => {
     const convo = c.toJSON();
     delete convo._rev;
@@ -87,52 +45,78 @@ const messageCache = {};
 // Please note: For now, just fetching all the messages. Later, we'll probably
 // want to do some form of pagination since the number of messages can get
 // quite large and rendering them in one go could be too heavy.
-const getMessages = async peerID => {
-  return await setAsyncTimeout(
-    () => [
-      {
-        message:
-          '🐙🔗🍶 How do you say? Is it on the ben gay thrust it up the slick donkey blue maria. No doubt he went over there for more than ta and crumpets. Right up her alley, eh?',
-        messageId: 'QmV9TuiCWjBXT9W1bg4zM4jEJDpfUCZoi6q8gB6gViGUgk',
-        outgoing: false,
-        peerID: 'QmYTXDyMNjdUSvqNc88T2VeVF3KdG7PMefnGQKrp9NZ5Tp',
-        read: true,
-        subject: '',
-        timestamp: '2019-05-24T14:17:28-06:00'
-      },
-      {
-        message:
-          'Thee salamander said no more. No less. Never again! How far will you go if the show is all about that snow? Will you still go? I once went to the rafters of the green billy ripken on the show. Oh oh oh no.',
-        messageId: 'QmURVEiL4BKcuQMGChpe2aq13rUMFV7uZTZMLR8NHdMxqH',
-        outgoing: true,
-        peerID: 'QmU5ZSKVz2GhsqE6EmBGVCtrui4YhUXny6rbvsSf5h2xvH',
-        read: true,
-        subject: '',
-        timestamp: '2019-05-24T10:42:41-06:00'
+// const getMessages = async peerID => {
+//   return await setAsyncTimeout(
+//     () => [
+//       {
+//         message:
+//           '🐙🔗🍶 How do you say? Is it on the ben gay thrust it up the slick donkey blue maria. No doubt he went over there for more than ta and crumpets. Right up her alley, eh?',
+//         messageId: 'QmV9TuiCWjBXT9W1bg4zM4jEJDpfUCZoi6q8gB6gViGUgk',
+//         outgoing: false,
+//         peerID: 'QmYTXDyMNjdUSvqNc88T2VeVF3KdG7PMefnGQKrp9NZ5Tp',
+//         read: true,
+//         subject: '',
+//         timestamp: '2019-05-24T14:17:28-06:00'
+//       },
+//       {
+//         message:
+//           'Thee salamander said no more. No less. Never again! How far will you go if the show is all about that snow? Will you still go? I once went to the rafters of the green billy ripken on the show. Oh oh oh no.',
+//         messageId: 'QmURVEiL4BKcuQMGChpe2aq13rUMFV7uZTZMLR8NHdMxqH',
+//         outgoing: true,
+//         peerID: 'QmU5ZSKVz2GhsqE6EmBGVCtrui4YhUXny6rbvsSf5h2xvH',
+//         read: true,
+//         subject: '',
+//         timestamp: '2019-05-24T10:42:41-06:00'
+//       }
+//     ],
+//     // getRandomArbitrary(100, 3000)
+//     getRandomArbitrary(3000, 8000)
+//   );
+// };
+
+// For now, just fetching all the messages. Later, we'll probably
+// want to do some form of pagination since the number of messages can get
+// quite large and rendering them in one go could be too heavy.
+const getMessagesList = async (db, peerID) => {
+  const allMessages = await db.chatmessage.find().exec();
+  console.log(`SHART MASTA: ${peerID}`);
+  console.dir(allMessages.map(m => m.toJSON()));
+  console.log(`<==== SHART MASTA`);
+
+  const messages = await db.chatmessage
+    .find({
+      peerID: {
+        $eq: peerID,
       }
-    ],
-    // getRandomArbitrary(100, 3000)
-    getRandomArbitrary(3000, 8000)
-  );
+    }).exec();
+  const sizzle = messages.map(m => {
+    const message = m.toJSON();
+    delete message._rev;
+    return message;
+  });
+  console.log(`FART STARTTER: ${peerID}`);
+  console.dir(sizzle);
+  console.log('<==== FART STARTTER');
+  console.log('\n');
+  return sizzle;
 };
 
 function* getConvoMessages(action) {
   const peerID = action.payload.peerID;
-  let messages = [];
 
   try {
-    messages = yield call(getMessages, [peerID]);
+    const db = yield call(getDb);
+    const messages = yield call(getMessagesList, db, peerID);
+    yield put(
+      convoMessagesSuccess({
+        peerID,
+        messages
+      })
+    );    
   } catch (e) {
     yield put(convoMessagesFail(e.message || ''));
     return;
   }
-
-  yield put(
-    convoMessagesSuccess({
-      peerID,
-      messages
-    })
-  );
 }
 
 function* activateConvo(action) {
@@ -151,6 +135,32 @@ function* activateConvo(action) {
   }
 }
 
+function* messageChanged(action) {
+  const state = yield select();
+
+  if (action.payload.operation === 'INSERT') {
+    try {
+      const db = yield call(getDb);
+      const convo = state.chat.convos[action.payload.data.peerID];
+
+      db.chatconversation.upsert({
+        peerID: action.payload.data.peerID,
+        lastMessage: action.payload.data.message,
+        outgoing: action.payload.data.outgoing,
+        timestamp: action.payload.data.timestamp,
+        unread: convo ? convo.unread += 1 : 1,
+      });
+    } catch (e) {
+      // TODO: seems like an edge case for this to error, but we should probably
+      // have some fallback... maybe a retry with exponential backoff? Maybe
+      // scan the chat messages on startup and if there's no corresponding convo
+      // create one then?
+      console.error('Unable to create / update a chat head for the following action:');
+      console.error(action);
+    }
+  }
+}
+
 export function* convosRequestWatcher() {
   yield takeEvery(convosRequest, getConvos);
 }
@@ -161,4 +171,8 @@ export function* activateConvoWatcher() {
 
 export function* convoMessagesRequestWatcher() {
   yield takeEvery(convoMessagesRequest, getConvoMessages);
+}
+
+export function* messageChangeWatcher() {
+  yield takeEvery(messageChange, messageChanged);
 }

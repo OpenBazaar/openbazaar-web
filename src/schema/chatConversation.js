@@ -20,7 +20,6 @@ const schema = {
     timestamp: {
       type: 'string',
       encrypted: false,
-      index: true
     },
     unread: {
       type: 'number',

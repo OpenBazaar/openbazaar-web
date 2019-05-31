@@ -1,7 +1,7 @@
 import { omit } from 'lodash';
 import { get as getDb } from 'util/database';
 import { AUTH_LOGIN_SUCCESS } from 'actions/auth';
-import { convoChange } from 'actions/chat';
+import { convoChange, messageChange } from 'actions/chat';
 
 const middleware = store => next => action => {
   if (action.type === AUTH_LOGIN_SUCCESS) {
@@ -14,6 +14,15 @@ const middleware = store => next => action => {
       db.chatconversation.$.subscribe(changeEvent =>
         store.dispatch(
           convoChange({
+            operation: changeEvent.data.op,
+            data: omit(changeEvent.data.v, ['_rev']),
+          })
+        )
+      );
+
+      db.chatmessage.$.subscribe(changeEvent =>
+        store.dispatch(
+          messageChange({
             operation: changeEvent.data.op,
             data: omit(changeEvent.data.v, ['_rev']),
           })

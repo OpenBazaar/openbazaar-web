@@ -178,7 +178,7 @@ class Chat extends Component {
             this.state.messageInputValues[convoData.peerID] || ''
           }
           onMessageInputChange={
-            this.props.activeConvo ? this.handleMessageInputChange : null
+            this.props.activeConvo ? this.handleMessageInputChange : () => {}
           }
         />
       );

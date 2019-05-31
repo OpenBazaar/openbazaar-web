@@ -1,9 +1,11 @@
+import uuid from 'uuid/v1';
 import { getRandomInt } from 'util/number';
 import * as RxDB from 'rxdb';
 import pouchDbAdapterIdb from 'pouchdb-adapter-idb';
 import pouchDbAdapterHttp from 'pouchdb-adapter-http';
 import profileSchema from 'schema/profile';
 import chatConversationSchema from 'schema/chatConversation';
+import chatMessageSchema from 'schema/chatMessage';
 
 const collections = [
   {
@@ -14,6 +16,11 @@ const collections = [
   {
     name: 'chatconversation',
     schema: chatConversationSchema,
+    sync: true
+  },
+  {
+    name: 'chatmessage',
+    schema: chatMessageSchema,
     sync: true
   }
 ];
@@ -66,9 +73,9 @@ const _create = async (name, password) => {
   const getRandomPeer = () => peerIDs[getRandomInt(0, peerIDs.length - 1)];
 
   const messages = [
-    'how am I supposed to live without you?',
+    'the chikun is on the barbie, aint is so Joe?',
     "don't pee on my leg and tell me its raining",
-    'human love is very fleeting and unreliable',
+    'that\'s for sure!',
     'Well I come from Alabami with a banji on me knee. I come from ' +
       "west end Talee Hoo with a moop moop peek-a-boo. Ole Susani, oh don't " +
       'you cry yo ass for me, for I come from Alabami with a banji on me knee.'
@@ -76,14 +83,29 @@ const _create = async (name, password) => {
 
   const getRandomMessage = () => messages[getRandomInt(0, messages.length - 1)];
 
-  window.hey = (peerID = getRandomPeer()) => {
-    db.chatconversation.upsert({
+  // window.createConvo = (peerID = getRandomPeer()) => {
+  //   db.chatconversation.upsert({
+  //     peerID,
+  //     lastMessage: getRandomMessage(),
+  //     outgoing: true,
+  //     timestamp: Date.now().toString(),
+  //     unread: Math.floor(Math.random() * 150)
+  //   });
+  // };
+
+  console.log(`inboundChatMessage() is ready to go.`);
+  window.inboundChatMessage = (message = getRandomMessage(), peerID = getRandomPeer()) => {
+    const theGoods = {
       peerID,
-      lastMessage: getRandomMessage(),
-      outgoing: true,
-      timestamp: Date.now().toString(),
-      unread: Math.floor(Math.random() * 150)
-    });
+      messageID: uuid(),
+      message,
+      outgoing: false,
+      timestamp: (new Date()).toISOString(),
+    };
+
+    console.dir(theGoods);
+
+    db.chatmessage.insert(theGoods);
   };
 
   return db;

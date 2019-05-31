@@ -12,6 +12,7 @@ import {
   convoMessagesFail,
   deactivateConvo,
   convoChange,
+  messageChange,
 } from 'actions/chat';
 import { AUTH_LOGOUT } from 'actions/auth';
 
@@ -82,7 +83,7 @@ const reduceConvoMessagesSuccess = (state, action) => {
       fetchingMessages: false,
       messageFetchFailed: false,
       messageFetchError: null,
-      messages: action.payload.messages
+      messages: action.payload.messages,
     };
   }
 };
@@ -108,6 +109,19 @@ const reduceConvoChange = (state, action) => {
   state.convos[action.payload.data.peerID] = action.payload.data;
 }
 
+const reduceMessageChange = (state, action) => {
+  if (
+    action.payload.operation === 'INSERT' &&
+    state.activeConvo &&
+    state.activeConvo.peerID === action.payload.data.peerID
+  ) {
+    // for now, we're not supporting editing or deleting a chat message
+    const messages = state.activeConvo.messages || [];
+    messages.push(action.payload.data);
+    state.activeConvo.messages = messages;
+  }
+}
+
 const reduceAuthLogout = state => {
   return initialState;
 };
@@ -124,6 +138,7 @@ export default createReducer(initialState, {
   [convoMessagesFail]: reduceConvoMessagesFail,
   [deactivateConvo]: reduceDeactivateConvo,
   [convoChange]: reduceConvoChange,
+  [messageChange]: reduceMessageChange,
   [AUTH_LOGOUT]: reduceAuthLogout
 });
 
