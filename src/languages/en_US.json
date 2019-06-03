@@ -188,7 +188,12 @@
   "chat": {
     "fetchConvosErrorGeneric": "There was an error retrieving the chat conversations.",
     "fetchConvosError": "There was an error retrieving the chat conversations: %{error}",
-    "btnRetryConvos": "Retry",
     "placeholderMessageInput": "Enter a message…"
+  },
+  "chatConvo": {
+    "fetchMessagesError": "There was an error retrieving the chat messages: %{error}"
+  },
+  "retryError": {
+    "btnRetry": "Retry"
   }
 }

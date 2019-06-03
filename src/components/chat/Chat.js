@@ -9,6 +9,7 @@ import IosClose from 'react-ionicons/lib/IosClose';
 import IosAlertOutline from 'react-ionicons/lib/IosAlertOutline';
 import ChatHead from './ChatHead';
 import ChatConvo from './convo/Convo.js';
+import RetryError from 'components/misc/RetryError';
 import './Chat.scss';
 
 class Chat extends Component {
@@ -24,6 +25,7 @@ class Chat extends Component {
     this.handleChatHeadClick = this.handleChatHeadClick.bind(this);
     this.handleConvoCloseClick = this.handleConvoCloseClick.bind(this);
     this.handleMessageInputChange = this.handleMessageInputChange.bind(this);
+    this.handleRetryMessageFetch = this.handleRetryMessageFetch.bind(this);
   }
 
   componentDidMount() {
@@ -86,6 +88,10 @@ class Chat extends Component {
     this.setState({ messageInputValues });
   }
 
+  handleRetryMessageFetch() {
+    this.props.actions.convoMessagesRequest();
+  }
+
   activateFirstConvo() {
     if (this.props.convos && this.props.convos.length) {
       this.props.actions.activateConvo(this.props.convos[0].peerID);
@@ -105,21 +111,16 @@ class Chat extends Component {
       if (this.props.chatOpen) {
         convos = (
           <div className="row">
-            <div className="clrTErr row">
-              {this.props.convosFetchError
-                ? getPoly().t('chat.fetchConvosError', {
+            <RetryError
+              errorMessage={
+                this.props.convosFetchError ?
+                  getPoly().t('chat.fetchConvosError', {
                     error: this.props.convosFetchError
-                  })
-                : getPoly().t('chat.fetchConvosErrorGeneric')}
-            </div>
-            <div className="txCtr">
-              <button
-                className="btn clrP"
-                onClick={this.handleRetryConvosClick}
-              >
-                {getPoly().t('chat.btnRetryConvos')}
-              </button>
-            </div>
+                  }) :
+                  getPoly().t('chat.fetchConvosErrorGeneric')
+              }
+              onRetryClick={this.handleRetryConvosClick}
+            />
           </div>
         );
       } else {
@@ -138,12 +139,6 @@ class Chat extends Component {
       convos = (
         <div className="gutterVSm">
           {this.props.convos
-            // .concat(this.props.convos)
-            // .concat(this.props.convos)
-            // .concat(this.props.convos)
-            // .concat(this.props.convos)
-            // .concat(this.props.convos)
-            // .concat(this.props.convos)
             // .concat(this.props.convos)
             .map(convo => {
               const selected =
@@ -173,12 +168,17 @@ class Chat extends Component {
           {...convoData}
           key={convoData.peerID}
           profile={this.props.profile[convoData.peerID]}
-          onClick={this.props.activeConvo ? this.handleConvoCloseClick : null}
+          onCloseClick={this.props.activeConvo ? this.handleConvoCloseClick : null}
           messageInputValue={
             this.state.messageInputValues[convoData.peerID] || ''
           }
           onMessageInputChange={
             this.props.activeConvo ? this.handleMessageInputChange : () => {}
+          }
+          messagesFetchFailed={convoData.messageFetchFailed}
+          messagesFetchError={convoData.messageFetchError}
+          onClickRetryMessageFetch={
+            this.props.activeConvo ? this.handleRetryMessageFetch : () => {}
           }
         />
       );

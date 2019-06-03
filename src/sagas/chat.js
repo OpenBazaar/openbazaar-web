@@ -1,3 +1,4 @@
+import { omit } from 'lodash';
 import { getRandomArbitrary } from 'util/number';
 import { setAsyncTimeout } from 'util/index';
 import { get as getDb } from 'util/database';
@@ -41,64 +42,27 @@ const messageCache = {};
 // TODO: cancel existing async tasks on deactivate convo and logout
 // this might make the noAuthNoChat middleware moot.
 
-// stub until the db part is done and we get the message from there.
-// Please note: For now, just fetching all the messages. Later, we'll probably
-// want to do some form of pagination since the number of messages can get
-// quite large and rendering them in one go could be too heavy.
-// const getMessages = async peerID => {
-//   return await setAsyncTimeout(
-//     () => [
-//       {
-//         message:
-//           '🐙🔗🍶 How do you say? Is it on the ben gay thrust it up the slick donkey blue maria. No doubt he went over there for more than ta and crumpets. Right up her alley, eh?',
-//         messageId: 'QmV9TuiCWjBXT9W1bg4zM4jEJDpfUCZoi6q8gB6gViGUgk',
-//         outgoing: false,
-//         peerID: 'QmYTXDyMNjdUSvqNc88T2VeVF3KdG7PMefnGQKrp9NZ5Tp',
-//         read: true,
-//         subject: '',
-//         timestamp: '2019-05-24T14:17:28-06:00'
-//       },
-//       {
-//         message:
-//           'Thee salamander said no more. No less. Never again! How far will you go if the show is all about that snow? Will you still go? I once went to the rafters of the green billy ripken on the show. Oh oh oh no.',
-//         messageId: 'QmURVEiL4BKcuQMGChpe2aq13rUMFV7uZTZMLR8NHdMxqH',
-//         outgoing: true,
-//         peerID: 'QmU5ZSKVz2GhsqE6EmBGVCtrui4YhUXny6rbvsSf5h2xvH',
-//         read: true,
-//         subject: '',
-//         timestamp: '2019-05-24T10:42:41-06:00'
-//       }
-//     ],
-//     // getRandomArbitrary(100, 3000)
-//     getRandomArbitrary(3000, 8000)
-//   );
-// };
+const getChatMessagesCol = async database => {
+  const db = database || await getDb();
+  return await db.collections.chatmessage.inMemory();
+};
 
 // For now, just fetching all the messages. Later, we'll probably
 // want to do some form of pagination since the number of messages can get
 // quite large and rendering them in one go could be too heavy.
 const getMessagesList = async (db, peerID) => {
-  const allMessages = await db.chatmessage.find().exec();
-  console.log(`SHART MASTA: ${peerID}`);
-  console.dir(allMessages.map(m => m.toJSON()));
-  console.log(`<==== SHART MASTA`);
-
-  const messages = await db.chatmessage
+  const messageCol = await getChatMessagesCol(db)
+  const docs = await messageCol
     .find({
       peerID: {
         $eq: peerID,
-      }
-    }).exec();
-  const sizzle = messages.map(m => {
-    const message = m.toJSON();
-    delete message._rev;
-    return message;
-  });
-  console.log(`FART STARTTER: ${peerID}`);
-  console.dir(sizzle);
-  console.log('<==== FART STARTTER');
-  console.log('\n');
-  return sizzle;
+      }      
+    })
+    .exec();
+
+  return docs.map(doc => (
+    omit(doc.toJSON(), ['_rev'])
+  ));
 };
 
 function* getConvoMessages(action) {
@@ -107,6 +71,8 @@ function* getConvoMessages(action) {
   try {
     const db = yield call(getDb);
     const messages = yield call(getMessagesList, db, peerID);
+
+    console.dir(messages);
     yield put(
       convoMessagesSuccess({
         peerID,
@@ -114,7 +80,12 @@ function* getConvoMessages(action) {
       })
     );    
   } catch (e) {
-    yield put(convoMessagesFail(e.message || ''));
+    yield put(
+      convoMessagesFail({
+        peerID,
+        error: e.message || '',
+      })
+    );
     return;
   }
 }

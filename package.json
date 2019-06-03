@@ -22,6 +22,7 @@
     "peer-id": "^0.12.2",
     "pouchdb-adapter-http": "^6.4.3",
     "pouchdb-adapter-idb": "^6.4.3",
+    "pouchdb-adapter-memory": "^7.0.0",
     "pouchdb-server": "^4.1.0",
     "prettier": "^1.16.1",
     "prop-types": "15.5.9",

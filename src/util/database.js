@@ -3,6 +3,7 @@ import { getRandomInt } from 'util/number';
 import * as RxDB from 'rxdb';
 import pouchDbAdapterIdb from 'pouchdb-adapter-idb';
 import pouchDbAdapterHttp from 'pouchdb-adapter-http';
+import PouchAdapterMemory from 'pouchdb-adapter-memory';
 import profileSchema from 'schema/profile';
 import chatConversationSchema from 'schema/chatConversation';
 import chatMessageSchema from 'schema/chatMessage';
@@ -29,6 +30,7 @@ RxDB.QueryChangeDetector.enableDebugging();
 
 RxDB.plugin(pouchDbAdapterIdb);
 RxDB.plugin(pouchDbAdapterHttp); //enable syncing over http
+RxDB.plugin(PouchAdapterMemory);
 
 // const syncUrl = process.env.REACT_APP_DB_SYNC_URL;
 
@@ -94,7 +96,7 @@ const _create = async (name, password) => {
   // };
 
   console.log(`inboundChatMessage() is ready to go.`);
-  window.inboundChatMessage = (message = getRandomMessage(), peerID = getRandomPeer()) => {
+  window.inboundChatMessage = async (message = getRandomMessage(), peerID = getRandomPeer()) => {
     const theGoods = {
       peerID,
       messageID: uuid(),
@@ -105,11 +107,21 @@ const _create = async (name, password) => {
 
     console.dir(theGoods);
 
-    db.chatmessage.insert(theGoods);
+    await db.chatmessage.insert(theGoods);
   };
 
   return db;
 };
+
+console.log('alot() yo');
+let i = 0;
+window.alot = () => {
+  if (i >= 100) return;
+  setTimeout(async () => {
+    await window.inboundChatMessage();
+    window.alot()
+  }, 300);
+}
 
 export const get = (name, password) => {
   if (name !== undefined || password !== undefined) {

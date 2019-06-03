@@ -11,7 +11,6 @@ const schema = {
     peerID: {
       type: 'string',
       encrypted: true,
-      index: true
     },
     message: {
       type: 'string',
