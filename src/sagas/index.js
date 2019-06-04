@@ -6,6 +6,7 @@ import {
   convoMessagesRequestWatcher,
   convosRequestWatcher,
   messageChangeWatcher,
+  sendMessageWatcher,
 } from './chat';
 import { getCachedProfileWatcher } from './profile';
 
@@ -16,4 +17,5 @@ export default function* root() {
   yield spawn(convosRequestWatcher);
   yield spawn(getCachedProfileWatcher);
   yield spawn(messageChangeWatcher);
+  yield spawn(sendMessageWatcher);
 }

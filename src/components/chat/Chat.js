@@ -26,6 +26,7 @@ class Chat extends Component {
     this.handleConvoCloseClick = this.handleConvoCloseClick.bind(this);
     this.handleMessageInputChange = this.handleMessageInputChange.bind(this);
     this.handleRetryMessageFetch = this.handleRetryMessageFetch.bind(this);
+    this.handleMessageSend = this.handleMessageSend.bind(this);
 
     this.convoMessagesScroll = {};
   }
@@ -92,6 +93,17 @@ class Chat extends Component {
 
   handleRetryMessageFetch() {
     this.props.actions.convoMessagesRequest();
+  }
+
+  handleMessageSend(data) {
+    this.props.actions.sendMessage(data);
+    const messageInputValues = 
+    this.setState({
+      messageInputValues: {
+        ...this.state.messageInputValues,
+        [data.peerID]: '',
+      }
+    });
   }
 
   activateFirstConvo() {
@@ -170,6 +182,7 @@ class Chat extends Component {
           {...convoData}
           key={convoData.peerID}
           profile={this.props.profile[convoData.peerID]}
+          ownProfile={this.props.auth.profile}
           onCloseClick={this.props.activeConvo ? this.handleConvoCloseClick : null}
           messageInputValue={
             this.state.messageInputValues[convoData.peerID] || ''
@@ -192,6 +205,10 @@ class Chat extends Component {
                 99999999 : el.scrollTop;
           }}
           initialMessagesScrollTop={this.convoMessagesScroll[convoData.peerID]}
+          onMessageSend={message => this.handleMessageSend({
+            message,
+            peerID: convoData.peerID,
+          })}
         />
       );
     }
@@ -219,7 +236,8 @@ function mapStateToProps(state, prop) {
   return {
     ...state.chat,
     convos: getConvos(state.chat),
-    profile: state.profile
+    profile: state.profile,
+    auth: state.auth,
   };
 }
 

@@ -24,6 +24,7 @@ class Convo extends Component {
     super(props);
     this.programaticallyScrolling = false;
     this.handleMessagesScroll = this.handleMessagesScroll.bind(this);
+    this.handleMessageInputKeyUp = this.handleMessageInputKeyUp.bind(this);
   }
 
   componentDidMount() {
@@ -73,6 +74,16 @@ class Convo extends Component {
     }
   }
 
+  handleMessageInputKeyUp(e) {
+    if (
+      typeof this.props.onMessageSend === 'function' &&
+      e.target.value &&
+      e.key === 'Enter'
+    ) {
+      this.props.onMessageSend(e.target.value);
+    }
+  }
+
   render() {
     let messages;
 
@@ -103,18 +114,30 @@ class Convo extends Component {
       );
     }
 
+    // now that this is a smart component, should we connect it
+    // and get the profiles ourselves?
+
+    // DUH - this needs to go on message not the header.
+    const avatarHashes = this.props.outgoing ?
+      (this.props.ownProfile && this.props.ownProfile.avatarHashes) || null :
+      (this.props.profile && this.props.profile.avatarHashes) || null;
+
+    console.dir(this.props);
+
     return (
       <section className="ChatConvo clrP border clrBr">
         <header className="flexVCent padSm clrBr gutterHSm">
-          <Avatar
-            size="medium"
-            avatarHashes={this.props.profile ? this.props.profile.avatarHashes : null}
-            href={`/${this.props.peerID}`}
-          />
-          <div className="ChatConvo-headerName flexExpand clamp txB">
-            {this.props.profile ? getName(this.props.profile) : ''}
+          <div className="flexNoShrink">
+            <Avatar
+              size="medium"
+              avatarHashes={avatarHashes}
+              href={`/${this.props.peerID}`}
+            />
           </div>
-          <button className="btn ChatConvo-btnClose" onClick={this.props.onCloseClick}>
+          <div className="ChatConvo-headerName flexExpand clamp txB">
+            {this.props.profile ? getName(this.props.profile) : this.props.peerID}
+          </div>
+          <button className="btn ChatConvo-btnClose flexNoShrink" onClick={this.props.onCloseClick}>
             <IosClose fontSize="26px" />
           </button>
         </header>
@@ -131,6 +154,7 @@ class Convo extends Component {
           placeholder={getPoly().t('chat.placeholderMessageInput')}
           value={this.props.messageInputValue}
           onChange={this.props.onMessageInputChange}
+          onKeyUp={this.handleMessageInputKeyUp}
         />
       </section>
     );

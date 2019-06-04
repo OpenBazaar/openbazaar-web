@@ -1,3 +1,4 @@
+import uuid from 'uuid';
 import { omit, orderBy, shuffle } from 'lodash';
 import { getRandomArbitrary } from 'util/number';
 import { setAsyncTimeout } from 'util/index';
@@ -13,6 +14,7 @@ import {
   convoMessagesSuccess,
   convoMessagesFail,
   messageChange,
+  sendMessage,
 } from 'actions/chat';
 
 const getConvoList = async db => {
@@ -134,6 +136,28 @@ function* messageChanged(action) {
   }
 }
 
+function *handleSendMessage(action) {
+  try {
+    const messageCol = yield call(getChatMessagesCol);
+    yield call([messageCol, 'insert'], {
+      peerID: action.payload.peerID,
+      messageID: uuid(),
+      message: action.payload.message,
+      outgoing: true,
+      timestamp: (new Date()).toISOString(),
+    });
+  } catch (e) {
+    // Not the best UX here, since the user only sees the failure in the
+    // console and can't retry without retyping. But... this is only the
+    // db message insertion which should very rarely fail and it's a bit
+    // of a rabbit whole to get this into the UI. Cutting a corner, for now.
+    const msg = `${action.payload.message.slice(0, 10)}…`;
+    console.error(`Unable to send the chat message: ${msg}`);
+    console.error(e);
+    return;
+  }
+}
+
 export function* convosRequestWatcher() {
   yield takeEvery(convosRequest, getConvos);
 }
@@ -148,4 +172,8 @@ export function* convoMessagesRequestWatcher() {
 
 export function* messageChangeWatcher() {
   yield takeEvery(messageChange, messageChanged);
+}
+
+export function* sendMessageWatcher() {
+  yield takeEvery(sendMessage, handleSendMessage);
 }
