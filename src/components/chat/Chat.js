@@ -26,6 +26,8 @@ class Chat extends Component {
     this.handleConvoCloseClick = this.handleConvoCloseClick.bind(this);
     this.handleMessageInputChange = this.handleMessageInputChange.bind(this);
     this.handleRetryMessageFetch = this.handleRetryMessageFetch.bind(this);
+
+    this.convoMessagesScroll = {};
   }
 
   componentDidMount() {
@@ -180,6 +182,16 @@ class Chat extends Component {
           onClickRetryMessageFetch={
             this.props.activeConvo ? this.handleRetryMessageFetch : () => {}
           }
+          onMessagesScroll={el => {
+            // Store the scroll position so it can be restored if they return
+            // to the convo. If theyre scrolled near the bottom, then we'll just
+            // put a hug number so the scroll position remains at the bottom
+            // even if new messages have arrived.
+            this.convoMessagesScroll[convoData.peerID] =
+              ChatConvo.scrolledNearBottom(el) ?
+                99999999 : el.scrollTop;
+          }}
+          initialMessagesScrollTop={this.convoMessagesScroll[convoData.peerID]}
         />
       );
     }
