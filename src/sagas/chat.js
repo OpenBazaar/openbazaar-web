@@ -1,4 +1,4 @@
-import { omit } from 'lodash';
+import { omit, orderBy, shuffle } from 'lodash';
 import { getRandomArbitrary } from 'util/number';
 import { setAsyncTimeout } from 'util/index';
 import { get as getDb } from 'util/database';
@@ -60,9 +60,12 @@ const getMessagesList = async (db, peerID) => {
     })
     .exec();
 
-  return docs.map(doc => (
-    omit(doc.toJSON(), ['_rev'])
-  ));
+  return orderBy(
+    docs.map(doc => (
+      omit(doc.toJSON(), ['_rev'])
+    )),
+    ['timestamp', 'desc']
+  );
 };
 
 function* getConvoMessages(action) {
@@ -72,7 +75,6 @@ function* getConvoMessages(action) {
     const db = yield call(getDb);
     const messages = yield call(getMessagesList, db, peerID);
 
-    console.dir(messages);
     yield put(
       convoMessagesSuccess({
         peerID,
@@ -119,7 +121,7 @@ function* messageChanged(action) {
         lastMessage: action.payload.data.message,
         outgoing: action.payload.data.outgoing,
         timestamp: action.payload.data.timestamp,
-        unread: convo ? convo.unread += 1 : 1,
+        unread: convo ? convo.unread + 1 : 1,
       });
     } catch (e) {
       // TODO: seems like an edge case for this to error, but we should probably

@@ -104,19 +104,21 @@ const reduceDeactivateConvo = state => {
 };
 
 const reduceConvoChange = (state, action) => {
-  state.convos[action.payload.data.peerID] = action.payload.data;
-}
+  state.convos[action.payload.data.peerID] = action.payload.data
+};
 
 const reduceMessageChange = (state, action) => {
   if (
+    // for now, we're not supporting editing or deleting a chat message
     action.payload.operation === 'INSERT' &&
     state.activeConvo &&
     state.activeConvo.peerID === action.payload.data.peerID
   ) {
-    // for now, we're not supporting editing or deleting a chat message
-    const messages = state.activeConvo.messages || [];
-    messages.push(action.payload.data);
-    state.activeConvo.messages = messages;
+    // TODO: insert in sorted order
+    state.activeConvo.messages = [
+      ...(state.activeConvo.messages || []),
+      action.payload.data
+    ];
   }
 }
 

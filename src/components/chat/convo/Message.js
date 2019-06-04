@@ -16,7 +16,7 @@ export default function(props) {
   const timestamp = (
     <div
       className={`ChatMessage-timestamp clrT2 txTn ${
-        !props.outgoing ? 'flexHRight' : ''
+        !props.outgoing ? '' : 'flexHRight'
       }`}
     >
       {moment(props.timestamp).fromNow()}
@@ -24,7 +24,7 @@ export default function(props) {
   );
 
   const msgText = (
-    <div className="flexCol gutterVTn">
+    <div className="flexCol gutterVTn" style={{marginTop: '5px'}}>
       <div className="padSm border clrBr clrS">{props.message}</div>
       {timestamp}
     </div>
