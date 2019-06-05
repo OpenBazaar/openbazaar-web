@@ -1,7 +1,5 @@
 import uuid from 'uuid';
-import { omit, orderBy, shuffle } from 'lodash';
-import { getRandomArbitrary } from 'util/number';
-import { setAsyncTimeout } from 'util/index';
+import { omit, orderBy } from 'lodash';
 import { get as getDb } from 'util/database';
 import { takeEvery, put, call, select } from 'redux-saga/effects';
 import {
@@ -15,6 +13,7 @@ import {
   convoMessagesFail,
   messageChange,
   sendMessage,
+  convoMarkRead,
 } from 'actions/chat';
 
 const getConvoList = async db => {
@@ -116,14 +115,24 @@ function* messageChanged(action) {
   if (action.payload.operation === 'INSERT') {
     try {
       const db = yield call(getDb);
-      const convo = state.chat.convos[action.payload.data.peerID];
+      const peerID = action.payload.data.peerID;
+      const convo = state.chat.convos[peerID];
+      const isActive =
+        state.chat.chatOpen &&
+        state.chat.activeConvo &&
+          state.chat.activeConvo.peerID === peerID;
+      let unread = 0;
+
+      if (!action.payload.data.outgoing && !isActive) {
+        unread = convo ? convo.unread + 1 : 1;
+      }
 
       db.chatconversation.upsert({
         peerID: action.payload.data.peerID,
         lastMessage: action.payload.data.message,
         outgoing: action.payload.data.outgoing,
         timestamp: action.payload.data.timestamp,
-        unread: convo ? convo.unread + 1 : 1,
+        unread,
       });
     } catch (e) {
       // TODO: seems like an edge case for this to error, but we should probably
@@ -132,6 +141,7 @@ function* messageChanged(action) {
       // create one then?
       console.error('Unable to create / update a chat head for the following action:');
       console.error(action);
+      console.error(e);
     }
   }
 }
@@ -150,11 +160,56 @@ function *handleSendMessage(action) {
     // Not the best UX here, since the user only sees the failure in the
     // console and can't retry without retyping. But... this is only the
     // db message insertion which should very rarely fail and it's a bit
-    // of a rabbit whole to get this into the UI. Cutting a corner, for now.
+    // of a rabbit hole to get this into the UI. Cutting a corner, for now.
     const msg = `${action.payload.message.slice(0, 10)}…`;
     console.error(`Unable to send the chat message: ${msg}`);
     console.error(e);
     return;
+  }
+}
+
+const getConvo = async (peerID, database) => {
+  const db = database || await getDb();
+  const doc = await db.collections.chatconversation
+    .findOne(
+      {
+        peerID: {
+          $eq: peerID,
+        },
+      }
+    ).exec();
+
+  return doc;
+}
+
+function *handleConvoMarkRead(action) {
+  let peerID;
+
+  try {
+    peerID = action.payload.peerID;
+    const convo = yield call(getConvo, peerID);
+
+    if (!convo) {
+      throw new Error(`There is no convo for peerID ${peerID}`);
+    }
+
+    yield call(
+      [convo, 'update'],
+      {
+        $set: {
+          unread: 0,
+        },
+      }
+    );
+  } catch (e) {
+    if (!peerID) {
+      console.error('Unable to process the handleConvoMarkRead because a ' +
+        'peerID was not provided in the action payload.');
+      return;
+    }
+
+    console.error(`Unable to mark convo ${peerID} as read.`);
+    console.error(e);
   }
 }
 
@@ -176,4 +231,8 @@ export function* messageChangeWatcher() {
 
 export function* sendMessageWatcher() {
   yield takeEvery(sendMessage, handleSendMessage);
+}
+
+export function* convoMarkReadWatcher() {
+  yield takeEvery(convoMarkRead, handleConvoMarkRead);
 }

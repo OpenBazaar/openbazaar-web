@@ -16,5 +16,6 @@ export const convoActivated = createAction('CHAT_CONVO_ACTIVATED');
 export const convoMessagesRequest = createAction('CHAT_CONVO_MESSAGES_REQUEST');
 export const convoMessagesSuccess = createAction('CHAT_CONVO_MESSAGES_SUCCESS');
 export const convoMessagesFail = createAction('CHAT_CONVO_MESSAGES_FAILURE');
+export const convoMarkRead = createAction('CHAT_CONVO_MARK_READ');
 export const messageChange = createAction('CHAT_CONVO_MESSAGE_CHANGE');
 export const sendMessage = createAction('CHAT_SEND_MESSAGE');

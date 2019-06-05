@@ -39,14 +39,50 @@ const reduceConvosRequest = (state, action) => {
   state.convosFetchError = null;
 };
 
+const createConvo = data => ({
+  ...data,
+  // This is used for sorting by the selector.
+  sortTimestamp: (new Date()).toISOString(),
+});
+
 const reduceConvosSuccess = (state, action) => {
   state.fetchingConvos = false;
   state.convosFetchFailed = false;
   state.convosFetchError = null;
+
   state.convos = action.payload.reduce((acc, convo) => {
-    acc[convo.peerID] = convo;
+    let sortTimestamp = convo.timestamp;
+
+    if (!convo.unread) {
+      // the idea is for convos with unread messages to be on top
+      const date = new Date(convo.timestamp);
+      date.setFullYear(date.getFullYear() - 100);
+      sortTimestamp = date.toISOString();
+    }
+
+    acc[convo.peerID] = {
+      ...convo,
+      sortTimestamp,
+    };
     return acc;
   }, {});
+};
+
+const reduceConvoChange = (state, action) => {
+  const peerID = action.payload.data.peerID;
+  const isNew = !state.convos[peerID];
+
+  if (isNew || action.payload.data.unread) {
+    state.convos[peerID] = {
+      ...action.payload.data,
+      sortTimestamp: (new Date()).toISOString(),
+    };
+  } else {
+    state.convos[peerID] = {
+      ...action.payload.data,
+      sortTimestamp: state.convos[peerID].sortTimestamp,
+    };
+  }
 };
 
 const reduceConvosFail = (state, action) => {
@@ -103,10 +139,6 @@ const reduceDeactivateConvo = state => {
   state.activeConvo = null;
 };
 
-const reduceConvoChange = (state, action) => {
-  state.convos[action.payload.data.peerID] = action.payload.data
-};
-
 const reduceMessageChange = (state, action) => {
   if (
     // for now, we're not supporting editing or deleting a chat message
@@ -149,6 +181,7 @@ export const getConvos = createSelector(
   convos => orderBy(
     Object.keys(convos)
       .map(convoPeerId => convos[convoPeerId]),
-    ['unread', 'timestamp'], ['desc', 'desc']
+    ['sortTimestamp'],
+    ['desc']
   )
 );

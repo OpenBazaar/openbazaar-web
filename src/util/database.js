@@ -105,23 +105,11 @@ const _create = async (name, password) => {
       timestamp: (new Date()).toISOString(),
     };
 
-    console.dir(theGoods);
-
     await db.chatmessage.insert(theGoods);
   };
 
   return db;
 };
-
-console.log('alot() yo');
-let i = 0;
-window.alot = () => {
-  if (i >= 100) return;
-  setTimeout(async () => {
-    await window.inboundChatMessage();
-    window.alot()
-  }, 300);
-}
 
 export const get = (name, password) => {
   if (name !== undefined || password !== undefined) {

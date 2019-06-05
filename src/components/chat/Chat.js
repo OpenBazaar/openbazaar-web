@@ -64,6 +64,26 @@ class Chat extends Component {
       // component will visually remain in the UI as it slides down.
       this.setState({ oldActiveConvo: prevProps.activeConvo });
     }
+
+    if (
+      (
+        this.props.chatOpen &&
+        !prevProps.activeConvo &&
+        this.props.activeConvo
+      ) || (
+        this.props.chatOpen &&
+        !prevProps.chatOpen &&
+        this.props.activeConvo
+      )
+    ){
+      const convo = this.props.convos
+        .find(convo => convo.peerID === this.props.activeConvo.peerID);
+
+      if (convo && convo.unread) {
+        this.props.actions
+          .convoMarkRead({ peerID: this.props.activeConvo.peerID });
+      }
+    }
   }
 
   handleRetryConvosClick() {

@@ -469,6 +469,11 @@ body .tippy-popper {
 .Chat {
   .Chat-chatHeads {
     background-color: transparent;
+
+    .ChatHead-unreadCount {
+      background-color: red;
+      color: white;
+    }
   }
 
   .Chat-chatOpen & {
