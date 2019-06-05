@@ -4,17 +4,11 @@
 
 .Chat {
   position: absolute;
-  width: $chatWidth;
+  width: 100%;
   right: 0;
   top: 0;
   bottom: 0;
-  transform: translateX(calc(100% - 52px));
   padding-top: 35px;
-  @include chatOpenTransition(transform);
-
-  @include mq($until: mobileLandscape) {
-    width: 100%;
-  }
 
   .Chat-chatHeads {
     height: 100%;
@@ -87,8 +81,6 @@
   }
 
   .Chat-chatOpen & {
-    transform: translateX(0);
-
     .Chat-chatConvoWrap {
       // Using bottom here rather than hiding/showing with
       // display because the latter would not allow us to set
