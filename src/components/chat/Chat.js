@@ -97,7 +97,6 @@ class Chat extends Component {
 
   handleMessageSend(data) {
     this.props.actions.sendMessage(data);
-    const messageInputValues = 
     this.setState({
       messageInputValues: {
         ...this.state.messageInputValues,
@@ -181,8 +180,6 @@ class Chat extends Component {
         <ChatConvo
           {...convoData}
           key={convoData.peerID}
-          profile={this.props.profile[convoData.peerID]}
-          ownProfile={this.props.auth.profile}
           onCloseClick={this.props.activeConvo ? this.handleConvoCloseClick : null}
           messageInputValue={
             this.state.messageInputValues[convoData.peerID] || ''
@@ -254,5 +251,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(Chat);
-
-// export default Chat;

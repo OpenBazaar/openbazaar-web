@@ -1,5 +1,6 @@
 import { getName } from 'models/profile';
 import { getPoly } from 'util/polyglot';
+import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import IosClose from 'react-ionicons/lib/IosClose';
 import Avatar from 'components/ui/Avatar';
@@ -103,26 +104,26 @@ class Convo extends Component {
     } else {
       messages = (
         <div className="ChatConvo-messages gutterV">
-          {this.props.messages.map(message => (
-            <Message
+          {this.props.messages.map(message => {
+            let avatarHashes;
+
+            try {
+              avatarHashes = message.outgoing ?
+                this.props.auth.profile.avatarHashes :
+                this.props.profile[message.peerID].avatarHashes;
+            } catch (e) {
+              // pass
+            }
+
+            return <Message
               {...message}
               key={message.messageID}
-              avatarHashes={this.props.profile ? this.props.profile.avatarHashes : null}
+              avatarHashes={avatarHashes}
             />
-          ))}
+          })}
         </div>
       );
     }
-
-    // now that this is a smart component, should we connect it
-    // and get the profiles ourselves?
-
-    // DUH - this needs to go on message not the header.
-    const avatarHashes = this.props.outgoing ?
-      (this.props.ownProfile && this.props.ownProfile.avatarHashes) || null :
-      (this.props.profile && this.props.profile.avatarHashes) || null;
-
-    console.dir(this.props);
 
     return (
       <section className="ChatConvo clrP border clrBr">
@@ -130,12 +131,19 @@ class Convo extends Component {
           <div className="flexNoShrink">
             <Avatar
               size="medium"
-              avatarHashes={avatarHashes}
+              avatarHashes={
+                this.props.profile[this.props.peerID] &&
+                this.props.profile[this.props.peerID].avatarHashes
+              }
               href={`/${this.props.peerID}`}
             />
           </div>
           <div className="ChatConvo-headerName flexExpand clamp txB">
-            {this.props.profile ? getName(this.props.profile) : this.props.peerID}
+            {
+              this.props.profile[this.props.peerID] ?
+                getName(this.props.profile[this.props.peerID]) :
+                this.props.peerID
+            }
           </div>
           <button className="btn ChatConvo-btnClose flexNoShrink" onClick={this.props.onCloseClick}>
             <IosClose fontSize="26px" />
@@ -161,4 +169,14 @@ class Convo extends Component {
   }
 }
 
-export default Convo;
+function mapStateToProps(state, prop) {
+  return {
+    profile: state.profile,
+    auth: state.auth,
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  null,
+)(Convo);
