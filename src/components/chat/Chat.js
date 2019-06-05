@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as ChatActions from 'actions/chat';
 import * as ProfileActions from 'actions/profile';
-import { getConvos } from 'reducers/chat';
+import { getChatState } from 'reducers/chat';
 import IosClose from 'react-ionicons/lib/IosClose';
 import IosAlertOutline from 'react-ionicons/lib/IosAlertOutline';
 import ChatHead from './ChatHead';
@@ -251,8 +251,7 @@ class Chat extends Component {
 
 function mapStateToProps(state, prop) {
   return {
-    ...state.chat,
-    convos: getConvos(state.chat),
+    ...getChatState(state.chat),
     profile: state.profile,
     auth: state.auth,
   };

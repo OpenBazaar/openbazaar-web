@@ -92,10 +92,6 @@ ol {
   @include mq($until: mobileLandscape) {
     width: 100%;
   }
-
-  &:empty {
-    display: none;
-  }
 }
 
 #OBWEB {

@@ -185,3 +185,8 @@ export const getConvos = createSelector(
     ['desc']
   )
 );
+
+export const getChatState = rawChatState => ({
+  ...rawChatState,
+  convos: getConvos(rawChatState)
+});

@@ -7,6 +7,7 @@ import * as ChatActions from 'actions/chat';
 import { Route, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
 import { loadLang } from 'util/polyglot';
+import { getChatState } from 'reducers/chat';
 import ModalRoot from 'components/modals/ModalRoot';
 import Discovery from 'components/pages/Discovery';
 import Modals from 'components/pages/Modals';
@@ -49,11 +50,17 @@ class App extends Component {
         ? 'Chat-chatOpen'
         : '';
 
-    const chat = this.props.auth.loggedIn ? (
-      <div className="App-chatContainer">
-        <Chat />
-      </div>
-    ) : null;
+    const chat =
+      this.props.auth.loggedIn &&
+      (
+        this.props.chat.convos.length ||
+        this.props.activeConvo
+      ) ?
+      (
+        <div className="App-chatContainer">
+          <Chat />
+        </div>
+      ) : null;
 
     const Content = !this.state.langLoaded ? (
       <div className="flexCent">
@@ -104,7 +111,7 @@ function mapStateToProps(state, prop) {
     router: state.router,
     responsive: state.responsive,
     auth: state.auth,
-    chat: state.chat
+    chat: getChatState(state.chat),
   };
 }
 
