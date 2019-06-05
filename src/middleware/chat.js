@@ -9,8 +9,6 @@ const middleware = store => next => action => {
     getDb().then(db => {
       // todo: shouldn't collection names be plural?
       // todo: shouldn't collection names be plural?
-      // todo: shouldn't collection names be plural?
-      // todo: shouldn't collection names be plural?
       db.chatconversation.$.subscribe(changeEvent =>
         store.dispatch(
           convoChange({

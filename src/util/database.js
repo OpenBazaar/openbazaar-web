@@ -85,16 +85,6 @@ const _create = async (name, password) => {
 
   const getRandomMessage = () => messages[getRandomInt(0, messages.length - 1)];
 
-  // window.createConvo = (peerID = getRandomPeer()) => {
-  //   db.chatconversation.upsert({
-  //     peerID,
-  //     lastMessage: getRandomMessage(),
-  //     outgoing: true,
-  //     timestamp: Date.now().toString(),
-  //     unread: Math.floor(Math.random() * 150)
-  //   });
-  // };
-
   console.log(`inboundChatMessage() is ready to go.`);
   window.inboundChatMessage = async (message = getRandomMessage(), peerID = getRandomPeer()) => {
     const theGoods = {
