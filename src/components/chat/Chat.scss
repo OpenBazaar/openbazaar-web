@@ -21,6 +21,7 @@
     overflow-x: hidden;
     overflow-y: auto;
     border-width: 0;
+    transition: height 500ms;
 
     // devices where mouse is primary pointing device
     @media (hover: hover) and (pointer: fine) {
@@ -78,11 +79,7 @@
     right: 0;
     transform: translateY(100%);
     transition: transform 500ms;
-    height: 350px;
-
-    &.open {
-      transform: translateY(0);
-    }
+    height: $chatHeight;
 
     @include mq($until: mobileLandscape) {
       height: 100%;
@@ -107,5 +104,19 @@
         cursor: default;
       }
     }
+
+    &.Chat-convoOpen {
+      .Chat-chatHeads {
+        height: calc(100% - #{$chatHeight});
+
+        @include mq($until: mobileLandscape) {
+          height: 100%;
+        }      
+      }
+
+      .Chat-chatConvoWrap {
+        transform: translateY(0);
+      }
+    }    
   }
 }

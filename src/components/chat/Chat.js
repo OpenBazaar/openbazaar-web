@@ -230,10 +230,10 @@ class Chat extends Component {
       );
     }
 
-    const chatConvoWrapOpenClass = this.props.activeConvo ? 'open' : '';
+    const chatConvoOpenClass = this.props.activeConvo ? 'Chat-convoOpen' : '';
 
     return (
-      <div className="Chat tx6">
+      <div className={`Chat tx6 ${chatConvoOpenClass}`}>
         <button
           className="Chat-btnClose border clrBr clrP"
           onClick={this.handleCloseClick}
@@ -241,7 +241,7 @@ class Chat extends Component {
           <IosClose fontSize="30px" />
         </button>
         <div className="Chat-chatHeads border padSm clrBr">{convos}</div>
-        <div className={`Chat-chatConvoWrap ${chatConvoWrapOpenClass}`}>
+        <div className="Chat-chatConvoWrap">
           {chatConvo}
         </div>
       </div>
