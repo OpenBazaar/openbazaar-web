@@ -7,8 +7,8 @@ import './ModalRoot.scss';
 class ModalRoot extends Component {
   static defaultProps = {
     rootClass: '',
-    transparent: false,
-    innerWrapClass: ''
+    contentWrapClrClass: 'clrP clrBr clrSh3 clrT border',
+    contentWrapBaseClass: 'padMd',
   };
 
   constructor(props) {
@@ -80,15 +80,16 @@ class ModalRoot extends Component {
     //  component, not all the top level sugar.
     return (
       <section className={`ModalRoot ${this.props.rootClass}`}>
-        <div
-          className={
-            'ModalRoot-innerWrap ' +
-            (!this.props.transparent ? 'clrP clrBr clrSh3 padMd' : '') +
-            this.props.innerWrapClass
-          }
-        >
-          {btnClose}
-          <this.state.ModalComponent {...modalProps} />
+        <div className="ModalRoot-innerWrap">
+          <div
+            className={
+              `ModalRoot-contentWrap ${this.props.contentWrapClrClass} ` +
+              this.props.contentWrapBaseClass
+            }
+          >
+            {btnClose}
+            <this.state.ModalComponent {...modalProps} />          
+          </div>
         </div>
       </section>
     );

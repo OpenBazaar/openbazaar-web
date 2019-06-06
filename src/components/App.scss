@@ -42,6 +42,7 @@
   .App-mainContent {
     @include chatOpenTransition(width);
     width: 100%;
+    // overflow-y: scroll;
   }
 
   &.Chat-chatOpen .App-mainContent {
