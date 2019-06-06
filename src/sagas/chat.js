@@ -6,7 +6,7 @@ import {
   convosRequest,
   convosSuccess,
   convosFail,
-  activateConvo as activateConvoAction,
+  activateConvo,
   convoActivated,
   convoMessagesRequest,
   convoMessagesSuccess,
@@ -93,7 +93,7 @@ function* getConvoMessages(action) {
   }
 }
 
-function* activateConvo(action) {
+function* handleActivateConvo(action) {
   const peerID = action.payload;
   const cachedMessages = messageCache[peerID];
 
@@ -218,7 +218,7 @@ export function* convosRequestWatcher() {
 }
 
 export function* activateConvoWatcher() {
-  yield takeEvery(activateConvoAction, activateConvo);
+  yield takeEvery(activateConvo, handleActivateConvo);
 }
 
 export function* convoMessagesRequestWatcher() {

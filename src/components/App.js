@@ -50,17 +50,15 @@ class App extends Component {
         ? 'Chat-chatOpen'
         : '';
 
-    const chat =
-      this.props.auth.loggedIn &&
-      (
-        this.props.chat.convos.length ||
-        this.props.activeConvo
-      ) ?
-      (
-        <div className="App-chatContainer">
-          <Chat />
-        </div>
-      ) : null;
+    const showChatClass =
+      this.props.chat.convos.length ||
+      this.props.activeConvo ?
+        '' : 'hide';
+
+    const chat = this.props.auth.loggedIn ?
+      <div className={`App-chatContainer ${showChatClass}`}>
+        <Chat />
+      </div> : null;
 
     const Content = !this.state.langLoaded ? (
       <div className="flexCent">
