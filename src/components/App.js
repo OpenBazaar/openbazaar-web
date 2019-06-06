@@ -46,41 +46,62 @@ class App extends Component {
   }
 
   render() {
-    const chatOpenClass =
-      this.props.chat.chatOpen && this.props.auth.loggedIn
-        ? 'Chat-chatOpen'
-        : '';
+    const isChatOpen = this.props.chat.chatOpen && this.props.auth.loggedIn;
+    const chatOpenClass = isChatOpen ? 'Chat-chatOpen' : '';
 
-    const showChatClass =
-      this.props.chat.convos.length ||
-      this.props.activeConvo ?
-        '' : 'hide';
+    const isChatVisible = this.props.chat.convos.length || this.props.activeConvo;
+    const chatVisibleClass = isChatVisible ? 'Chat-chatVisible' : '';
 
+    const upToMobileLandscape =
+      ['mobile', 'mobileLandscape'].includes(this.props.responsive.breakpoint);
+    const chatWidth = 250;
     const chatClosedWidth = 52;
     // TODO: bake greaterThan(breakpoint) and lessThan(breakpoint) functions
     // into the responsive reducer file.
-    const scrollBarOffset =
-      !['mobile', 'mobileLandscape'].includes(this.props.responsive.breakpoint) ?
-        getScrollBarWidth() : 0;
+    const scrollBarOffset = !upToMobileLandscape ? getScrollBarWidth() : 0;
+    const chatWidthWithScroll = chatWidth + scrollBarOffset;
+    const chatClosedWidthWithScroll = chatClosedWidth + scrollBarOffset;
+
+    // Used for containers that need to shrink to allow space for chat.
+    let chatWidthOffset = '0px';
+    
+    if (isChatVisible && !isChatOpen) {
+      chatWidthOffset = `${chatClosedWidthWithScroll}px`;
+    } else if (isChatOpen && !upToMobileLandscape) {
+      chatWidthOffset = `${chatWidthWithScroll}px`;
+    }
 
     const chat = this.props.auth.loggedIn ?
       <div
-        className={`App-chatContainer ${showChatClass}`}
+        className="App-chatContainer"
         style={{
           transform: this.props.chat.chatOpen ?
             `translateX(${0 - scrollBarOffset}px)` :
-            `translateX(calc(100% - ${52 + scrollBarOffset}px))`,
+            `translateX(calc(100% - ${chatClosedWidthWithScroll}px))`,
+          width: upToMobileLandscape ? '100%' : `${chatWidth}px`,
         }}
       >
         <Chat />
       </div> : null;
+
+    // let mainContentStyle = {};
+
+    // if (isChatVisible && !isChatOpen) {
+    //   mainContentStyle = {
+    //     paddingRight: `${chatClosedWidthWithScroll}px`,
+    //   }
+    // } else if (isChatOpen) {
+    //   mainContentStyle = {
+    //     paddingRight: `${chatWidthWithScroll}px`,
+    //   }      
+    // }
 
     const Content = !this.state.langLoaded ? (
       <div className="flexCent">
         <Spinner size="large" />
       </div>
     ) : (
-      <div className={`App ${chatOpenClass}`} id="OBWEB">
+      <div className={`App ${chatOpenClass} ${chatVisibleClass}`} id="OBWEB">
         <header className="App-header">
           <nav className="flexVCent row gutterH">
             <Link to="/" className="App-logo-wrap">
@@ -93,7 +114,12 @@ class App extends Component {
             </div>
           </nav>
         </header>
-        <div className="App-mainContent">
+        <div
+          className="App-mainContent"
+          style={{
+            paddingRight: chatWidthOffset,
+          }}
+        >
           <div>
             <Switch>
               <Route exact path="/" component={Discovery} />
@@ -105,7 +131,11 @@ class App extends Component {
         </div>
         <div className="App-modalContainer">
           {this.props.modals.openModals.map(modal => (
-            <ModalRoot key={modal.id} {...modal} />
+            <ModalRoot
+              key={modal.id}
+              chatWidthOffset={chatWidthOffset}
+              {...modal}
+            />
           ))}
         </div>
         {chat}

@@ -80,7 +80,12 @@ class ModalRoot extends Component {
     //  component, not all the top level sugar.
     return (
       <section className={`ModalRoot ${this.props.rootClass}`}>
-        <div className="ModalRoot-innerWrap">
+        <div
+          className="ModalRoot-innerWrap"
+          style={{
+            right: this.props.chatWidthOffset,
+          }}          
+        >
           <div
             className={
               `ModalRoot-contentWrap ${this.props.contentWrapClrClass} ` +

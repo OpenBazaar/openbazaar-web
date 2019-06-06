@@ -75,19 +75,20 @@ ol {
 
 .App-chatContainer {
   position: fixed;
-  width: $chatWidth;
+  // width: $chatWidth;
   top: $chatTop;
   right: 0;
   bottom: 0;
-  // transform: translateX(calc(100% - #{$chatClosedWidth}));
   @include chatOpenTransition(transform);  
+  display: none;
+  // background-color: pink;
 
-  // .Chat-chatOpen & {
-  //   transform: translateX(0);
+  // @include mq($until: mobileLandscape) {
+  //   width: 100%;
   // }
 
-  @include mq($until: mobileLandscape) {
-    width: 100%;
+  .Chat-chatVisible & {
+    display: block;
   }
 }
 
