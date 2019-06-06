@@ -32,6 +32,7 @@
 
       .ChatHead-textContent {
         height: 35px;
+        display: none;
 
         .ChatHead-name {
           max-width: 50px;
@@ -94,6 +95,10 @@
 
       .ChatHead.active {
         cursor: default;
+      }
+
+      .ChatHead-textContent {
+        display: flex;
       }
     }
 

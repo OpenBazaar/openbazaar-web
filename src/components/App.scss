@@ -6,7 +6,7 @@
   .App-header {
     padding: 10px 20px;
     box-shadow: 0 1px 3px 0 rgba(219, 219, 219, 0.75);
-    height: 62px;
+    height: $appHeaderHeight;
 
     nav {
       margin: 0;
@@ -40,12 +40,13 @@
   }
 
   .App-mainContent {
-    @include chatOpenTransition(width);
+    @include chatOpenTransition(padding-right);
     width: 100%;
-    // overflow-y: scroll;
+    height: calc(100% - #{$appHeaderHeight});
+    overflow-y: scroll;
   }
 
   &.Chat-chatOpen .App-mainContent {
-    width: calc(100% - #{$chatWidth});
+    padding-right: $chatWidth;
   }
 }

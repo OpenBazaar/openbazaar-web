@@ -7,6 +7,7 @@ import * as ChatActions from 'actions/chat';
 import { Route, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
 import { loadLang } from 'util/polyglot';
+import { getScrollBarWidth } from 'util/dom';
 import { getChatState } from 'reducers/chat';
 import ModalRoot from 'components/modals/ModalRoot';
 import Discovery from 'components/pages/Discovery';
@@ -55,8 +56,22 @@ class App extends Component {
       this.props.activeConvo ?
         '' : 'hide';
 
+    const chatClosedWidth = 52;
+    // TODO: bake greaterThan(breakpoint) and lessThan(breakpoint) functions
+    // into the responsive reducer file.
+    const scrollBarOffset =
+      !['mobile', 'mobileLandscape'].includes(this.props.responsive.breakpoint) ?
+        getScrollBarWidth() : 0;
+
     const chat = this.props.auth.loggedIn ?
-      <div className={`App-chatContainer ${showChatClass}`}>
+      <div
+        className={`App-chatContainer ${showChatClass}`}
+        style={{
+          transform: this.props.chat.chatOpen ?
+            `translateX(${0 - scrollBarOffset}px)` :
+            `translateX(calc(100% - ${52 + scrollBarOffset}px))`,
+        }}
+      >
         <Chat />
       </div> : null;
 

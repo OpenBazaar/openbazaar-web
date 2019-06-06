@@ -21,15 +21,7 @@
 
   .ModalRoot-innerWrap {
     margin-top: 50px;
-    // position: absolute;
-    // top: 50px;
-    // top: 0;
-    // left: 0;
-    // right: 0;
-    // bottom: 0;
-    // background-color: pink;
-    // left: 50%;
-    // transform: translateX(-50%);
+    max-width: 100vw;
 
     .ModalRoot-contentWrap {
       position: relative;

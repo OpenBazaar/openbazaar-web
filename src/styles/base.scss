@@ -7,10 +7,7 @@
 
 html {
   font-size: $baseFontSize;
-
-  // avoid page jump from pages with a scollbar, to one's without and vice
-  // versa
-  overflow-y: scroll;
+  overflow: hidden;
 }
 
 body {
@@ -82,12 +79,12 @@ ol {
   top: $chatTop;
   right: 0;
   bottom: 0;
-  transform: translateX(calc(100% - #{$chatClosedWidth}));
+  // transform: translateX(calc(100% - #{$chatClosedWidth}));
   @include chatOpenTransition(transform);  
 
-  .Chat-chatOpen & {
-    transform: translateX(0);
-  }
+  // .Chat-chatOpen & {
+  //   transform: translateX(0);
+  // }
 
   @include mq($until: mobileLandscape) {
     width: 100%;
