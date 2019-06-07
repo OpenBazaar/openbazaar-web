@@ -36,7 +36,6 @@ const _create = async (options = {}) => {
     if (process.env.NODE_ENV === 'development') {
       // write to window for debugging
       window.ipfs = node;
-      window.IPFS = IPFS;
     }
 
     node.on('ready', () => resolve(node));
@@ -111,3 +110,7 @@ export const destroy = peerID => {
 
   return Promise.resolve();
 };
+
+
+const ipfsRelayPeer =
+  '/dns4/webchat.ob1.io/tcp/9999/wss/ipfs/QmSAumietCn85sF68xgCUtVS7UuZbyBi5LQPWqLe4vfwYb';
