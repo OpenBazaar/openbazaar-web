@@ -36,6 +36,7 @@ const _create = async (options = {}) => {
     if (process.env.NODE_ENV === 'development') {
       // write to window for debugging
       window.ipfs = node;
+      window.IPFS = IPFS;
     }
 
     node.on('ready', () => resolve(node));

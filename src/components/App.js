@@ -22,6 +22,7 @@ import './App.scss';
 import 'styles/layout.scss';
 import 'styles/ui/buttons.scss';
 import logo from 'img/ob-logo.png';
+import 'util/messaging/index';
 
 class App extends Component {
   state = {
@@ -29,6 +30,7 @@ class App extends Component {
   };
 
   componentDidMount() {
+    console.dir(process.env);
     this.props.actions.responsive.trackBreakpoints();
 
     // hard-coded for now
