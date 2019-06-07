@@ -6,11 +6,11 @@ export default function(props) {
   const borderColor = props.selected ? 'clrBr3' : 'clrBr';
   const activeClass = props.selected ? 'active' : '';
 
-  const unreadCount = props.unread ?
+  const unreadCount = props.unread ? (
     <div className="ChatHead-unreadCount">
       {props.unread > 99 ? '…' : props.unread}
-    </div> :
-    null;
+    </div>
+  ) : null;
 
   return (
     <div

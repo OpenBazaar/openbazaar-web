@@ -11,8 +11,10 @@ import './Convo.scss';
 
 class Convo extends Component {
   state = {
-    messagesScrollTop: typeof this.props.initialMessagesScrollTop === 'number' ?
-      this.props.initialMessagesScrollTop : this.constructor.scrollBottomHeight,
+    messagesScrollTop:
+      typeof this.props.initialMessagesScrollTop === 'number'
+        ? this.props.initialMessagesScrollTop
+        : this.constructor.scrollBottomHeight
   };
 
   static scrolledNearBottom(el) {
@@ -92,11 +94,9 @@ class Convo extends Component {
       messages = (
         <div className="padSm">
           <RetryError
-            errorMessage={
-              getPoly().t('chatConvo.fetchMessagesError', {
-                error: this.props.messagesFetchError || '',
-              })
-            }
+            errorMessage={getPoly().t('chatConvo.fetchMessagesError', {
+              error: this.props.messagesFetchError || ''
+            })}
             onRetryClick={this.props.onClickRetryMessageFetch}
           />
         </div>
@@ -108,18 +108,20 @@ class Convo extends Component {
             let avatarHashes;
 
             try {
-              avatarHashes = message.outgoing ?
-                this.props.auth.profile.avatarHashes :
-                this.props.profile[message.peerID].avatarHashes;
+              avatarHashes = message.outgoing
+                ? this.props.auth.profile.avatarHashes
+                : this.props.profile[message.peerID].avatarHashes;
             } catch (e) {
               // pass
             }
 
-            return <Message
-              {...message}
-              key={message.messageID}
-              avatarHashes={avatarHashes}
-            />
+            return (
+              <Message
+                {...message}
+                key={message.messageID}
+                avatarHashes={avatarHashes}
+              />
+            );
           })}
         </div>
       );
@@ -139,19 +141,20 @@ class Convo extends Component {
             />
           </div>
           <div className="ChatConvo-headerName flexExpand clamp txB">
-            {
-              this.props.profile[this.props.peerID] ?
-                getName(this.props.profile[this.props.peerID]) :
-                this.props.peerID
-            }
+            {this.props.profile[this.props.peerID]
+              ? getName(this.props.profile[this.props.peerID])
+              : this.props.peerID}
           </div>
-          <button className="btn ChatConvo-btnClose flexNoShrink" onClick={this.props.onCloseClick}>
+          <button
+            className="btn ChatConvo-btnClose flexNoShrink"
+            onClick={this.props.onCloseClick}
+          >
             <IosClose fontSize="26px" />
           </button>
         </header>
         <div
           className="ChatConvo-messagesWrap"
-          ref={el => this.messagesWrapEl = el}
+          ref={el => (this.messagesWrapEl = el)}
           onScroll={this.handleMessagesScroll}
         >
           {messages}
@@ -172,11 +175,11 @@ class Convo extends Component {
 function mapStateToProps(state, prop) {
   return {
     profile: state.profile,
-    auth: state.auth,
+    auth: state.auth
   };
 }
 
 export default connect(
   mapStateToProps,
-  null,
+  null
 )(Convo);

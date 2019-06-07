@@ -108,12 +108,12 @@
 
         @include mq($until: mobileLandscape) {
           height: 100%;
-        }      
+        }
       }
 
       .Chat-chatConvoWrap {
         transform: translateY(0);
       }
-    }    
+    }
   }
 }

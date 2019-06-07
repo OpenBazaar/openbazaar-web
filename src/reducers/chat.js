@@ -12,7 +12,7 @@ import {
   convoMessagesFail,
   deactivateConvo,
   convoChange,
-  messageChange,
+  messageChange
 } from 'actions/chat';
 import { AUTH_LOGOUT } from 'actions/auth';
 
@@ -42,7 +42,7 @@ const reduceConvosRequest = (state, action) => {
 const createConvo = data => ({
   ...data,
   // This is used for sorting by the selector.
-  sortTimestamp: (new Date()).toISOString(),
+  sortTimestamp: new Date().toISOString()
 });
 
 const reduceConvosSuccess = (state, action) => {
@@ -62,7 +62,7 @@ const reduceConvosSuccess = (state, action) => {
 
     acc[convo.peerID] = {
       ...convo,
-      sortTimestamp,
+      sortTimestamp
     };
     return acc;
   }, {});
@@ -75,12 +75,12 @@ const reduceConvoChange = (state, action) => {
   if (isNew || action.payload.data.unread) {
     state.convos[peerID] = {
       ...action.payload.data,
-      sortTimestamp: (new Date()).toISOString(),
+      sortTimestamp: new Date().toISOString()
     };
   } else {
     state.convos[peerID] = {
       ...action.payload.data,
-      sortTimestamp: state.convos[peerID].sortTimestamp,
+      sortTimestamp: state.convos[peerID].sortTimestamp
     };
   }
 };
@@ -119,7 +119,7 @@ const reduceConvoMessagesSuccess = (state, action) => {
       fetchingMessages: false,
       messageFetchFailed: false,
       messageFetchError: null,
-      messages: action.payload.messages,
+      messages: action.payload.messages
     };
   }
 };
@@ -130,7 +130,7 @@ const reduceConvoMessagesFail = (state, action) => {
       ...state.activeConvo,
       fetchingMessages: false,
       messageFetchFailed: true,
-      messageFetchError: action.payload.error,
+      messageFetchError: action.payload.error
     };
   }
 };
@@ -152,7 +152,7 @@ const reduceMessageChange = (state, action) => {
       action.payload.data
     ];
   }
-}
+};
 
 const reduceAuthLogout = state => {
   return initialState;
@@ -178,12 +178,12 @@ export default createReducer(initialState, {
 
 export const getConvos = createSelector(
   ['convos'],
-  convos => orderBy(
-    Object.keys(convos)
-      .map(convoPeerId => convos[convoPeerId]),
-    ['sortTimestamp'],
-    ['desc']
-  )
+  convos =>
+    orderBy(
+      Object.keys(convos).map(convoPeerId => convos[convoPeerId]),
+      ['sortTimestamp'],
+      ['desc']
+    )
 );
 
 export const getChatState = rawChatState => ({

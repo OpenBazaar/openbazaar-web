@@ -24,7 +24,7 @@ export default function(props) {
   );
 
   const msgText = (
-    <div className="flexCol gutterVTn" style={{marginTop: '5px'}}>
+    <div className="flexCol gutterVTn" style={{ marginTop: '5px' }}>
       <div className={props.outgoing ? 'flexHRight' : ''}>
         <div className="padSm border clrBr clrS">{props.message}</div>
       </div>

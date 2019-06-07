@@ -13,7 +13,7 @@ import {
   convoMessagesFail,
   messageChange,
   sendMessage,
-  convoMarkRead,
+  convoMarkRead
 } from 'actions/chat';
 
 const getConvoList = async db => {
@@ -44,7 +44,7 @@ const messageCache = {};
 // this might make the noAuthNoChat middleware moot.
 
 const getChatMessagesCol = async database => {
-  const db = database || await getDb();
+  const db = database || (await getDb());
   return await db.collections.chatmessage.inMemory();
 };
 
@@ -52,21 +52,19 @@ const getChatMessagesCol = async database => {
 // want to do some form of pagination since the number of messages can get
 // quite large and rendering them in one go could be too heavy.
 const getMessagesList = async (db, peerID) => {
-  const messageCol = await getChatMessagesCol(db)
+  const messageCol = await getChatMessagesCol(db);
   const docs = await messageCol
     .find({
       peerID: {
-        $eq: peerID,
-      }      
+        $eq: peerID
+      }
     })
     .exec();
 
-  return orderBy(
-    docs.map(doc => (
-      omit(doc.toJSON(), ['_rev'])
-    )),
-    ['timestamp', 'desc']
-  );
+  return orderBy(docs.map(doc => omit(doc.toJSON(), ['_rev'])), [
+    'timestamp',
+    'desc'
+  ]);
 };
 
 function* getConvoMessages(action) {
@@ -81,12 +79,12 @@ function* getConvoMessages(action) {
         peerID,
         messages
       })
-    );    
+    );
   } catch (e) {
     yield put(
       convoMessagesFail({
         peerID,
-        error: e.message || '',
+        error: e.message || ''
       })
     );
     return;
@@ -120,7 +118,7 @@ function* messageChanged(action) {
       const isActive =
         state.chat.chatOpen &&
         state.chat.activeConvo &&
-          state.chat.activeConvo.peerID === peerID;
+        state.chat.activeConvo.peerID === peerID;
       let unread = 0;
 
       if (!action.payload.data.outgoing && !isActive) {
@@ -132,21 +130,23 @@ function* messageChanged(action) {
         lastMessage: action.payload.data.message,
         outgoing: action.payload.data.outgoing,
         timestamp: action.payload.data.timestamp,
-        unread,
+        unread
       });
     } catch (e) {
       // TODO: seems like an edge case for this to error, but we should probably
       // have some fallback... maybe a retry with exponential backoff? Maybe
       // scan the chat messages on startup and if there's no corresponding convo
       // create one then?
-      console.error('Unable to create / update a chat head for the following action:');
+      console.error(
+        'Unable to create / update a chat head for the following action:'
+      );
       console.error(action);
       console.error(e);
     }
   }
 }
 
-function *handleSendMessage(action) {
+function* handleSendMessage(action) {
   try {
     const messageCol = yield call(getChatMessagesCol);
     yield call([messageCol, 'insert'], {
@@ -154,7 +154,7 @@ function *handleSendMessage(action) {
       messageID: uuid(),
       message: action.payload.message,
       outgoing: true,
-      timestamp: (new Date()).toISOString(),
+      timestamp: new Date().toISOString()
     });
   } catch (e) {
     // Not the best UX here, since the user only sees the failure in the
@@ -169,20 +169,19 @@ function *handleSendMessage(action) {
 }
 
 const getConvo = async (peerID, database) => {
-  const db = database || await getDb();
+  const db = database || (await getDb());
   const doc = await db.collections.chatconversation
-    .findOne(
-      {
-        peerID: {
-          $eq: peerID,
-        },
+    .findOne({
+      peerID: {
+        $eq: peerID
       }
-    ).exec();
+    })
+    .exec();
 
   return doc;
-}
+};
 
-function *handleConvoMarkRead(action) {
+function* handleConvoMarkRead(action) {
   let peerID;
 
   try {
@@ -193,18 +192,17 @@ function *handleConvoMarkRead(action) {
       throw new Error(`There is no convo for peerID ${peerID}`);
     }
 
-    yield call(
-      [convo, 'update'],
-      {
-        $set: {
-          unread: 0,
-        },
+    yield call([convo, 'update'], {
+      $set: {
+        unread: 0
       }
-    );
+    });
   } catch (e) {
     if (!peerID) {
-      console.error('Unable to process the handleConvoMarkRead because a ' +
-        'peerID was not provided in the action payload.');
+      console.error(
+        'Unable to process the handleConvoMarkRead because a ' +
+          'peerID was not provided in the action payload.'
+      );
       return;
     }
 

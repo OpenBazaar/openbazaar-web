@@ -131,5 +131,5 @@ UserContentLoading.modalProps = {
   path: 'components/misc/UserContentLoading',
   closeable: false,
   rootClass: 'modalM',
-  contentWrapBaseClass: '',
+  contentWrapBaseClass: ''
 };

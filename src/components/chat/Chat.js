@@ -66,22 +66,19 @@ class Chat extends Component {
     }
 
     if (
-      (
-        this.props.chatOpen &&
+      (this.props.chatOpen &&
         !prevProps.activeConvo &&
-        this.props.activeConvo
-      ) || (
-        this.props.chatOpen &&
-        !prevProps.chatOpen &&
-        this.props.activeConvo
-      )
-    ){
-      const convo = this.props.convos
-        .find(convo => convo.peerID === this.props.activeConvo.peerID);
+        this.props.activeConvo) ||
+      (this.props.chatOpen && !prevProps.chatOpen && this.props.activeConvo)
+    ) {
+      const convo = this.props.convos.find(
+        convo => convo.peerID === this.props.activeConvo.peerID
+      );
 
       if (convo && convo.unread) {
-        this.props.actions
-          .convoMarkRead({ peerID: this.props.activeConvo.peerID });
+        this.props.actions.convoMarkRead({
+          peerID: this.props.activeConvo.peerID
+        });
       }
     }
   }
@@ -120,7 +117,7 @@ class Chat extends Component {
     this.setState({
       messageInputValues: {
         ...this.state.messageInputValues,
-        [data.peerID]: '',
+        [data.peerID]: ''
       }
     });
   }
@@ -146,11 +143,11 @@ class Chat extends Component {
           <div className="row">
             <RetryError
               errorMessage={
-                this.props.convosFetchError ?
-                  getPoly().t('chat.fetchConvosError', {
-                    error: this.props.convosFetchError
-                  }) :
-                  getPoly().t('chat.fetchConvosErrorGeneric')
+                this.props.convosFetchError
+                  ? getPoly().t('chat.fetchConvosError', {
+                      error: this.props.convosFetchError
+                    })
+                  : getPoly().t('chat.fetchConvosErrorGeneric')
               }
               onRetryClick={this.handleRetryConvosClick}
             />
@@ -200,7 +197,9 @@ class Chat extends Component {
         <ChatConvo
           {...convoData}
           key={convoData.peerID}
-          onCloseClick={this.props.activeConvo ? this.handleConvoCloseClick : null}
+          onCloseClick={
+            this.props.activeConvo ? this.handleConvoCloseClick : null
+          }
           messageInputValue={
             this.state.messageInputValues[convoData.peerID] || ''
           }
@@ -217,15 +216,17 @@ class Chat extends Component {
             // to the convo. If theyre scrolled near the bottom, then we'll just
             // put a hug number so the scroll position remains at the bottom
             // even if new messages have arrived.
-            this.convoMessagesScroll[convoData.peerID] =
-              ChatConvo.scrolledNearBottom(el) ?
-                99999999 : el.scrollTop;
+            this.convoMessagesScroll[
+              convoData.peerID
+            ] = ChatConvo.scrolledNearBottom(el) ? 99999999 : el.scrollTop;
           }}
           initialMessagesScrollTop={this.convoMessagesScroll[convoData.peerID]}
-          onMessageSend={message => this.handleMessageSend({
-            message,
-            peerID: convoData.peerID,
-          })}
+          onMessageSend={message =>
+            this.handleMessageSend({
+              message,
+              peerID: convoData.peerID
+            })
+          }
         />
       );
     }
@@ -241,9 +242,7 @@ class Chat extends Component {
           <IosClose fontSize="30px" />
         </button>
         <div className="Chat-chatHeads border padSm clrBr">{convos}</div>
-        <div className="Chat-chatConvoWrap">
-          {chatConvo}
-        </div>
+        <div className="Chat-chatConvoWrap">{chatConvo}</div>
       </div>
     );
   }
@@ -253,7 +252,7 @@ function mapStateToProps(state, prop) {
   return {
     ...getChatState(state.chat),
     profile: state.profile,
-    auth: state.auth,
+    auth: state.auth
   };
 }
 

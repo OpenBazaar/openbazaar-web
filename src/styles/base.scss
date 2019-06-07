@@ -79,7 +79,7 @@ ol {
   top: $chatTop;
   right: 0;
   bottom: 0;
-  @include chatOpenTransition(transform);  
+  @include chatOpenTransition(transform);
   display: none;
   // background-color: pink;
 

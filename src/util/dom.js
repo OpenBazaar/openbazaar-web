@@ -5,17 +5,17 @@ export function getScrollBarWidth() {
   if (scrollBarWidth) return scrollBarWidth;
 
   const inner = document.createElement('p');
-  inner.style.width = "100%";
-  inner.style.height = "200px";
+  inner.style.width = '100%';
+  inner.style.height = '200px';
 
   const outer = document.createElement('div');
-  outer.style.position = "absolute";
-  outer.style.top = "0px";
-  outer.style.left = "0px";
-  outer.style.visibility = "hidden";
-  outer.style.width = "200px";
-  outer.style.height = "150px";
-  outer.style.overflow = "hidden";
+  outer.style.position = 'absolute';
+  outer.style.top = '0px';
+  outer.style.left = '0px';
+  outer.style.visibility = 'hidden';
+  outer.style.width = '200px';
+  outer.style.height = '150px';
+  outer.style.overflow = 'hidden';
   outer.appendChild(inner);
 
   document.body.appendChild(outer);

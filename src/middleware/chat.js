@@ -13,7 +13,7 @@ const middleware = store => next => action => {
         store.dispatch(
           convoChange({
             operation: changeEvent.data.op,
-            data: omit(changeEvent.data.v, ['_rev']),
+            data: omit(changeEvent.data.v, ['_rev'])
           })
         )
       );
@@ -22,7 +22,7 @@ const middleware = store => next => action => {
         store.dispatch(
           messageChange({
             operation: changeEvent.data.op,
-            data: omit(changeEvent.data.v, ['_rev']),
+            data: omit(changeEvent.data.v, ['_rev'])
           })
         )
       );

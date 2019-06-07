@@ -8,7 +8,7 @@ class ModalRoot extends Component {
   static defaultProps = {
     rootClass: '',
     contentWrapClrClass: 'clrP clrBr clrSh3 clrT border',
-    contentWrapBaseClass: 'padMd',
+    contentWrapBaseClass: 'padMd'
   };
 
   constructor(props) {
@@ -83,8 +83,8 @@ class ModalRoot extends Component {
         <div
           className="ModalRoot-innerWrap"
           style={{
-            right: this.props.chatWidthOffset,
-          }}          
+            right: this.props.chatWidthOffset
+          }}
         >
           <div
             className={
@@ -93,7 +93,7 @@ class ModalRoot extends Component {
             }
           >
             {btnClose}
-            <this.state.ModalComponent {...modalProps} />          
+            <this.state.ModalComponent {...modalProps} />
           </div>
         </div>
       </section>

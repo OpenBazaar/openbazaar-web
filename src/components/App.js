@@ -49,11 +49,13 @@ class App extends Component {
     const isChatOpen = this.props.chat.chatOpen && this.props.auth.loggedIn;
     const chatOpenClass = isChatOpen ? 'Chat-chatOpen' : '';
 
-    const isChatVisible = this.props.chat.convos.length || this.props.activeConvo;
+    const isChatVisible =
+      this.props.chat.convos.length || this.props.activeConvo;
     const chatVisibleClass = isChatVisible ? 'Chat-chatVisible' : '';
 
-    const upToMobileLandscape =
-      ['mobile', 'mobileLandscape'].includes(this.props.responsive.breakpoint);
+    const upToMobileLandscape = ['mobile', 'mobileLandscape'].includes(
+      this.props.responsive.breakpoint
+    );
     const chatWidth = 250;
     const chatClosedWidth = 52;
     // TODO: bake greaterThan(breakpoint) and lessThan(breakpoint) functions
@@ -64,25 +66,26 @@ class App extends Component {
 
     // Used for containers that need to shrink to allow space for chat.
     let chatWidthOffset = '0px';
-    
+
     if (isChatVisible && !isChatOpen) {
       chatWidthOffset = `${chatClosedWidthWithScroll}px`;
     } else if (isChatOpen && !upToMobileLandscape) {
       chatWidthOffset = `${chatWidthWithScroll}px`;
     }
 
-    const chat = this.props.auth.loggedIn ?
+    const chat = this.props.auth.loggedIn ? (
       <div
         className="App-chatContainer"
         style={{
-          transform: this.props.chat.chatOpen ?
-            `translateX(${0 - scrollBarOffset}px)` :
-            `translateX(calc(100% - ${chatClosedWidthWithScroll}px))`,
-          width: upToMobileLandscape ? '100%' : `${chatWidth}px`,
+          transform: this.props.chat.chatOpen
+            ? `translateX(${0 - scrollBarOffset}px)`
+            : `translateX(calc(100% - ${chatClosedWidthWithScroll}px))`,
+          width: upToMobileLandscape ? '100%' : `${chatWidth}px`
         }}
       >
         <Chat />
-      </div> : null;
+      </div>
+    ) : null;
 
     // let mainContentStyle = {};
 
@@ -93,7 +96,7 @@ class App extends Component {
     // } else if (isChatOpen) {
     //   mainContentStyle = {
     //     paddingRight: `${chatWidthWithScroll}px`,
-    //   }      
+    //   }
     // }
 
     const Content = !this.state.langLoaded ? (
@@ -117,7 +120,7 @@ class App extends Component {
         <div
           className="App-mainContent"
           style={{
-            paddingRight: chatWidthOffset,
+            paddingRight: chatWidthOffset
           }}
         >
           <div>
@@ -154,7 +157,7 @@ function mapStateToProps(state, prop) {
     router: state.router,
     responsive: state.responsive,
     auth: state.auth,
-    chat: getChatState(state.chat),
+    chat: getChatState(state.chat)
   };
 }
 

@@ -69,7 +69,7 @@ const _create = async (name, password) => {
     'QmTiyLne8hCzAJVJzADposCQs8w7UqosvC9sK1wqtgmD5d',
     'QmQ8g6HkawoosFrKNcjLhykRmvj3ra4QTSmeDcNTHrXWAJ',
     'QmQinqZKXsLzzjTyTyNpZ8eNUUZNaRqtJ43cGa7hV7MscV',
-    'QmYUBFiztxr35LUnAksFiZdzdGEJBNuzcXutmeeZAazFB6',
+    'QmYUBFiztxr35LUnAksFiZdzdGEJBNuzcXutmeeZAazFB6'
   ];
 
   const getRandomPeer = () => peerIDs[getRandomInt(0, peerIDs.length - 1)];
@@ -77,7 +77,7 @@ const _create = async (name, password) => {
   const messages = [
     'the chikun is on the barbie, aint is so Joe?',
     "don't pee on my leg and tell me its raining",
-    'that\'s for sure!',
+    "that's for sure!",
     'Well I come from Alabami with a banji on me knee. I come from ' +
       "west end Talee Hoo with a moop moop peek-a-boo. Ole Susani, oh don't " +
       'you cry yo ass for me, for I come from Alabami with a banji on me knee.'
@@ -86,13 +86,16 @@ const _create = async (name, password) => {
   const getRandomMessage = () => messages[getRandomInt(0, messages.length - 1)];
 
   console.log(`inboundChatMessage() is ready to go.`);
-  window.inboundChatMessage = async (message = getRandomMessage(), peerID = getRandomPeer()) => {
+  window.inboundChatMessage = async (
+    message = getRandomMessage(),
+    peerID = getRandomPeer()
+  ) => {
     const theGoods = {
       peerID,
       messageID: uuid(),
       message,
       outgoing: false,
-      timestamp: (new Date()).toISOString(),
+      timestamp: new Date().toISOString()
     };
 
     await db.chatmessage.insert(theGoods);

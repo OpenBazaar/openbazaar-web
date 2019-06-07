@@ -19,7 +19,7 @@ const schema = {
     },
     timestamp: {
       type: 'string',
-      encrypted: false,
+      encrypted: false
     },
     unread: {
       type: 'number',

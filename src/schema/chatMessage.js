@@ -10,7 +10,7 @@ const schema = {
     },
     peerID: {
       type: 'string',
-      encrypted: true,
+      encrypted: true
     },
     message: {
       type: 'string',
@@ -23,7 +23,7 @@ const schema = {
     },
     timestamp: {
       type: 'string',
-      encrypted: true,
+      encrypted: true
     },
     read: {
       type: 'boolean',
@@ -33,7 +33,7 @@ const schema = {
     subject: {
       type: 'string',
       encrypted: true,
-      default: '',
+      default: ''
     }
   },
   required: ['messageID', 'peerID', 'message', 'timestamp']
