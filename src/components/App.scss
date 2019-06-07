@@ -45,8 +45,4 @@
     height: calc(100% - #{$appHeaderHeight});
     overflow-y: scroll;
   }
-
-  // &.Chat-chatOpen .App-mainContent {
-  //   padding-right: $chatWidth;
-  // }
 }

@@ -87,18 +87,6 @@ class App extends Component {
       </div>
     ) : null;
 
-    // let mainContentStyle = {};
-
-    // if (isChatVisible && !isChatOpen) {
-    //   mainContentStyle = {
-    //     paddingRight: `${chatClosedWidthWithScroll}px`,
-    //   }
-    // } else if (isChatOpen) {
-    //   mainContentStyle = {
-    //     paddingRight: `${chatWidthWithScroll}px`,
-    //   }
-    // }
-
     const Content = !this.state.langLoaded ? (
       <div className="flexCent">
         <Spinner size="large" />

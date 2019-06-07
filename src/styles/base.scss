@@ -75,17 +75,11 @@ ol {
 
 .App-chatContainer {
   position: fixed;
-  // width: $chatWidth;
   top: $chatTop;
   right: 0;
   bottom: 0;
   @include chatOpenTransition(transform);
   display: none;
-  // background-color: pink;
-
-  // @include mq($until: mobileLandscape) {
-  //   width: 100%;
-  // }
 
   .Chat-chatVisible & {
     display: block;
