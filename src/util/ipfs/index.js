@@ -1,4 +1,4 @@
-import IPFS from 'ipfs';
+import IPFS from './ipfs';
 
 // todo: doc me up including:
 // todo: more robust arg checking here possible?
@@ -110,54 +110,3 @@ export const destroy = peerID => {
 
   return Promise.resolve();
 };
-
-let relayConnectPromise;
-
-export const relayConnect = async (options = {}) => {
-  const opts = {
-    relayPeerAddr: process.env.REACT_APP_IPFS_RELAY_PEER,
-    reconnectOnClose: true,
-    ...options,
-  };
-
-  const node = opts.node = opts.node || await get();
-
-  if (!(node instanceof IPFS)) {
-    throw new Error('An IPFS node instance is required.');
-  }
-
-  console.log(`attempting to connect to the relay peer at ${opts.relayPeerAddr}`);
-
-  if (relayConnectPromise) {
-    return relayConnectPromise;
-  }
-
-  return new Promise((res, rej) => {
-    const always = () => relayConnectPromise = null;
-    const resolve = (...args) => {
-      always();
-      res(...args);
-    };
-    const reject = (...args) => {
-      always();
-      resolve(...args);
-    };
-
-    node.libp2pNode.dialFSM(opts.relayPeerAddr, '/openbazaar/app/1.0.0', (err, connFSM) => {
-      if (err) {
-        console.error(`Unable to connect to the relay peer at ${opts.relayPeerAddr}.`);
-        console.error(err);
-        reject(err);
-        return;
-      }
-
-      console.log('connected to the relay');
-
-      if (opts.reconnectOnClose) {
-        connFSM.on('close', () => relayConnect(node));
-      }
-      
-      resolve();
-    });
-  });
-}

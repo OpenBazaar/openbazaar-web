@@ -1,7 +1,10 @@
-import uuid from 'uuid';
-import { omit, orderBy } from 'lodash';
+import { omit } from 'lodash';
+import multihashes from 'multihashes';
+import crypto from 'crypto';
 import { get as getDb } from 'util/database';
 import { takeEvery, put, call, select } from 'redux-saga/effects';
+import { sendMessage as sendChatMessage } from 'util/messaging/index';
+import { CHAT } from 'util/messaging/types';
 import {
   convosRequest,
   convosSuccess,
@@ -145,14 +148,25 @@ function* messageChanged(action) {
 }
 
 function* handleSendMessage(action) {
+  const peerID = action.payload.peerID;
+  const timestampDate = new Date();
+  const message = action.payload.message;
+  const subject = '';
+  const combinationString = `${subject}!${timestampDate.toISOString()}`;
+  const idBytes = crypto.createHash('sha256').update(combinationString).digest();
+  const idBytesArray = new Uint8Array(idBytes);
+  const idBytesBuffer =  new Buffer(idBytesArray.buffer);
+  const encoded = multihashes.encode(idBytesBuffer, 0x12);  
+  const messageId = multihashes.toB58String(encoded);
+
   try {
     const messageCol = yield call(getChatMessagesCol);
     yield call([messageCol, 'insert'], {
       peerID: action.payload.peerID,
-      messageID: uuid(),
-      message: action.payload.message,
+      messageID: messageId,
+      message,
       outgoing: true,
-      timestamp: new Date().toISOString()
+      timestamp: timestampDate.toISOString()
     });
   } catch (e) {
     // Not the best UX here, since the user only sees the failure in the
@@ -160,7 +174,30 @@ function* handleSendMessage(action) {
     // db message insertion which should very rarely fail and it's a bit
     // of a rabbit hole to get this into the UI. Cutting a corner, for now.
     const msg = `${action.payload.message.slice(0, 10)}…`;
-    console.error(`Unable to send the chat message: ${msg}`);
+    console.error(`Unable to send the chat message to peerID ${peerID}: ${msg}`);
+    console.error(e);
+    return;
+  }
+
+  try {
+    sendChatMessage(
+      CHAT,
+      peerID,
+      {
+        messageId,
+        subject,
+        message,
+        timestamp: {
+          seconds: Math.floor(timestampDate / 1000),
+          nanos: timestampDate % 1000,
+        },
+        flag: 0
+      }      
+    );
+  } catch (e) {
+    // todo: eventually toggle some sent state in the DB to failed and let the
+    // user retry via the UI.
+    console.error(`Unable to send the chat message.`);
     console.error(e);
     return;
   }

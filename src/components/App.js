@@ -30,7 +30,6 @@ class App extends Component {
   };
 
   componentDidMount() {
-    console.dir(process.env);
     this.props.actions.responsive.trackBreakpoints();
 
     // hard-coded for now
