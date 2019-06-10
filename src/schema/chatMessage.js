@@ -23,7 +23,8 @@ const schema = {
     },
     timestamp: {
       type: 'string',
-      encrypted: true
+      encrypted: true,
+      index: true,
     },
     read: {
       type: 'boolean',

@@ -4,45 +4,6 @@ import protobuf from 'protobufjs';
 import messageJSON from 'util/pb/message.json';
 import * as messageTypes from './types';
 
-const ipfsRelayPeer =
-  '/dns4/webchat.ob1.io/tcp/9999/wss/ipfs/QmSAumietCn85sF68xgCUtVS7UuZbyBi5LQPWqLe4vfwYb';
-let relayConnectPromise;
-
-export function relayConnect(node) {
-  if (relayConnectPromise) {
-    return relayConnectPromise;
-  }
-
-  if (!node) {
-    throw new Error('Please provide an ipfs node.');
-  }
-
-  return new Promise((res, rej) => {
-    const always = () => relayConnectPromise = null;
-    const resolve = (...args) => {
-      always();
-      res(...args);
-    };
-    const reject = (...args) => {
-      always();
-      resolve(...args);
-    };
-
-    node._libp2pNode.dialFSM(ipfsRelayPeer, '/openbazaar/app/1.0.0', (err, connFSM) => {
-      if (err) {
-        console.error(`Unable to connect to the relay peer at ${ipfsRelayPeer}.`);
-        console.error(err);
-        reject(err);
-        return;
-      }
-
-      console.log('connected to the relay');
-      connFSM.on('close', () => relayConnect(node));
-      resolve();
-    });
-  });
-}
-
 let protoRoot;
 
 function getProtoMessageRoot() {
@@ -95,8 +56,6 @@ function isValidMessageType(type) {
 function sendDirectMessage(ipfsNode, peerID, message) {
   const peer = `/p2p-circuit/ipfs/${peerID}`;
   console.log(`attempting to send direct message to ${peerID} at ${peer}`);
-
-
 }
 
 export async function sendMessage(ipfsNode, type, peerID, payload) {
@@ -120,7 +79,3 @@ export async function sendMessage(ipfsNode, type, peerID, payload) {
 
   const message = generateMessage(type, peerID, payload);
 }
-
-console.log('foo json');
-window.foo = protobuf;
-window.json = messageJSON;

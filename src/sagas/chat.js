@@ -57,14 +57,12 @@ const getMessagesList = async (db, peerID) => {
     .find({
       peerID: {
         $eq: peerID
-      }
+      },
     })
-    .exec();
+    .sort({ timestamp: 'asc' })
+    .exec();    
 
-  return orderBy(docs.map(doc => omit(doc.toJSON(), ['_rev'])), [
-    'timestamp',
-    'desc'
-  ]);
+  return docs.map(doc => omit(doc.toJSON(), ['_rev']));
 };
 
 function* getConvoMessages(action) {

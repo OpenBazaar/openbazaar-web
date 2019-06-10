@@ -39,12 +39,6 @@ const reduceConvosRequest = (state, action) => {
   state.convosFetchError = null;
 };
 
-const createConvo = data => ({
-  ...data,
-  // This is used for sorting by the selector.
-  sortTimestamp: new Date().toISOString()
-});
-
 const reduceConvosSuccess = (state, action) => {
   state.fetchingConvos = false;
   state.convosFetchFailed = false;
