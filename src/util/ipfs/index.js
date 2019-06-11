@@ -31,7 +31,8 @@ const getIpfsNodeInitOpts = (peerID, privateKey) => {
       },
       Bootstrap: [
         '/dns4/bootstrap1.openbazaar.org/tcp/443/wss/ipfs/QmWUdwXW3bTXS19MtMjmfpnRYgssmbJCwnq8Lf9vjZwDii',
-        '/dns4/bootstrap2.openbazaar.org/tcp/443/wss/ipfs/QmcXwJePGLsP1x7gTXLE51BmE7peUKe2eQuR5LGbmasekt'
+        '/dns4/bootstrap2.openbazaar.org/tcp/443/wss/ipfs/QmcXwJePGLsP1x7gTXLE51BmE7peUKe2eQuR5LGbmasekt',
+        '/dns4/bootstrap3.openbazaar.org/tcp/443/wss/ipfs/Qmb8i7uy6rk47hNorNLMVRMer4Nv9YWRhzZrWVqnvk5mSk'
       ]
     },
   };
