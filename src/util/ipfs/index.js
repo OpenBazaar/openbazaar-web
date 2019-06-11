@@ -21,7 +21,19 @@ const getIpfsNodeInitOpts = (peerID, privateKey) => {
       enabled: true
     },
     repo: `ipfs/${peerID}`,
-    init: { privateKey }
+    init: { privateKey },
+    config: {
+      Addresses: {
+        Swarm: [
+         '/ip4/0.0.0.0/tcp/4002',
+         // '/ip4/127.0.0.1/tcp/9999/ws'
+        ],
+      },
+      Bootstrap: [
+        '/dns4/bootstrap1.openbazaar.org/tcp/443/wss/ipfs/QmWUdwXW3bTXS19MtMjmfpnRYgssmbJCwnq8Lf9vjZwDii',
+        '/dns4/bootstrap2.openbazaar.org/tcp/443/wss/ipfs/QmcXwJePGLsP1x7gTXLE51BmE7peUKe2eQuR5LGbmasekt'
+      ]
+    },
   };
 };
 
