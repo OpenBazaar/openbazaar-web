@@ -1,13 +1,15 @@
-// TODO: write a test ensuring a 1:1 mapping of the enumerated types (e.g. CHAT)
+// TODO: write a test ensuring a 1:1 mapping of each enumerated type
 // and a corresponding entry in the typesData object. Also validate the contents
 // of each typesData object.
-export const CHAT = 1;
+const types = {
+  CHAT: 1,
+}
 
-const typesData = {
-  [CHAT]: {
+export default types;
+
+export const typesData = {
+  [types.CHAT]: {
     value: 1,
     name: 'Chat',
   },
 }
-
-export default typesData;

@@ -38,6 +38,17 @@ class App extends Component {
       .then(() => this.setState({ langLoaded: true }))
       .catch(e => console.error(e));
     // todo: handle error case better here.
+
+    window.initiateChatConvo = peerID => {
+      if (typeof peerID !== 'string' || !peerID) {
+        throw new Error('Please provide a peerID as a non-empty string.');
+      }
+
+      this.props.actions.chat.open();
+      this.props.actions.chat.activateConvo(peerID);
+    };
+
+    console.log('initiateChatConvo() is ready to go.');
   }
 
   componentDidUpdate(prevProps) {

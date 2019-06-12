@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import { get as getDb } from 'util/database';
 import { takeEvery, put, call, select } from 'redux-saga/effects';
 import { sendMessage as sendChatMessage } from 'util/messaging/index';
-import { CHAT } from 'util/messaging/types';
+import messageTypes from 'util/messaging/types';
 import {
   convosRequest,
   convosSuccess,
@@ -18,6 +18,7 @@ import {
   sendMessage,
   convoMarkRead
 } from 'actions/chat';
+import { directMessage } from 'actions/messaging';
 
 const getConvoList = async db => {
   const convos = await db.chatconversation.find().exec();
@@ -147,26 +148,41 @@ function* messageChanged(action) {
   }
 }
 
+async function insertChatMessage(data) {
+  let messageID = data.messageID;
+  const subject = data.subject || '';
+  const timestampDate = new Date();
+
+  if (typeof data.messageID === 'undefined') {
+    const combinationString = `${subject}!${timestampDate.toISOString()}`;
+    const idBytes = crypto.createHash('sha256').update(combinationString).digest();
+    const idBytesArray = new Uint8Array(idBytes);
+    const idBytesBuffer =  new Buffer(idBytesArray.buffer);
+    const encoded = multihashes.encode(idBytesBuffer, 0x12);  
+    messageID = multihashes.toB58String(encoded);
+  }
+
+  const messageCol = await getChatMessagesCol();
+  const doc = await messageCol.upsert({
+    ...data,
+    messageID,
+    subject,
+    timestamp: timestampDate.toISOString(),
+  });
+  await messageCol.awaitPersistence();
+  return doc;
+}
+
 function* handleSendMessage(action) {
   const peerID = action.payload.peerID;
-  const timestampDate = new Date();
   const message = action.payload.message;
-  const subject = '';
-  const combinationString = `${subject}!${timestampDate.toISOString()}`;
-  const idBytes = crypto.createHash('sha256').update(combinationString).digest();
-  const idBytesArray = new Uint8Array(idBytes);
-  const idBytesBuffer =  new Buffer(idBytesArray.buffer);
-  const encoded = multihashes.encode(idBytesBuffer, 0x12);  
-  const messageId = multihashes.toB58String(encoded);
+  let messageDoc;
 
   try {
-    const messageCol = yield call(getChatMessagesCol);
-    yield call([messageCol, 'insert'], {
-      peerID: action.payload.peerID,
-      messageID: messageId,
+    messageDoc = yield call(insertChatMessage, {
+      peerID,
       message,
       outgoing: true,
-      timestamp: timestampDate.toISOString()
     });
   } catch (e) {
     // Not the best UX here, since the user only sees the failure in the
@@ -179,17 +195,19 @@ function* handleSendMessage(action) {
     return;
   }
 
+  const timestamp = (new Date(messageDoc.get('timestamp'))).getTime();
+
   try {
     sendChatMessage(
-      CHAT,
+      messageTypes.CHAT,
       peerID,
       {
-        messageId,
-        subject,
+        messageId: messageDoc.get('messageID'),
+        subject: messageDoc.get('subject'),
         message,
         timestamp: {
-          seconds: Math.floor(timestampDate / 1000),
-          nanos: timestampDate % 1000,
+          seconds: Math.floor(timestamp / 1000),
+          nanos: timestamp % 1000,
         },
         flag: 0
       }      
@@ -246,6 +264,37 @@ function* handleConvoMarkRead(action) {
   }
 }
 
+function* handleDirectMessage(action) {
+  if (action.payload && action.payload.type === messageTypes.CHAT) {
+    const peerID = action.payload.peerID;
+    const message = action.payload.payload;
+
+    try {
+      yield call(insertChatMessage, {
+        peerID,
+        message: message.message,
+        messageID: message.messageId,
+        timestamp: (
+          new Date(
+            message.timestamp.seconds +
+            message.timestamp.nanos
+          )
+        ),
+        subject: message.subject,
+        outgoing: false,
+      });
+    } catch (e) {
+      // TODO: maybe some type of retry? A db insertion failure I would think
+      // would be very rare.
+      console.error(`Unable to insert the following message from ${peerID} ` +
+        'into the database.');
+      console.dir(message);
+      console.error(e);
+      return;
+    }
+  }
+}
+
 export function* convosRequestWatcher() {
   yield takeEvery(convosRequest, getConvos);
 }
@@ -268,4 +317,8 @@ export function* sendMessageWatcher() {
 
 export function* convoMarkReadWatcher() {
   yield takeEvery(convoMarkRead, handleConvoMarkRead);
+}
+
+export function* directMessageWatcher() {
+  yield takeEvery(directMessage, handleDirectMessage);
 }

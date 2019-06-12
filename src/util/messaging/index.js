@@ -1,9 +1,9 @@
-import IPFS from 'ipfs';
+import IPFS from 'util/ipfs/ipfs';
 import pull from 'pull-stream';
-import { get as getNode } from 'util/ipfs';
+import { get as getNode } from 'util/ipfs/index';
 import protobuf from 'protobufjs';
 import messageJSON from 'pb/message.json';
-import messageTypes from './types';
+import { typesData as messageTypesData } from './types';
 
 let protoRoot;
 
@@ -49,14 +49,15 @@ function generateMessage(type, peerID, payload) {
 }
 
 function isValidMessageType(type) {
-  return typeof messageTypes[type] !== 'undefined';
+  return typeof messageTypesData[type] !== 'undefined';
 }
 
 // doc me up
 // message should already be a pb encoded message
 async function sendDirectMessage(node, peerID, message) {
   const peer = `/p2p-circuit/ipfs/${peerID}`;
-  console.group(`attempting to send direct message to ${peerID} at ${peer}`);
+  console.log(`attempting to send direct message to ${peerID} at ${peer} ` +
+    `via protocol ${IPFS.OB_PROTOCOL}.`);
   
   try {
     await node.relayConnect();
@@ -69,23 +70,12 @@ async function sendDirectMessage(node, peerID, message) {
   await node.swarm.connect(peer);  
 
   return new Promise((resolve, reject) => {
-    const res = (...args) => {
-      console.groupEnd();
-      resolve(...args);
-    };
-
-    const rej = (...args) => {
-      console.groupEnd();
-      reject(...args);
-    };
-
-    this._libp2pNode.dialProtocol(peer, IPFS.OB_PROTOCOL,
+    node.libp2p.dialProtocol(peer, IPFS.OB_PROTOCOL,
       (err, conn) => {
         if (err) {
-          console.group('Unable to send the direct message');
+          console.error('Unable to send the direct message');
           console.error(err);
-          console.groupEnd();
-          rej(err);
+          reject(err);
         }
 
         console.log('pushing outgoing message - outMess');
@@ -97,7 +87,7 @@ async function sendDirectMessage(node, peerID, message) {
         );            
 
         console.log('Message succssfully sent.');
-        res();
+        resolve();
       });
   });
 }
@@ -115,7 +105,7 @@ export async function sendMessage(type, peerID, payload, options = {}) {
     throw new Error('A payload must be provided as an object.');
   }
 
-  const messageType = messageTypes[type];
+  const messageType = messageTypesData[type];
   const node = options.node || await getNode();
 
   if (!(node instanceof IPFS)) {
@@ -127,6 +117,51 @@ export async function sendMessage(type, peerID, payload, options = {}) {
   try {
     await sendDirectMessage(node, peerID, message);
   } catch (e) {
-    console.error('Unable to send via a direct message')
+    console.error('Unable to send via a direct message.')
+    console.error(e);
   }
+}
+
+export async function openDirectMessage(encodedMessage, peerID, options = {}) {
+  if (!(encodedMessage instanceof Uint8Array)) {
+    throw new Error('Please provide a protobuf encoded message.');
+  }
+
+  if (typeof peerID !== 'string' || !peerID) {
+    throw new Error('A peerID must be provided as a non-empty string.');
+  }
+
+  const node = options.node || await getNode();
+
+  if (!(node instanceof IPFS)) {
+    throw new Error('An IPFS node instance is required.');
+  }
+
+  const Message = getProtoMessageRoot().lookupType('Message');
+  let decodedMessage;
+
+  try {
+    decodedMessage = Message.decode(encodedMessage);
+  } catch (e) {
+    console.warn(`Unable to decode message in an undelimted way - ${e}. ` +
+      'Will try delimited.');
+    decodedMessage = Message.decodeDelimited(encodedMessage);
+  }
+
+  if (!isValidMessageType(decodedMessage.messageType)) {
+    throw new Error('Unable to process the direct message because it contains ' +
+      `an unrecognized message type: ${decodedMessage.messageType}.`);
+  }
+
+  const PB = getProtoMessageRoot()
+    .lookupType(
+      messageTypesData[decodedMessage.messageType].name
+    );
+
+  return {
+    type: decodedMessage.messageType,
+    payload: PB.toObject(
+      PB.decode(decodedMessage.payload.value)
+    ),
+  };
 }

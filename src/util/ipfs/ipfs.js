@@ -11,13 +11,13 @@ export default class extends IPFS {
       ...options,
     };
 
-    console.log(`attempting to connect to the relay peer at ${opts.relayPeerAddr}`);
-
     if (this._relayConnectPromise) {
       return this._relayConnectPromise;
     }
 
-    return new Promise((resolve, reject) => {
+    console.log(`attempting to connect to the relay peer at ${opts.relayPeerAddr}`);
+
+    this._relayConnectPromise = new Promise((resolve, reject) => {
       this.libp2p.dialFSM(
         opts.relayPeerAddr,
         this.constructor.OB_PROTOCOL,
@@ -29,10 +29,11 @@ export default class extends IPFS {
             return;
           }
 
-          console.log('connected to the relay');
+          console.log('Connected to the relay');
 
           if (opts.reconnectOnClose) {
             connFSM.on('close', () => {
+              console.log('Lost the connection to the relay. Will reconnect.');
               this._relayConnectPromise = null;
               this.relayConnect(options);
             });
@@ -42,5 +43,7 @@ export default class extends IPFS {
         }
       );
     });
+
+    return this._relayConnectPromise;
   }
 }

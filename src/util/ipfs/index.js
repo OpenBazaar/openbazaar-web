@@ -1,4 +1,26 @@
 import IPFS from './ipfs';
+import pull from 'pull-stream';
+import { createFromBytes } from 'peer-id';
+import { openDirectMessage } from 'util/messaging/index';
+import { directMessage } from 'actions/messaging';
+
+let _store;
+
+export function init(store) {
+  if (typeof store !== 'object' ||
+    !Object.keys(store).length) {
+    throw new Error('Please provide a store object');
+  }
+
+  _store = store;
+}
+
+const ensureInitialized = () => {
+  if (!_store) {
+    throw new Error('Please initialize the module via init() before ' +
+      'calling this function.');
+  }
+}
 
 // todo: doc me up including:
 // todo: more robust arg checking here possible?
@@ -33,7 +55,12 @@ const getIpfsNodeInitOpts = (peerID, privateKey) => {
         '/dns4/bootstrap1.openbazaar.org/tcp/443/wss/ipfs/QmWUdwXW3bTXS19MtMjmfpnRYgssmbJCwnq8Lf9vjZwDii',
         '/dns4/bootstrap2.openbazaar.org/tcp/443/wss/ipfs/QmcXwJePGLsP1x7gTXLE51BmE7peUKe2eQuR5LGbmasekt',
         '/dns4/bootstrap3.openbazaar.org/tcp/443/wss/ipfs/Qmb8i7uy6rk47hNorNLMVRMer4Nv9YWRhzZrWVqnvk5mSk'
-      ]
+      ],
+      Discovery: {
+        MDNS: {
+          Enabled: false,
+        },
+      },
     },
   };
 };
@@ -51,7 +78,63 @@ const _create = async (options = {}) => {
       window.ipfs = node;
     }
 
-    node.on('ready', () => resolve(node));
+    node.on('ready', () => {
+      node.libp2p.start(async () => {
+        console.log('libp2p is started');
+
+        await node.relayConnect();
+
+        // handle incoming messages
+        console.log(`Listinging for incoming messages with the protocol: ${IPFS.OB_PROTOCOL}`);
+        node.libp2p.handle(IPFS.OB_PROTOCOL, (protocol, conn) => {
+          console.log('Pulling in incoming message');
+
+          pull(
+            conn,
+            pull.collect((err, data) => {
+              if (err) {
+                return console.error('There was an error pulling in an incoming chat ' +
+                  'message:', err);
+              }
+
+              console.log('The incoming message is howdy.');
+              window.howdy = data;
+
+              conn.getPeerInfo((err, peerInfo) => {
+                if (err) {
+                  console.error(`Unable to obtain the peerInfo for a direct message: ${err}`);
+                  return;
+                }
+
+                console.log('Got the peer info.');
+
+
+                const sender = createFromBytes(peerInfo.id.id).toB58String();
+
+                data.forEach(msg => {
+                  console.log('Processing incoming msg.');
+
+                  openDirectMessage(msg, sender, { node })
+                    .then(openedMessage => {
+                      _store.dispatch(directMessage({
+                        ...openedMessage,
+                        peerID: sender,
+                      }));
+                    })
+                    .catch(e => {
+                      console.error('Unable to open direct message.');
+                      console.error(e.stack);                      
+                    });
+                });
+              });
+            })
+          );
+        });
+      });
+
+      resolve(node);
+    });
+
     node.on('error', e => reject(e));
   });
 };
@@ -59,6 +142,8 @@ const _create = async (options = {}) => {
 let curNode = null;
 
 export const get = (peerID, privateKey) => {
+  ensureInitialized();
+
   if (peerID !== undefined || privateKey !== undefined) {
     ['peerID', 'privateKey'].forEach(arg => {
       if (typeof arg !== 'string' || !arg) {
@@ -110,6 +195,8 @@ export const get = (peerID, privateKey) => {
 };
 
 export const destroy = peerID => {
+  ensureInitialized();
+
   if (typeof peerID !== 'string' || !peerID) {
     throw new Error('Please provide a peerID as a non-empty string.');
   }
