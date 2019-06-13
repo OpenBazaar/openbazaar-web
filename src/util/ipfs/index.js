@@ -93,8 +93,8 @@ const _create = async (options = {}) => {
             conn,
             pull.collect((err, data) => {
               if (err) {
-                return console.error('There was an error pulling in an incoming chat ' +
-                  'message:', err);
+                return console.error('There was an error pulling in an incoming message:',
+                  err);
               }
 
               console.log('The incoming message is howdy.');
@@ -130,9 +130,9 @@ const _create = async (options = {}) => {
             })
           );
         });
-      });
 
-      resolve(node);
+        resolve(node);
+      });
     });
 
     node.on('error', e => reject(e));
