@@ -4,6 +4,7 @@ import { get as getNode } from 'util/ipfs/index';
 import protobuf from 'protobufjs';
 import messageJSON from 'pb/message.json';
 import { typesData as messageTypesData } from './types';
+import { getRandomInt } from 'util/number';
 
 let protoRoot;
 
@@ -67,8 +68,6 @@ async function sendDirectMessage(node, peerID, message) {
     // just means it will likely fail for nodes that can handle incoming direct connections.
   }
 
-  await node.swarm.connect(peer);  
-
   return new Promise((resolve, reject) => {
     node.libp2p.dialProtocol(peer, IPFS.OB_PROTOCOL,
       (err, conn) => {
@@ -93,33 +92,43 @@ async function sendDirectMessage(node, peerID, message) {
 }
 
 export async function sendMessage(type, peerID, payload, options = {}) {
-  if (!isValidMessageType(type)) {
-    throw new Error(`${type} is not a valid message type.`);
-  }
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (getRandomInt(0, 1)) {
+        resolve();
+      } else {
+        reject('You silly little amaranto!');
+      }
+    }, getRandomInt(300, 3000))
+  });
 
-  if (typeof peerID !== 'string' || !peerID) {
-    throw new Error('A peerID must be provided as a non-empty string.');
-  }
+  // if (!isValidMessageType(type)) {
+  //   throw new Error(`${type} is not a valid message type.`);
+  // }
 
-  if (typeof payload !== 'object') {
-    throw new Error('A payload must be provided as an object.');
-  }
+  // if (typeof peerID !== 'string' || !peerID) {
+  //   throw new Error('A peerID must be provided as a non-empty string.');
+  // }
 
-  const messageType = messageTypesData[type];
-  const node = options.node || await getNode();
+  // if (typeof payload !== 'object') {
+  //   throw new Error('A payload must be provided as an object.');
+  // }
 
-  if (!(node instanceof IPFS)) {
-    throw new Error('An IPFS node instance is required.');
-  }
+  // const messageType = messageTypesData[type];
+  // const node = options.node || await getNode();
 
-  const message = generateMessage(messageType, peerID, payload);
+  // if (!(node instanceof IPFS)) {
+  //   throw new Error('An IPFS node instance is required.');
+  // }
+
+  // const message = generateMessage(messageType, peerID, payload);
   
-  try {
-    await sendDirectMessage(node, peerID, message);
-  } catch (e) {
-    console.error('Unable to send via a direct message.')
-    console.error(e);
-  }
+  // try {
+  //   await sendDirectMessage(node, peerID, message);
+  // } catch (e) {
+  //   console.error('Unable to send via a direct message.')
+  //   console.error(e);
+  // }
 }
 
 export async function openDirectMessage(encodedMessage, peerID, options = {}) {
@@ -143,8 +152,8 @@ export async function openDirectMessage(encodedMessage, peerID, options = {}) {
   try {
     decodedMessage = Message.decode(encodedMessage);
   } catch (e) {
-    console.warn(`Unable to decode message in an undelimted way - ${e}. ` +
-      'Will try delimited.');
+    // console.warn(`Unable to decode message in an undelimted way - ${e}. ` +
+    //   'Will try delimited.');
     decodedMessage = Message.decodeDelimited(encodedMessage);
   }
 

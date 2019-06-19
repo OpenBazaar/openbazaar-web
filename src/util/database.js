@@ -23,6 +23,11 @@ const collections = [
     name: 'chatmessage',
     schema: chatMessageSchema,
     sync: true
+  },
+  {
+    name: 'unsentchatmessages',
+    schema: chatMessageSchema,
+    sync: false
   }
 ];
 

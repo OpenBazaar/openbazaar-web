@@ -89,46 +89,44 @@ const _create = async (options = {}) => {
         node.libp2p.handle(IPFS.OB_PROTOCOL, (protocol, conn) => {
           console.log('Pulling in incoming message');
 
-          pull(
-            conn,
-            pull.collect((err, data) => {
-              if (err) {
-                return console.error('There was an error pulling in an incoming message:',
-                  err);
-              }
+          conn.getPeerInfo((err, peerInfo) => {
+            if (err) {
+              console.error(`Unable to obtain the peerInfo for a direct message: ${err}`);
+              return;
+            }
 
-              console.log('The incoming message is howdy.');
-              window.howdy = data;
+            console.log('The peerInfo has been obtained.');
 
-              conn.getPeerInfo((err, peerInfo) => {
-                if (err) {
-                  console.error(`Unable to obtain the peerInfo for a direct message: ${err}`);
+            pull(
+              conn,
+              pull.map(msg => {
+                const sender = createFromBytes(peerInfo.id.id).toB58String();
+
+                if (msg.length <= 1) {
                   return;
                 }
 
-                console.log('Got the peer info.');
+                console.log('Processing incoming msg.');
 
+                openDirectMessage(msg, sender, { node })
+                  .then(openedMessage => {
+                    _store.dispatch(directMessage({
+                      ...openedMessage,
+                      peerID: sender,
+                    }));
+                  })
+                  .catch(e => {
+                    console.error('Unable to open direct message.');
+                    console.error(e.stack);
+                  });
 
-                const sender = createFromBytes(peerInfo.id.id).toB58String();
-
-                data.forEach(msg => {
-                  console.log('Processing incoming msg.');
-
-                  openDirectMessage(msg, sender, { node })
-                    .then(openedMessage => {
-                      _store.dispatch(directMessage({
-                        ...openedMessage,
-                        peerID: sender,
-                      }));
-                    })
-                    .catch(e => {
-                      console.error('Unable to open direct message.');
-                      console.error(e.stack);                      
-                    });
-                });
-              });
-            })
-          );
+                return msg;
+              }),
+              // at least a no-op collect seems to be needed for the stream to go through
+              // map() above
+              pull.collect(() => {})
+            );
+          });
         });
 
         resolve(node);

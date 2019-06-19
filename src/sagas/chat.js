@@ -1,4 +1,8 @@
-import { omit } from 'lodash';
+import {
+  omit,
+  orderBy,
+  memoize,
+} from 'lodash';
 import multihashes from 'multihashes';
 import crypto from 'crypto';
 import { get as getDb } from 'util/database';
@@ -14,9 +18,12 @@ import {
   convoMessagesRequest,
   convoMessagesSuccess,
   convoMessagesFail,
+  messageDbChange,
   messageChange,
   sendMessage,
-  convoMarkRead
+  // sendMessageRequest,
+  // sendMessageFail,
+  convoMarkRead,
 } from 'actions/chat';
 import { directMessage } from 'actions/messaging';
 
@@ -39,8 +46,6 @@ function* getConvos(action) {
   }
 }
 
-const messageCache = {};
-
 // TODO: cancel existing async tasks on deactivate convo and logout
 // TODO: cancel existing async tasks on deactivate convo and logout
 // TODO: cancel existing async tasks on deactivate convo and logout
@@ -52,21 +57,66 @@ const getChatMessagesCol = async database => {
   return await db.collections.chatmessage.inMemory();
 };
 
+const getUnsentChatMessagesCol = async database => {
+  const db = database || (await getDb());
+  return await db.collections.unsentchatmessages.inMemory();
+};
+
+const messagesCache = {};
+
 // For now, just fetching all the messages. Later, we'll probably
 // want to do some form of pagination since the number of messages can get
 // quite large and rendering them in one go could be too heavy.
 const getMessagesList = async (db, peerID) => {
-  const messageCol = await getChatMessagesCol(db);
-  const docs = await messageCol
+  if (messagesCache[peerID]) return messagesCache[peerID];
+
+  const messagesCol = await getChatMessagesCol(db);
+  const docs = await messagesCol
     .find({
       peerID: {
         $eq: peerID
       },
     })
-    .sort({ timestamp: 'asc' })
-    .exec();    
+    // .sort({ timestamp: 'asc' })
+    .exec();
 
-  return docs.map(doc => omit(doc.toJSON(), ['_rev']));
+  const unsentMessagesCol = await getUnsentChatMessagesCol(db);
+  const unsentDocs = await unsentMessagesCol
+    .find({
+      peerID: {
+        $eq: peerID
+      },
+    })
+    .exec();
+
+  let messages = {};
+
+  docs.forEach(doc => {
+    messages[doc.messageID] = {
+      ...omit(doc.toJSON(), ['_rev']),
+      sent: true,
+      sending: false,
+    };
+  });
+
+  unsentDocs.forEach(doc => {
+    if (!messages[doc.messageID]) {
+      messages[doc.messageID] = {
+        ...omit(doc.toJSON(), ['_rev']),
+        sent: false,
+        sending: !!(
+          inTransitMessages[peerID] &&
+          inTransitMessages[peerID][doc.messageID]
+        ),
+      };
+    }
+  });  
+
+  messagesCache[peerID] = {
+    ...messagesCache[peerID],
+    ...messages,
+  };
+  return messages;
 };
 
 function* getConvoMessages(action) {
@@ -95,21 +145,24 @@ function* getConvoMessages(action) {
 
 function* handleActivateConvo(action) {
   const peerID = action.payload;
-  const cachedMessages = messageCache[peerID];
 
   yield put(
     convoActivated({
       peerID,
-      messages: cachedMessages || []
+      messages: messagesCache[peerID] || {},
     })
   );
 
-  if (!cachedMessages) {
+  if (!messagesCache[peerID]) {
+    // todo: ensure this is only called the first time thee convo is activate
+    // todo: ensure this is only called the first time thee convo is activate
+    // todo: ensure this is only called the first time thee convo is activate
+    // todo: ensure this is only called the first time thee convo is activate
     yield put(convoMessagesRequest({ peerID }));
   }
 }
 
-function* messageChanged(action) {
+function* handleMessageDbChange(action) {
   const state = yield select();
 
   if (action.payload.operation === 'INSERT') {
@@ -140,7 +193,7 @@ function* messageChanged(action) {
       // scan the chat messages on startup and if there's no corresponding convo
       // create one then?
       console.error(
-        'Unable to create / update a chat head for the following action:'
+        'Unable to create / update the chat head for the following action:'
       );
       console.error(action);
       console.error(e);
@@ -148,76 +201,155 @@ function* messageChanged(action) {
   }
 }
 
-async function insertChatMessage(data) {
-  let messageID = data.messageID;
-  const subject = data.subject || '';
-  const timestampDate = new Date();
-
-  if (typeof data.messageID === 'undefined') {
-    const combinationString = `${subject}!${timestampDate.toISOString()}`;
-    const idBytes = crypto.createHash('sha256').update(combinationString).digest();
-    const idBytesArray = new Uint8Array(idBytes);
-    const idBytesBuffer =  new Buffer(idBytesArray.buffer);
-    const encoded = multihashes.encode(idBytesBuffer, 0x12);  
-    messageID = multihashes.toB58String(encoded);
+function generateChatMessageData(message, options = {}) {
+  if (
+    typeof options.timestamp !== 'undefined' &&
+    !(options.timestamp instanceof Date)
+  ) {
+    throw new Error('If providing a timestamp, it must be provided as ' +
+      'a Date instance.');
   }
 
-  const messageCol = await getChatMessagesCol();
-  const doc = await messageCol.upsert({
-    ...data,
+  if (
+    typeof options.subject !== 'undefined' &&
+    typeof options.subject !== 'string'
+  ) {
+    throw new Error('If providing a subject, it must be provided as ' +
+      'a string.');
+  }  
+
+  const opts = {
+    subject: '',
+    timestamp: new Date(),
+  };
+
+  const combinationString = `${opts.subject}!${opts.timestamp.toISOString()}`;
+  const idBytes = crypto.createHash('sha256').update(combinationString).digest();
+  const idBytesArray = new Uint8Array(idBytes);
+  const idBytesBuffer =  new Buffer(idBytesArray.buffer);
+  const encoded = multihashes.encode(idBytesBuffer, 0x12);  
+  const messageID = multihashes.toB58String(encoded);
+
+  return {
     messageID,
-    subject,
-    timestamp: timestampDate.toISOString(),
-  });
-  await messageCol.awaitPersistence();
-  return doc;
+    timestamp: opts.timestamp.toISOString(),
+    timestampPB: {
+      seconds: Math.floor(opts.timestamp / 1000),
+      nanos: opts.timestamp % 1000,
+    },    
+  }
+}
+
+const inTransitMessages = {};
+
+function* retryMessageSend(action) {
+  // yield put(sendMessageRequest(action));
 }
 
 function* handleSendMessage(action) {
   const peerID = action.payload.peerID;
   const message = action.payload.message;
-  let messageDoc;
 
-  try {
-    messageDoc = yield call(insertChatMessage, {
-      peerID,
-      message,
-      outgoing: true,
-    });
-  } catch (e) {
-    // Not the best UX here, since the user only sees the failure in the
-    // console and can't retry without retyping. But... this is only the
-    // db message insertion which should very rarely fail and it's a bit
-    // of a rabbit hole to get this into the UI. Cutting a corner, for now.
-    const msg = `${action.payload.message.slice(0, 10)}…`;
-    console.error(`Unable to send the chat message to peerID ${peerID}: ${msg}`);
-    console.error(e);
-    return;
+  const {
+    messageID,
+    timestamp,
+    timestampPB,
+  } = generateChatMessageData(message);
+
+  const messageData = {
+    messageID,
+    peerID,
+    message,
+    outgoing: true,
+    timestamp,
+    read: false,
+    subject: '',
   }
 
-  const timestamp = (new Date(messageDoc.get('timestamp'))).getTime();
+  // if (action.payload.messageID) {
+  //   return yield call(retryMessageSend, action);
+  // }
+
+  inTransitMessages[peerID] = inTransitMessages[peerID] || {};
+  inTransitMessages[peerID][messageID] = true;
+
+  yield put(messageChange({
+    // todo: constantize this?
+    type: 'INSERT',
+    data: {
+      ...messageData,
+      sent: false,
+      sending: true,
+    },
+  }));
+
+  const db = yield call(getDb);
+  let unsentMessageDoc;
+  
+  try {
+    unsentMessageDoc = yield call(
+      [db.collections.unsentchatmessages, 'insert'],
+      messageData
+    );
+  } catch (e) {
+    const msg = message.length > 10 ?
+      `${message.slice(0, 10)}…` : message;
+    console.error(`Unable to save message "${msg}" in the ` +
+      'unsent chat messages DB.');
+    // We'll just proceed without it. It really just means that if the
+    // send fails and the user closes the app, it will be lost.
+  }
+
+  let messageSendFailed;
 
   try {
     sendChatMessage(
       messageTypes.CHAT,
       peerID,
       {
-        messageId: messageDoc.get('messageID'),
-        subject: messageDoc.get('subject'),
-        message,
-        timestamp: {
-          seconds: Math.floor(timestamp / 1000),
-          nanos: timestamp % 1000,
-        },
+        ...messageData,
+        timestamp: timestampPB,
         flag: 0
       }      
     );
   } catch (e) {
-    // todo: eventually toggle some sent state in the DB to failed and let the
-    // user retry via the UI.
-    console.error(`Unable to send the chat message.`);
+    const msg = message.length > 10 ?
+      `${message.slice(0, 10)}…` : message;
+    console.error(`Unable to send the chat message "${msg}".`);
     console.error(e);
+    messageSendFailed = true;
+  } finally {
+    delete inTransitMessages[peerID][messageID];
+    yield put(messageChange({
+      type: 'UPDATE',
+      data: {
+        ...messageData,
+        sent: !messageSendFailed,
+        sending: false,
+      },
+    }));
+    if (messageSendFailed) return;
+  }
+
+  try {
+    yield call(
+      [db.collections.chatmessage, 'insert'],
+      messageData
+    );
+  } catch (e) {
+    const msg = message.length > 10 ?
+      `${message.slice(0, 10)}…` : message;
+    console.error(`Unable to save the sent message "${msg}" in the ` +
+      'chat messages DB.');
     return;
+  }
+
+  if (unsentMessageDoc) {
+    try {
+      yield call([unsentMessageDoc, 'remove']);
+    } catch (e) {
+      // pass
+    }
   }
 }
 
@@ -269,28 +401,53 @@ function* handleDirectMessage(action) {
     const peerID = action.payload.peerID;
     const message = action.payload.payload;
 
+    if (message.flag) {
+      // ignore "read" and "typing" messages for now
+      return;
+    }
+
+    const msg = message.message.length > 10 ?
+      `${message.message.slice(0, 10)}…` : message;    
+
+    console.log(`writing "${msg}" from ${peerID} to the database`);
+
+    const db = yield call(getDb);
+
     try {
-      yield call(insertChatMessage, {
-        peerID,
-        message: message.message,
-        messageID: message.messageId,
-        timestamp: (
-          new Date(
-            message.timestamp.seconds +
-            message.timestamp.nanos
-          )
-        ),
-        subject: message.subject,
-        outgoing: false,
-      });
+      yield call(
+        [db.collections.chatmessage, 'insert'],
+        {
+          peerID,
+          message: message.message,
+          messageID: message.messageId,
+          timestamp: (
+            new Date(
+              message.timestamp.seconds +
+              message.timestamp.nanos
+            )
+          ),
+          subject: message.subject,
+          outgoing: false,          
+        }
+      );
     } catch (e) {
       // TODO: maybe some type of retry? A db insertion failure I would think
       // would be very rare.
-      console.error(`Unable to insert the following message from ${peerID} ` +
+      console.error(`Unable to insert direct message ${msg} from ${peerID} ` +
         'into the database.');
-      console.dir(message);
       console.error(e);
-      return;
+      return;      
+    }
+  }
+}
+
+function handleMessageChange(action) {
+  if (action.payload.type === 'DELETE') {
+    delete messagesCache[action.payload.peerID];
+  } else {
+    messagesCache[action.payload.peerID] = {
+      ...messagesCache[action.payload.peerID],
+      ...action.payload,
     }
   }
 }
@@ -307,8 +464,12 @@ export function* convoMessagesRequestWatcher() {
   yield takeEvery(convoMessagesRequest, getConvoMessages);
 }
 
+export function* messageDbChangeWatcher() {
+  yield takeEvery(messageChange, handleMessageDbChange);
+}
+
 export function* messageChangeWatcher() {
-  yield takeEvery(messageChange, messageChanged);
+  yield takeEvery(messageChange, handleMessageChange);
 }
 
 export function* sendMessageWatcher() {

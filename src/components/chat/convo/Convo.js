@@ -120,6 +120,7 @@ class Convo extends Component {
                 {...message}
                 key={message.messageID}
                 avatarHashes={avatarHashes}
+                onRetryClick={() => this.props.onMessageRetrySend(message.messageID)}
               />
             );
           })}

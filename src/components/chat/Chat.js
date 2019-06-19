@@ -27,6 +27,7 @@ class Chat extends Component {
     this.handleMessageInputChange = this.handleMessageInputChange.bind(this);
     this.handleRetryMessageFetch = this.handleRetryMessageFetch.bind(this);
     this.handleMessageSend = this.handleMessageSend.bind(this);
+    this.handleMessageRetrySend = this.handleMessageRetrySend.bind(this);
 
     this.convoMessagesScroll = {};
   }
@@ -122,6 +123,10 @@ class Chat extends Component {
     });
   }
 
+  handleMessageRetrySend(data) {
+    this.props.actions.sendMessage(data);    
+  }
+
   activateFirstConvo() {
     if (this.props.convos && this.props.convos.length) {
       this.props.actions.activateConvo(this.props.convos[0].peerID);
@@ -158,7 +163,6 @@ class Chat extends Component {
           <div className="icon clrTErr">
             <IosAlertOutline
               fontSize="42px"
-              // color="red"
               onClick={() => this.props.actions.open()}
               style={{ cursor: 'pointer' }}
             />
@@ -225,6 +229,12 @@ class Chat extends Component {
             this.handleMessageSend({
               message,
               peerID: convoData.peerID
+            })
+          }
+          onMessageRetrySend={messageID =>
+            this.handleMessageRetrySend({
+              messageID,
+              peerID: convoData.peerID,
             })
           }
         />
