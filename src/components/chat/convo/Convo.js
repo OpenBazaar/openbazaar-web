@@ -11,6 +11,8 @@ import './Convo.scss';
 
 class Convo extends Component {
   state = {
+    sent: false,
+    sending: false,
     messagesScrollTop:
       typeof this.props.initialMessagesScrollTop === 'number'
         ? this.props.initialMessagesScrollTop
@@ -28,6 +30,8 @@ class Convo extends Component {
     this.programaticallyScrolling = false;
     this.handleMessagesScroll = this.handleMessagesScroll.bind(this);
     this.handleMessageInputKeyUp = this.handleMessageInputKeyUp.bind(this);
+    console.log('checkIt');
+    window.checkIt = this.setState.bind(this);
   }
 
   componentDidMount() {
@@ -35,19 +39,31 @@ class Convo extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    // If we have a new message at the bottom and we're scrolled at or
-    // near the bottom, we'll scroll to the bottom so the new message
-    // is shown.
-    if (
-      this.props.messages.length &&
-      !prevProps.messages.includes(
-        this.props.messages[this.props.messages.length - 1]
-      ) &&
-      this.scrolledNearBottom()
-    ) {
-      this.setState({
-        messagesScrollTop: this.constructor.scrollBottomHeight
-      });
+    // If we have a new message at the bottom and it's an outgoing message
+    // or we're scrolled at or near the bottom, we'll scroll to the bottom
+    // so the new message is shown.
+    if (this.props.messages.length) {
+      const prevLastMessage = prevProps.messages &&
+        prevProps.messages.length &&
+        prevProps.messages[prevProps.messages.length - 1];
+      const lastMessage = this.props.messages[
+        this.props.messages.length - 1
+      ];
+
+      if (
+        (
+          !prevLastMessage ||
+          prevLastMessage.messageID !== lastMessage.messageID
+        ) &&
+        (
+          lastMessage.outgoing ||
+          this.scrolledNearBottom()
+        )
+      ) {
+        this.setState({
+          messagesScrollTop: this.constructor.scrollBottomHeight
+        });
+      }      
     }
 
     this.scrollMessages();
@@ -115,12 +131,23 @@ class Convo extends Component {
               // pass
             }
 
+            let theGoods = { ...message };
+
+            if (message.messageID === 'QmQFV8yCyhEX87iDrhE24eTeE1HTe9V3BwNjzwR3wrDpbr') {
+              theGoods = {
+                ...theGoods,
+                sent: this.state.sent,
+                sending: this.state.sending,
+              }
+            }
+
             return (
               <Message
-                {...message}
+                { ...theGoods }
                 key={message.messageID}
                 avatarHashes={avatarHashes}
-                onRetryClick={() => this.props.onMessageRetrySend(message.messageID)}
+                onRetryClick={() =>
+                  this.props.onMessageRetrySend(message)}
               />
             );
           })}

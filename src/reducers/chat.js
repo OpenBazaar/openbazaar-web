@@ -13,8 +13,6 @@ import {
   deactivateConvo,
   convoChange,
   messageChange,
-  // sendMessageRequest,
-  // sendMessageFail,
 } from 'actions/chat';
 import { AUTH_LOGOUT } from 'actions/auth';
 
@@ -135,47 +133,6 @@ const reduceDeactivateConvo = state => {
   state.activeConvo = null;
 };
 
-const reduceSendMessageRequest = (state, action) => {
-  // if (state.activeConvo && action.payload.peerID === state.activeConvo.peerID) {
-  //   console.log(`feel the funk punk: ${action.payload.messageID}`);
-  //   state.activeConvo.messages
-  //     .slice()
-  //     .reverse()
-  //     .slice(0, 10)
-  //     .forEach((msg, index) => {
-  //       console.log('hey ===== ');
-  //       console.dir(JSON.parse(JSON.stringify(msg)));
-  //       console.log('hey ===== \n');
-  //       if (msg.messageID === action.payload.messageID) {
-  //         console.log('got dose goods');
-  //         state.activeConvo.messages[index] = {
-  //           ...state.activeConvo.messages[index],
-  //           sending: true,
-  //         };
-  //       }
-  //     });
-  // }  
-};
-
-// const reduceSendMessageFail = (state, action) => {
-
-// };
-
-// const reduceMessageChange = (state, action) => {
-//   if (
-//     // for now, we're not supporting editing or deleting a chat message
-//     action.payload.operation === 'INSERT' &&
-//     state.activeConvo &&
-//     state.activeConvo.peerID === action.payload.data.peerID
-//   ) {
-//     // TODO: insert in sorted order
-//     state.activeConvo.messages = [
-//       ...(state.activeConvo.messages || []),
-//       action.payload.data
-//     ];
-//   }
-// };
-
 const reduceMessageChange = (state, action) => {
   if (
     !(
@@ -187,17 +144,17 @@ const reduceMessageChange = (state, action) => {
   if (action.payload.type === 'INSERT') {
     state.activeConvo.messages = {
       ...state.activeConvo.messages,
-      [action.payload.data.peerID]: {
+      [action.payload.data.messageID]: {
         ...action.payload.data,
       },
     };
   } else if (action.payload.type === 'UPDATE') {
-    state.activeConvo.messages[action.payload.data.peerID] = {
-      ...state.activeConvo.messages[action.payload.data.peerID],
+    state.activeConvo.messages[action.payload.data.messageID] = {
+      ...state.activeConvo.messages[action.payload.data.messageID],
       ...action.payload.data,
     };
   } else {
-    delete state.activeConvo.messages[action.payload.data.peerID];
+    delete state.activeConvo.messages[action.payload.data.messageID];
   }
 }
 
@@ -218,8 +175,6 @@ export default createReducer(initialState, {
   [deactivateConvo]: reduceDeactivateConvo,
   [convoChange]: reduceConvoChange,
   [messageChange]: reduceMessageChange,
-  // [sendMessageRequest]: reduceSendMessageRequest,
-  // [sendMessageFail]: reduceSendMessageFail,
   [AUTH_LOGOUT]: reduceAuthLogout
 });
 
@@ -237,6 +192,10 @@ export const getConvos = createSelector(
 
 export const getActiveConvoMessage = createSelector(
   ['activeConvo.messages'],
+  // TODO: This is very ineeficient since anytime any change is made to a message
+  // or a new message comes in, the list will be resorted, which could be expensive
+  // on chats with a lot of messages. Probably better to have the saga provide an
+  // already sorted list and the saga canbe smarter about selectively sorting.
   messages =>
     orderBy(
       Object.keys(messages)

@@ -93,7 +93,10 @@ async function sendDirectMessage(node, peerID, message) {
 
 export async function sendMessage(type, peerID, payload, options = {}) {
   return new Promise((resolve, reject) => {
+    console.log('will send message');
     setTimeout(() => {
+      console.log('decision time');
+
       if (getRandomInt(0, 1)) {
         resolve();
       } else {

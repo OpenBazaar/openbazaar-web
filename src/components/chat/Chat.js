@@ -123,8 +123,13 @@ class Chat extends Component {
     });
   }
 
-  handleMessageRetrySend(data) {
-    this.props.actions.sendMessage(data);    
+  handleMessageRetrySend(message) {
+    this.props.actions.sendMessage({
+      messageID: message.messageID,
+      peerID: message.peerID,
+      timestamp: message.timestamp,
+      message: message.message,
+    });
   }
 
   activateFirstConvo() {
@@ -231,12 +236,7 @@ class Chat extends Component {
               peerID: convoData.peerID
             })
           }
-          onMessageRetrySend={messageID =>
-            this.handleMessageRetrySend({
-              messageID,
-              peerID: convoData.peerID,
-            })
-          }
+          onMessageRetrySend={message => this.handleMessageRetrySend(message)}
         />
       );
     }

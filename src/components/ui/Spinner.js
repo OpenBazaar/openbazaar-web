@@ -5,7 +5,7 @@ const sizes = {
   small: '20px',
   medium: '60px',
   large: '80px',
-  text: '1em'
+  text: '1.25em'
 };
 
 const Spinner = props => {

@@ -201,6 +201,17 @@ function* handleMessageDbChange(action) {
   }
 }
 
+function generatePbTimestamp(timestamp) {
+  if (!(timestamp instanceof Date)) {
+    throw new Error('A timestamp must be provided as a Date instance.');
+  }
+
+  return {
+    seconds: Math.floor(timestamp / 1000),
+    nanos: timestamp % 1000,
+  };
+}
+
 function generateChatMessageData(message, options = {}) {
   if (
     typeof options.timestamp !== 'undefined' &&
@@ -233,28 +244,28 @@ function generateChatMessageData(message, options = {}) {
   return {
     messageID,
     timestamp: opts.timestamp.toISOString(),
-    timestampPB: {
-      seconds: Math.floor(opts.timestamp / 1000),
-      nanos: opts.timestamp % 1000,
-    },    
+    timestampPB: generatePbTimestamp(opts.timestamp),    
   }
 }
 
 const inTransitMessages = {};
 
-function* retryMessageSend(action) {
-  // yield put(sendMessageRequest(action));
+function* handleRetryMessage(action) {
+  // todo: validate action params
+  return yield handleSendMessage(action);
 }
 
 function* handleSendMessage(action) {
+  const isRetry = !!action.payload.messageID;
   const peerID = action.payload.peerID;
   const message = action.payload.message;
-
+  const generatedChatMessageData = generateChatMessageData(message);
+  const messageID = isRetry ?
+    action.payload.messageID : generatedChatMessageData.messageID;
   const {
-    messageID,
     timestamp,
     timestampPB,
-  } = generateChatMessageData(message);
+  } = generatedChatMessageData;
 
   const messageData = {
     messageID,
@@ -266,51 +277,55 @@ function* handleSendMessage(action) {
     subject: '',
   }
 
-  // if (action.payload.messageID) {
-  //   return yield call(retryMessageSend, action);
-  // }
-
   inTransitMessages[peerID] = inTransitMessages[peerID] || {};
   inTransitMessages[peerID][messageID] = true;
 
   yield put(messageChange({
     // todo: constantize this?
-    type: 'INSERT',
+    type: isRetry ?
+      'UPDATE' : 'INSERT',
     data: {
       ...messageData,
       sent: false,
       sending: true,
+      // On a retry, we won't update the timestamp in the UI until it succeeds,
+      // since we don't want the meessagee needlessly changeing sort order.
+      timestamp: isRetry ?
+        action.payload.timestamp : timestamp,
     },
   }));
 
   const db = yield call(getDb);
   let unsentMessageDoc;
   
-  try {
-    unsentMessageDoc = yield call(
-      [db.collections.unsentchatmessages, 'insert'],
-      messageData
-    );
-  } catch (e) {
-    const msg = message.length > 10 ?
-      `${message.slice(0, 10)}…` : message;
-    console.error(`Unable to save message "${msg}" in the ` +
-      'unsent chat messages DB.');
-    // We'll just proceed without it. It really just means that if the
-    // send fails and the user closes the app, it will be lost.
+  if (!isRetry) {
+    try {
+      unsentMessageDoc = yield call(
+        [db.collections.unsentchatmessages, 'insert'],
+        messageData
+      );
+    } catch (e) {
+      const msg = message.length > 10 ?
+        `${message.slice(0, 10)}…` : message;
+      console.error(`Unable to save message "${msg}" in the ` +
+        'unsent chat messages DB.');
+      // We'll just proceed without it. It really just means that if the
+      // send fails and the user closes the app, it will be lost.
+    }
   }
 
   let messageSendFailed;
 
   try {
-    sendChatMessage(
+    yield call(
+      sendChatMessage,
       messageTypes.CHAT,
       peerID,
       {
         ...messageData,
         timestamp: timestampPB,
         flag: 0
-      }      
+      }
     );
   } catch (e) {
     const msg = message.length > 10 ?
@@ -326,6 +341,8 @@ function* handleSendMessage(action) {
         ...messageData,
         sent: !messageSendFailed,
         sending: false,
+        timestamp: isRetry && messageSendFailed ?
+          action.payload.timestamp : timestamp,
       },
     }));
     if (messageSendFailed) return;

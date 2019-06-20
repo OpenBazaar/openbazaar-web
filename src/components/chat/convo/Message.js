@@ -7,6 +7,10 @@ import 'styles/layout.scss';
 import 'styles/type.scss';
 
 export default function(props) {
+  const messageStyle = !props.sent && !props.sending ?
+    { opacity: 0.6 } : {};
+  const avatarWrapStyle = messageStyle;
+
   const avatar = (
     <Avatar
       size="small"
@@ -21,7 +25,7 @@ export default function(props) {
     timestampLine = moment(props.timestamp).fromNow();
   } else if (props.sending) {
     timestampLine = (
-      <span className="clrT2"><Spinner size="small" /></span>
+      <span className="clrT2"><Spinner size="text" /></span>
     );
   } else {
     // send error
@@ -50,9 +54,6 @@ export default function(props) {
     >{timestampLine}</div>
   );
 
-  const messageStyle = !props.sent && !props.sending ?
-    { opacity: 0.6 } : {};
-
   const msgText = (
     <div className="flexCol gutterVTn" style={{ marginTop: '5px' }}>
       <div className={props.outgoing ? 'flexHRight' : ''}>
@@ -74,7 +75,12 @@ export default function(props) {
       <div className="flex gutterHSm">
         <div className="flexExpand">&nbsp;</div>
         {msgText}
-        <div className="flexNoShrink">{avatar}</div>
+        <div
+          className="flexNoShrink"
+          style={avatarWrapStyle}
+        >
+          {avatar}
+        </div>
       </div>
     );
   } else {
