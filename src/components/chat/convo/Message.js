@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { getPoly } from 'util/polyglot';
 import React from 'react';
 import IosAlertOutline from 'react-ionicons/lib/IosAlertOutline';
 import Avatar from 'components/ui/Avatar';
@@ -38,10 +39,15 @@ export default function(props) {
           className="btnAsLink clrTErr"
           onClick={props.onRetryClick}
         >
-          Retry
+          {getPoly().t('chatConvo.message.btnRetry')}
         </button>
         <div className="clrT2">|</div>
-        <button className="btnAsLink clrTErr">Cancel</button>
+        <button
+          className="btnAsLink clrTErr"
+          onClick={props.onCancelClick}
+        >
+          {getPoly().t('chatConvo.message.btnCancel')}
+        </button>
       </div>
     )
   }
@@ -51,6 +57,8 @@ export default function(props) {
       className={`clrT2 txTn ${
         !props.outgoing ? '' : 'flexHRight'
       }`}
+      // prevents jumping when the timestamp line switches between states
+      style={{height: '11px'}}
     >{timestampLine}</div>
   );
 

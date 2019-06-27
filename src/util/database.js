@@ -5,7 +5,7 @@ import pouchDbAdapterIdb from 'pouchdb-adapter-idb';
 import pouchDbAdapterHttp from 'pouchdb-adapter-http';
 import PouchAdapterMemory from 'pouchdb-adapter-memory';
 import profileSchema from 'schema/profile';
-import chatConversationSchema from 'schema/chatConversation';
+// import chatConversationSchema from 'schema/chatConversation';
 import chatMessageSchema from 'schema/chatMessage';
 
 const collections = [
@@ -14,11 +14,11 @@ const collections = [
     schema: profileSchema,
     sync: true
   },
-  {
-    name: 'chatconversation',
-    schema: chatConversationSchema,
-    sync: true
-  },
+  // {
+  //   name: 'chatconversation',
+  //   schema: chatConversationSchema,
+  //   sync: true
+  // },
   {
     name: 'chatmessage',
     schema: chatMessageSchema,
@@ -45,7 +45,8 @@ const _create = async (name, password) => {
   const db = await RxDB.create({
     name: name.slice(0, 10),
     adapter: 'idb',
-    password
+    password,
+    queryChangeDetection: true,
   });
 
   if (process.env.NODE_ENV === 'development') {
@@ -58,11 +59,11 @@ const _create = async (name, password) => {
 
   // sync
   collections.filter(col => col.sync).map(col => col.name);
-  // .map(colName => {
-  //   return db[colName].sync({
-  //     remote: `${syncUrl}/${name}_${colName}`
-  //   });
-  // });
+    // .map(colName => {
+    //   return db[colName].sync({
+    //     remote: `${syncUrl}/${name}_${colName}`
+    //   });
+    // });
 
   const peerIDs = [
     'Qmbr7QtmKCVZ5g5mePNZHaetCKF9gryXxiLcyrdBPbMbnd',

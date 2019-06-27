@@ -62,7 +62,9 @@ class App extends Component {
     const chatOpenClass = isChatOpen ? 'Chat-chatOpen' : '';
 
     const isChatVisible =
-      this.props.chat.convos.length || this.props.activeConvo;
+      this.props.chat.convos.length ||
+      this.props.chat.convosFetchFailed ||
+      this.props.chat.activeConvo;
     const chatVisibleClass = isChatVisible ? 'Chat-chatVisible' : '';
 
     const upToMobileLandscape = ['mobile', 'mobileLandscape'].includes(

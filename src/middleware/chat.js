@@ -7,20 +7,22 @@ const middleware = store => next => action => {
   if (action.type === AUTH_LOGIN_SUCCESS) {
     // subscribe to chat db updates
     getDb().then(db => {
-      // todo: shouldn't collection names be plural?
-      // todo: shouldn't collection names be plural?
-      db.chatconversation.$.subscribe(changeEvent =>
-        store.dispatch(
-          convoChange({
-            operation: changeEvent.data.op,
-            data: omit(changeEvent.data.v, ['_rev'])
-          })
-        )
-      );
+      // db.chatconversation.$.subscribe(changeEvent =>
+      //   store.dispatch(
+      //     convoChange({
+      //       fromSync: !changeEvent.db,
+      //       operation: changeEvent.data.op,
+      //       data: omit(changeEvent.data.v, ['_rev'])
+      //     })
+      //   )
+      // );
 
+      // todo: shouldn't collection names be plural?
+      // todo: shouldn't collection names be plural?
       db.chatmessage.$.subscribe(changeEvent =>
         store.dispatch(
           messageDbChange({
+            fromSync: !changeEvent.db,
             operation: changeEvent.data.op,
             data: omit(changeEvent.data.v, ['_rev'])
           })

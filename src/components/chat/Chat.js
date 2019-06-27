@@ -28,6 +28,7 @@ class Chat extends Component {
     this.handleRetryMessageFetch = this.handleRetryMessageFetch.bind(this);
     this.handleMessageSend = this.handleMessageSend.bind(this);
     this.handleMessageRetrySend = this.handleMessageRetrySend.bind(this);
+    this.handleMessageCancel = this.handleMessageCancel.bind(this);
 
     this.convoMessagesScroll = {};
   }
@@ -132,6 +133,10 @@ class Chat extends Component {
     });
   }
 
+  handleMessageCancel(messageID) {
+    this.props.actions.cancelMessage({ messageID });
+  }
+
   activateFirstConvo() {
     if (this.props.convos && this.props.convos.length) {
       this.props.actions.activateConvo(this.props.convos[0].peerID);
@@ -183,6 +188,13 @@ class Chat extends Component {
               const selected =
                 this.props.activeConvo &&
                 this.props.activeConvo.peerID === convo.peerID;
+              let lastMessage = '';
+
+              try {
+                lastMessage = this.props.messages[convo.lastMessage].message || '';
+              } catch (e) {
+                // pass
+              }
 
               return (
                 <ChatHead
@@ -191,6 +203,7 @@ class Chat extends Component {
                   selected={selected}
                   onClick={() => this.handleChatHeadClick(convo.peerID)}
                   profile={this.props.profile[convo.peerID] || null}
+                  lastMessage={lastMessage}
                 />
               );
             })}
@@ -237,6 +250,7 @@ class Chat extends Component {
             })
           }
           onMessageRetrySend={message => this.handleMessageRetrySend(message)}
+          onMessageCancel={messageID => this.handleMessageCancel(messageID)}
         />
       );
     }

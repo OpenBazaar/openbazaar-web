@@ -6,13 +6,26 @@ import {
 import multihashes from 'multihashes';
 import crypto from 'crypto';
 import { get as getDb } from 'util/database';
-import { takeEvery, put, call, select } from 'redux-saga/effects';
+import {
+  takeEvery,
+  put,
+  call,
+  select,
+  all,
+  take,
+  spawn,
+} from 'redux-saga/effects';
+import {
+  eventChannel,
+  END,
+} from 'redux-saga';
 import { sendMessage as sendChatMessage } from 'util/messaging/index';
 import messageTypes from 'util/messaging/types';
 import {
   convosRequest,
   convosSuccess,
   convosFail,
+  convoUnreadChange,
   activateConvo,
   convoActivated,
   convoMessagesRequest,
@@ -21,27 +34,133 @@ import {
   messageDbChange,
   messageChange,
   sendMessage,
-  // sendMessageRequest,
-  // sendMessageFail,
+  cancelMessage,
   convoMarkRead,
 } from 'actions/chat';
 import { directMessage } from 'actions/messaging';
 
-const getConvoList = async db => {
-  const convos = await db.chatconversation.find().exec();
-  return convos.map(c => {
-    const convo = c.toJSON();
-    delete convo._rev;
-    return convo;
-  });
+let chatMessagesCol;
+
+const getChatMessagesCol = async database => {
+  if (chatMessagesCol) return chatMessagesCol;
+  const db = database || (await getDb());
+  chatMessagesCol = await db.collections.chatmessage.inMemory();
+  return chatMessagesCol;  
 };
+
+let unsentChatMessagesCol;
+
+const getUnsentChatMessagesCol = async database => {
+  if (unsentChatMessagesCol) return unsentChatMessagesCol;
+  const db = database || (await getDb());
+  unsentChatMessagesCol = await db.collections.unsentchatmessages.inMemory();
+  return unsentChatMessagesCol;
+};
+
+let unreadCountChannels;
+
+function unreadCountChange(query, peerID) {
+  return eventChannel(emitter => {
+    const sub = query.$.subscribe(docs => {
+      emitter({
+        unread: docs.length,
+        peerID,
+      });
+    });        
+
+    return () => {
+      emitter(END);
+      sub.unsubscribe();
+    };
+  });
+}
+
+function* watchUnreadCountChan(chan) {
+  while (true) {
+    const changeData = yield take(chan);
+    yield put(convoUnreadChange(changeData));
+  }
+}
 
 function* getConvos(action) {
   try {
-    const db = yield call(getDb);
-    const convos = yield call(getConvoList, db);
-    yield put(convosSuccess(convos));
+    const messagesCol = yield call(getChatMessagesCol);
+    const convos = {};
+    const messages = {};
+    const messageDocs = yield call([messagesCol.find(), 'exec']);
+
+    messageDocs.forEach(messageDoc => {
+      const peerID = messageDoc.get('peerID')
+      const convo = convos[peerID];
+
+      if (
+        !convo ||
+        messages[convo.lastMessage].timestamp < messageDoc.get('timestamp')
+      ) {
+        const messageID = messageDoc.get('messageID');      
+        messages[messageID] = { ...omit(messageDoc.toJSON(), ['_rev']) }
+        convos[peerID] = {
+          lastMessage: messageID,
+        }
+      }
+    });
+
+    const unreadCountQueries = Object.keys(convos)
+      .reduce((acc, peerID) => {
+        const query = messagesCol
+          .find()
+          .where('peerID')
+          .eq(peerID)
+          .where('read')
+          .eq(false)
+          .where('outgoing')
+          .eq(false);
+        acc[peerID] = query;
+        return acc;
+      }, {});
+
+    const unreadCountQueriesPeers = Object.keys(unreadCountQueries);
+
+    for (let i = 0; i < unreadCountQueriesPeers.length; i++) {
+      const peerID = unreadCountQueriesPeers[i];
+      const unreadCount = yield call(
+        async () => {
+          const unreadDocs = await unreadCountQueries[peerID]
+            .exec()
+            .then();
+          return unreadDocs.length;
+        }
+      );
+      convos[peerID].unread = unreadCount;
+    }
+
+    try {
+      // subcriibe to unreadQuery changes to update the unread counts as they
+      // change
+      (unreadCountChannels || []).forEach(chan => chan.close());
+
+      const channels = unreadCountChannels = yield all(
+        Object.keys(unreadCountQueries)
+          .map(peerID => {
+            return call(
+              unreadCountChange,
+              unreadCountQueries[peerID],
+              peerID
+            );
+          })
+      );
+
+      yield all(channels.map(chan => spawn(watchUnreadCountChan, chan)));
+    } catch (e) {
+      // todo: handle this, but not in a way where convosFail is sent.
+    } finally {
+      yield put(convosSuccess({
+        convos,
+        messages,
+      }));
+    }
   } catch (e) {
+    console.error(e);
     yield put(convosFail(e.message || ''));
   }
 }
@@ -51,16 +170,6 @@ function* getConvos(action) {
 // TODO: cancel existing async tasks on deactivate convo and logout
 // TODO: cancel existing async tasks on deactivate convo and logout
 // this might make the noAuthNoChat middleware moot.
-
-const getChatMessagesCol = async database => {
-  const db = database || (await getDb());
-  return await db.collections.chatmessage.inMemory();
-};
-
-const getUnsentChatMessagesCol = async database => {
-  const db = database || (await getDb());
-  return await db.collections.unsentchatmessages.inMemory();
-};
 
 const messagesCache = {};
 
@@ -199,6 +308,17 @@ function* handleMessageDbChange(action) {
       console.error(e);
     }
   }
+
+  if (action.payload.fromSync) {
+    yield put(messageChange({
+      type: action.payload.operation,
+      data: {
+        ...action.payload.data,
+        sent: true,
+        sending: false,
+      }
+    }));
+  }
 }
 
 function generatePbTimestamp(timestamp) {
@@ -250,11 +370,8 @@ function generateChatMessageData(message, options = {}) {
 
 const inTransitMessages = {};
 
-function* handleRetryMessage(action) {
-  // todo: validate action params
-  return yield handleSendMessage(action);
-}
-
+// todo: doc overloaded retry and explain params difference. Or
+// maybe a seperate handleRetryMessage to understand the intent?
 function* handleSendMessage(action) {
   const isRetry = !!action.payload.messageID;
   const peerID = action.payload.peerID;
@@ -298,20 +415,18 @@ function* handleSendMessage(action) {
   const db = yield call(getDb);
   let unsentMessageDoc;
   
-  if (!isRetry) {
-    try {
-      unsentMessageDoc = yield call(
-        [db.collections.unsentchatmessages, 'insert'],
-        messageData
-      );
-    } catch (e) {
-      const msg = message.length > 10 ?
-        `${message.slice(0, 10)}…` : message;
-      console.error(`Unable to save message "${msg}" in the ` +
-        'unsent chat messages DB.');
-      // We'll just proceed without it. It really just means that if the
-      // send fails and the user closes the app, it will be lost.
-    }
+  try {
+    unsentMessageDoc = yield call(
+      [db.collections.unsentchatmessages, 'insert'],
+      messageData,
+    );
+  } catch (e) {
+    const msg = message.length > 10 ?
+      `${message.slice(0, 10)}…` : message;
+    console.error(`Unable to save message "${msg}" in the ` +
+      'unsent chat messages DB.');
+    // We'll just proceed without it. It really just means that if the
+    // send fails and the user closes the app, it will be lost.
   }
 
   let messageSendFailed;
@@ -358,6 +473,7 @@ function* handleSendMessage(action) {
       `${message.slice(0, 10)}…` : message;
     console.error(`Unable to save the sent message "${msg}" in the ` +
       'chat messages DB.');
+    console.error(e);
     return;
   }
 
@@ -368,6 +484,37 @@ function* handleSendMessage(action) {
       // pass
     }
   }
+}
+
+async function getUnsentChatMessage(messageID) {
+  return await(
+    (await getUnsentChatMessagesCol())
+      .findOne({
+        messageID: {
+          $eq: messageID,
+        },
+      })
+      .exec()
+  );
+}
+
+function* handleCancelMessage(action) {
+  const messageID = action.payload.messageID;
+
+  if (
+    typeof messageID !== 'string' ||
+    !messageID
+  ) {
+    throw new Error('A messageID is required in order to cancel a message.');
+  }
+
+  yield put(messageChange({
+    type: 'DELETE',
+    data: { messageID },
+  }));  
+
+  const unsentMessage = yield call(getUnsentChatMessage, messageID);
+  if (unsentMessage) yield call([unsentMessage, 'remove']);
 }
 
 const getConvo = async (peerID, database) => {
@@ -482,7 +629,7 @@ export function* convoMessagesRequestWatcher() {
 }
 
 export function* messageDbChangeWatcher() {
-  yield takeEvery(messageChange, handleMessageDbChange);
+  yield takeEvery(messageDbChange, handleMessageDbChange);
 }
 
 export function* messageChangeWatcher() {
@@ -499,4 +646,8 @@ export function* convoMarkReadWatcher() {
 
 export function* directMessageWatcher() {
   yield takeEvery(directMessage, handleDirectMessage);
+}
+
+export function* cancelMessageWatcher() {
+  yield takeEvery(cancelMessage, handleCancelMessage);
 }

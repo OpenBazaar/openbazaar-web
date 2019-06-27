@@ -11,8 +11,6 @@ import './Convo.scss';
 
 class Convo extends Component {
   state = {
-    sent: false,
-    sending: false,
     messagesScrollTop:
       typeof this.props.initialMessagesScrollTop === 'number'
         ? this.props.initialMessagesScrollTop
@@ -30,8 +28,6 @@ class Convo extends Component {
     this.programaticallyScrolling = false;
     this.handleMessagesScroll = this.handleMessagesScroll.bind(this);
     this.handleMessageInputKeyUp = this.handleMessageInputKeyUp.bind(this);
-    console.log('checkIt');
-    window.checkIt = this.setState.bind(this);
   }
 
   componentDidMount() {
@@ -131,23 +127,17 @@ class Convo extends Component {
               // pass
             }
 
-            let theGoods = { ...message };
-
-            if (message.messageID === 'QmQFV8yCyhEX87iDrhE24eTeE1HTe9V3BwNjzwR3wrDpbr') {
-              theGoods = {
-                ...theGoods,
-                sent: this.state.sent,
-                sending: this.state.sending,
-              }
-            }
-
             return (
               <Message
-                { ...theGoods }
+                { ...message }
                 key={message.messageID}
                 avatarHashes={avatarHashes}
                 onRetryClick={() =>
-                  this.props.onMessageRetrySend(message)}
+                  this.props.onMessageRetrySend(message)
+                }
+                onCancelClick={() =>
+                  this.props.onMessageCancel(message.messageID)
+                }
               />
             );
           })}

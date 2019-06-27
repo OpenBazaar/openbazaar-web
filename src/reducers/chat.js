@@ -11,8 +11,8 @@ import {
   convoMessagesSuccess,
   convoMessagesFail,
   deactivateConvo,
-  convoChange,
   messageChange,
+  convoUnreadChange,
 } from 'actions/chat';
 import { AUTH_LOGOUT } from 'actions/auth';
 
@@ -22,7 +22,8 @@ const initialState = {
   convosFetchFailed: false,
   convosFetchError: null,
   convos: {},
-  activeConvo: null
+  activeConvo: null,
+  messages: {},
 };
 
 const openChat = (state, action) => {
@@ -44,38 +45,41 @@ const reduceConvosSuccess = (state, action) => {
   state.convosFetchFailed = false;
   state.convosFetchError = null;
 
-  state.convos = action.payload.reduce((acc, convo) => {
-    let sortTimestamp = convo.timestamp;
+  state.convos = Object.keys(action.payload.convos)
+    .reduce((acc, peerID) => {
+      const convo =action.payload.convos[peerID];
+      let sortTimestamp = convo.timestamp;
+      const message = action.payload.messages[convo.lastMessage];
 
-    if (!convo.unread) {
-      // the idea is for convos with unread messages to be on top
-      const date = new Date(convo.timestamp);
-      date.setFullYear(date.getFullYear() - 100);
-      sortTimestamp = date.toISOString();
-    }
+      if (!convo.unread) {
+        // the idea is for convos with unread messages to be on top
+        const date = new Date(message.timestamp);
+        date.setFullYear(date.getFullYear() - 100);
+        sortTimestamp = date.toISOString();
+      }
 
-    acc[convo.peerID] = {
-      ...convo,
-      sortTimestamp
-    };
-    return acc;
-  }, {});
+      acc[peerID] = {
+        ...convo,
+        sortTimestamp,
+      }
+
+      return acc;
+    }, {});
+  
+  state.messages = {
+    ...state.messages,
+    ...action.payload.messages,
+  };
 };
 
-const reduceConvoChange = (state, action) => {
-  const peerID = action.payload.data.peerID;
-  const isNew = !state.convos[peerID];
+const reduceConvoUnreadChange = (state, action) => {
+  const peerID = action.payload.peerID;
 
-  if (isNew || action.payload.data.unread) {
-    state.convos[peerID] = {
-      ...action.payload.data,
-      sortTimestamp: new Date().toISOString()
-    };
-  } else {
-    state.convos[peerID] = {
-      ...action.payload.data,
-      sortTimestamp: state.convos[peerID].sortTimestamp
-    };
+  if (
+    state.convos[peerID] &&
+    state.convos[peerID].unread !== action.payload.unread
+  ) {
+    state.convos[peerID].unread = action.payload.unread;
   }
 };
 
@@ -173,8 +177,8 @@ export default createReducer(initialState, {
   [convoMessagesSuccess]: reduceConvoMessagesSuccess,
   [convoMessagesFail]: reduceConvoMessagesFail,
   [deactivateConvo]: reduceDeactivateConvo,
-  [convoChange]: reduceConvoChange,
   [messageChange]: reduceMessageChange,
+  [convoUnreadChange]: reduceConvoUnreadChange,
   [AUTH_LOGOUT]: reduceAuthLogout
 });
 
@@ -184,7 +188,10 @@ export const getConvos = createSelector(
   ['convos'],
   convos =>
     orderBy(
-      Object.keys(convos).map(convoPeerId => convos[convoPeerId]),
+      Object.keys(convos).map(convoPeerId => ({
+        peerID: convoPeerId,
+        ...convos[convoPeerId],
+      })),
       ['sortTimestamp'],
       ['desc']
     )
@@ -192,10 +199,10 @@ export const getConvos = createSelector(
 
 export const getActiveConvoMessage = createSelector(
   ['activeConvo.messages'],
-  // TODO: This is very ineeficient since anytime any change is made to a message
+  // TODO: This is very ineficient since anytime any change is made to a message
   // or a new message comes in, the list will be resorted, which could be expensive
   // on chats with a lot of messages. Probably better to have the saga provide an
-  // already sorted list and the saga canbe smarter about selectively sorting.
+  // already sorted list and the saga can be smarter about selectively sorting.
   messages =>
     orderBy(
       Object.keys(messages)
