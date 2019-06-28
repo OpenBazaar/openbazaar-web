@@ -5,7 +5,6 @@ import pouchDbAdapterIdb from 'pouchdb-adapter-idb';
 import pouchDbAdapterHttp from 'pouchdb-adapter-http';
 import PouchAdapterMemory from 'pouchdb-adapter-memory';
 import profileSchema from 'schema/profile';
-// import chatConversationSchema from 'schema/chatConversation';
 import chatMessageSchema from 'schema/chatMessage';
 
 const collections = [
@@ -14,11 +13,6 @@ const collections = [
     schema: profileSchema,
     sync: true
   },
-  // {
-  //   name: 'chatconversation',
-  //   schema: chatConversationSchema,
-  //   sync: true
-  // },
   {
     name: 'chatmessage',
     schema: chatMessageSchema,
@@ -31,7 +25,7 @@ const collections = [
   }
 ];
 
-RxDB.QueryChangeDetector.enableDebugging();
+// RxDB.QueryChangeDetector.enableDebugging();
 
 RxDB.plugin(pouchDbAdapterIdb);
 RxDB.plugin(pouchDbAdapterHttp); //enable syncing over http
@@ -46,7 +40,7 @@ const _create = async (name, password) => {
     name: name.slice(0, 10),
     adapter: 'idb',
     password,
-    queryChangeDetection: true,
+    // queryChangeDetection: true,
   });
 
   if (process.env.NODE_ENV === 'development') {

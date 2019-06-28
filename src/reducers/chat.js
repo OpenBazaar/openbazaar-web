@@ -75,6 +75,10 @@ const reduceConvosSuccess = (state, action) => {
 const reduceConvoUnreadChange = (state, action) => {
   const peerID = action.payload.peerID;
 
+  if (action.payload.unread === 0) {
+    console.timeEnd('testFunk');
+  }
+
   if (
     state.convos[peerID] &&
     state.convos[peerID].unread !== action.payload.unread
