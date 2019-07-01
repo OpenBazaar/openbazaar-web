@@ -1,7 +1,7 @@
 import {
   omit,
-  orderBy,
-  memoize,
+  // orderBy,
+  // memoize,
 } from 'lodash';
 import multihashes from 'multihashes';
 import crypto from 'crypto';
@@ -11,7 +11,7 @@ import {
   put,
   call,
   select,
-  all,
+  // all,
   debounce,
 } from 'redux-saga/effects';
 import {
@@ -24,7 +24,7 @@ import {
   convosRequest,
   convosSuccess,
   convosFail,
-  convoUnreadChange,
+  convoChange,
   activateConvo,
   convoActivated,
   convoMessagesRequest,
@@ -56,26 +56,23 @@ const getUnsentChatMessagesCol = async database => {
   return unsentChatMessagesCol;
 };
 
-let unreadCountChannels;
+const convoUnreads = {};
 
-function unreadCountChange(query, peerID) {
-  return eventChannel(emitter => {
-    const sub = query.$.subscribe(docs => {
-      emitter({
-        unread: docs.length,
-        peerID,
-      });
-    });        
+const _convoUnreadsAddRemove = (add, peerID, messageID) => {
+  if (!convoUnreads[peerID]) {
+    convoUnreads[peerID] = new Set();
+  }
 
-    return () => {
-      emitter(END);
-      sub.unsubscribe();
-    };
-  });
+  return convoUnreads[peerID][add ? 'add' : 'delete'](messageID);
 }
 
-// let unreadCountQueries;
-const convoUnreads = {};
+const convoUnreadsAdd = (peerID, messageID) => {
+  return _convoUnreadsAddRemove(true, peerID, messageID);
+}
+
+const convoUnreadsRemove = (peerID, messageID) => {
+  return _convoUnreadsAddRemove(false, peerID, messageID);
+}
 
 function* getConvos(action) {
   try {
@@ -88,88 +85,28 @@ function* getConvos(action) {
       const peerID = messageDoc.get('peerID')
       const convo = convos[peerID];
       const messageID = messageDoc.get('messageID');
+      const timestamp = messageDoc.get('timestamp');
 
       if (
         !convo ||
-        messages[convo.lastMessage].timestamp < messageDoc.get('timestamp')
+        messages[convo.lastMessage].timestamp < timestamp
       ) {
         messages[messageID] = { ...omit(messageDoc.toJSON(), ['_rev']) }
         convos[peerID] = {
           lastMessage: messageID,
+          unread: 0,
         }
       }
 
-      convoUnreads[peerID] = convoUnreads[peerID] || [];
-      if (!messageDoc.get('read')) {
-        convoUnreads[peerID].push(messageID);
+      if (!messageDoc.get('outgoing') && !messageDoc.get('read')) {
+        convoUnreadsAdd(peerID, messageID);
       }
     });
 
-    // yield put(convoUnreadChange(changeData));
-
     Object.keys(convoUnreads)
       .forEach(peerID => {
-        convos[peerID].unread = convoUnreads[peerID].length;
+        convos[peerID].unread = convoUnreads[peerID].size;
       });
-
-    // unreadCountQueries = Object.keys(convos)
-    //   .reduce((acc, peerID) => {
-    //     const query = messagesCol
-    //       .find()
-    //       .where('peerID')
-    //       .eq(peerID)
-    //       .where('read')
-    //       .eq(false)
-    //       .where('outgoing')
-    //       .eq(false);
-    //     acc[peerID] = query;
-    //     return acc;
-    //   }, {});
-
-    // const unreadCountQueriesPeers = Object.keys(unreadCountQueries);
-
-    // for (let i = 0; i < unreadCountQueriesPeers.length; i++) {
-    //   const peerID = unreadCountQueriesPeers[i];
-    //   const unreadCount = yield call(
-    //     async () => {
-    //       const unreadDocs = await unreadCountQueries[peerID]
-    //         .exec()
-    //         .then();
-    //       return unreadDocs.length;
-    //     }
-    //   );
-    //   convos[peerID].unread = unreadCount;
-    // }
-
-    // try {
-    //   // subcribe to unreadQuery changes to update the unread counts as they
-    //   // change
-    //   (unreadCountChannels || []).forEach(chan => chan.close());
-
-    //   const channels = unreadCountChannels = yield all(
-    //     Object.keys(unreadCountQueries)
-    //       .map(peerID => {
-    //         return call(
-    //           unreadCountChange,
-    //           unreadCountQueries[peerID],
-    //           peerID
-    //         );
-    //       })
-    //   );
-
-    //   // TODO: Ideally that should be throttle, but throttle is throwing an exception.
-    //   yield all(channels.map(chan => debounce(100, chan, function* (changeData) {
-    //     console.timeEnd('testFunk');
-    //     yield put(convoUnreadChange(changeData));
-    //   })));
-    // } catch (e) {
-    //   // todo: handle this, but not in a way where convosFail is sent.
-    // } finally {
-    //   yield put(convosSuccess({
-    //     convos,
-    //     messages,
-    //   }));
-    // }
 
     yield put(convosSuccess({
       convos,
@@ -287,67 +224,94 @@ function* handleActivateConvo(action) {
   }
 }
 
-let unreadTimeout;
+const convoChangeTimeoutChannels = {};
 
 function* handleMessageDbChange(action) {
   const state = yield select();
+  const {
+    peerID,
+    messageID,
+    read,
+    timestamp,
+    outgoing,
+  } = action.payload.data;
+  let curConvo;
 
-  if (action.payload.operation === 'INSERT') {
-    try {
-      const db = yield call(getDb);
-      const peerID = action.payload.data.peerID;
-      const convo = state.chat.convos[peerID];
-      const isActive =
-        state.chat.chatOpen &&
-        state.chat.activeConvo &&
-        state.chat.activeConvo.peerID === peerID;
-      let unread = 0;
-
-      if (!action.payload.data.outgoing && !isActive) {
-        unread = convo ? convo.unread + 1 : 1;
-      }
-
-      db.chatconversation.upsert({
-        peerID: action.payload.data.peerID,
-        lastMessage: action.payload.data.message,
-        outgoing: action.payload.data.outgoing,
-        timestamp: action.payload.data.timestamp,
-        unread
-      });
-    } catch (e) {
-      // TODO: seems like an edge case for this to error, but we should probably
-      // have some fallback... maybe a retry with exponential backoff? Maybe
-      // scan the chat messages on startup and if there's no corresponding convo
-      // create one then?
-      console.error(
-        'Unable to create / update the chat head for the following action:'
-      );
-      console.error(action);
-      console.error(e);
-    }
+  try {
+    curConvo = state.chat &&
+      state.chat.convos &&
+      state.chat.convos[peerID];
+  } catch (e) {
+    // pass
   }
 
-  // if (action.payload.fromSync) {
-  //   yield put(messageChange({
-  //     type: action.payload.operation,
-  //     data: {
-  //       ...action.payload.data,
-  //       sent: true,
-  //       sending: false,
-  //     }
-  //   }));
-  // }
+  if (['INSERT', 'UPDATE'].includes(action.payload.operation)) {
+    let dispatchChangeAction = action.payload.operation === 'INSERT';
 
-  // 'INSERT', 'UPDATE', 'DELETE'
-  if (true) {
-    yield debounce(100, 'HAPPY_BILLS', function* () {
-      console.log('FIring the pilson from the drEEAM Weaver');
-      yield put(convoUnreadChange({
-        unread: Math.floor(Math.random() * 100),
-        peerID: action.payload.data.peerID,
-      })) 
-    });
-    yield put({ type: 'HAPPY_BILLS' });
+    if (action.payload.operation === 'UPDATE' &&
+      (!curConvo || curConvo.read !== read)) {
+      dispatchChangeAction = true;
+    }
+
+    if (!outgoing) {
+      if (read) {
+        convoUnreadsRemove(peerID, messageID);  
+      } else {
+        convoUnreadsAdd(peerID, messageID);  
+      }
+    }
+
+    let changeData = {
+      peerID,
+      convo: {
+        unread: (convoUnreads[peerID] &&
+          convoUnreads[peerID].size) || 0,
+      },
+    };
+
+    let curLastMessage;
+
+    try {
+      curLastMessage = state.chat.messages[curConvo.lastMessage];
+    } catch (e) {
+      // pass
+    }
+
+    if (curLastMessage && curLastMessage.timestamp < timestamp) {
+      dispatchChangeAction = true;
+      changeData = {
+        ...changeData,
+        convo: {
+          ...changeData.convo,
+          lastMessage: messageID,
+        },
+        messages: {
+          [messageID]: action.payload.data,
+        }
+      }
+    }
+
+    if (dispatchChangeAction) {
+      if (convoChangeTimeoutChannels[peerID]) {
+        convoChangeTimeoutChannels[peerID].close();
+      }
+
+      const createTimeout = () => eventChannel(emitter => {
+        const timeout = setTimeout(() => {
+          emitter('something');
+        }, 100)
+
+        return () => clearTimeout(timeout);
+      });
+
+      const channel = convoChangeTimeoutChannels[peerID] = yield call(createTimeout);
+      // todo: does the spawned deobunce also need to be canceled?
+      yield debounce(100, channel, function* () {
+        convoChangeTimeoutChannels[peerID].close();
+        delete convoChangeTimeoutChannels[peerID];        
+        yield put(convoChange(changeData));
+      });
+    }
   }
 }
 
@@ -382,6 +346,7 @@ function generateChatMessageData(message, options = {}) {
   const opts = {
     subject: '',
     timestamp: new Date(),
+    ...options,
   };
 
   const combinationString = `${opts.subject}!${opts.timestamp.toISOString()}`;
@@ -394,7 +359,7 @@ function generateChatMessageData(message, options = {}) {
   return {
     messageID,
     timestamp: opts.timestamp.toISOString(),
-    timestampPB: generatePbTimestamp(opts.timestamp),    
+    timestampPB: generatePbTimestamp(opts.timestamp),
   }
 }
 
@@ -467,7 +432,9 @@ function* handleSendMessage(action) {
       messageTypes.CHAT,
       peerID,
       {
-        ...messageData,
+        messageId: messageID,
+        subject: messageData.subject,
+        message: messageData.message,
         timestamp: timestampPB,
         flag: 0
       }
@@ -548,10 +515,7 @@ function* handleCancelMessage(action) {
 }
 
 function* handleConvoMarkRead(action) {
-  console.time('testFunk');
-
   const peerID = action.payload.peerID;
-  // const query = unreadCountQueries[peerID];
   const chatMessagesCol = yield call(getChatMessagesCol);
   const query = chatMessagesCol
     .find()
@@ -562,28 +526,22 @@ function* handleConvoMarkRead(action) {
     .where('outgoing')
     .eq(false);
 
-  if (query) {
-    const unreadDocs = yield call([query.exec(), 'then']);
+  const unreadDocs = yield call([query.exec(), 'then']);
 
-    console.log(`i have ${unreadDocs.length} unread`);
-
-    try {
-      yield call(
-        [chatMessagesCol.pouch, 'bulkDocs'],
-        unreadDocs.map(doc => ({
-          ...doc.toJSON(),
-          _id: doc.get('messageID'),
-          read: true,
-        }))
-      );
-    } catch (e) {
-      // TODO: The bulk update call should return granular info on which, if any,
-      // docs failed to update. We can at least do some logging regarding that.
-      console.error(`Unable to mark converesation as read for peer ${peerID}`);
-    }
+  try {
+    yield call(
+      [chatMessagesCol.pouch, 'bulkDocs'],
+      unreadDocs.map(doc => ({
+        ...doc.toJSON(),
+        _id: doc.get('messageID'),
+        read: true,
+      }))
+    );
+  } catch (e) {
+    // TODO: The bulk update call should return granular info on which, if any,
+    // docs failed to update. We can at least do some logging regarding that.
+    console.error(`Unable to mark converesation as read for peer ${peerID}`);
   }
-
-  // console.timeEnd('testFunk');
 }
 
 function* handleDirectMessage(action) {
@@ -597,11 +555,13 @@ function* handleDirectMessage(action) {
     }
 
     const msg = message.message.length > 10 ?
-      `${message.message.slice(0, 10)}…` : message;    
+      `${message.message.slice(0, 10)}…` : message.message;    
 
     console.log(`writing "${msg}" from ${peerID} to the database`);
+    console.dir(message);
 
     const db = yield call(getDb);
+    const state = yield select();
 
     try {
       yield call(
@@ -611,13 +571,20 @@ function* handleDirectMessage(action) {
           message: message.message,
           messageID: message.messageId,
           timestamp: (
-            new Date(
-              message.timestamp.seconds +
-              message.timestamp.nanos
-            )
+            (new Date(
+              Number(
+                String(message.timestamp.seconds) +
+                String(message.timestamp.nanos)
+              )
+            )).toISOString()
           ),
           subject: message.subject,
-          outgoing: false,          
+          outgoing: false,
+          read: state.chat &&
+            state.chat.chatOpen &&
+            state.chat.activeConvo &&
+            state.chat.activeConvo.peerID === peerID ?
+              true : false,
         }
       );
     } catch (e) {
@@ -632,14 +599,18 @@ function* handleDirectMessage(action) {
 }
 
 function handleMessageChange(action) {
-  if (action.payload.type === 'DELETE') {
-    delete messagesCache[action.payload.peerID];
-  } else {
-    messagesCache[action.payload.peerID] = {
-      ...messagesCache[action.payload.peerID],
-      ...action.payload,
-    }
-  }
+  // if (action.payload.type === 'DELETE') {
+  //   delete messagesCache[action.payload.peerID];
+  // } else {
+  //   messagesCache[action.payload.peerID] = {
+  //     ...messagesCache[action.payload.peerID],
+  //     ...action.payload,
+  //   }
+  // }
+}
+
+function* handleConvoChangeDebounce(action) {
+  yield put(convoChange(action.payload));
 }
 
 export function* convosRequestWatcher() {

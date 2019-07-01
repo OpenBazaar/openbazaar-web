@@ -6,13 +6,13 @@ import {
   convosRequest,
   convosSuccess,
   convosFail,
+  convoChange,
   convoActivated,
   convoMessagesRequest,
   convoMessagesSuccess,
   convoMessagesFail,
   deactivateConvo,
   messageChange,
-  convoUnreadChange,
 } from 'actions/chat';
 import { AUTH_LOGOUT } from 'actions/auth';
 
@@ -48,8 +48,8 @@ const reduceConvosSuccess = (state, action) => {
   state.convos = Object.keys(action.payload.convos)
     .reduce((acc, peerID) => {
       const convo =action.payload.convos[peerID];
-      let sortTimestamp = convo.timestamp;
       const message = action.payload.messages[convo.lastMessage];
+      let sortTimestamp = message.timestamp;
 
       if (!convo.unread) {
         // the idea is for convos with unread messages to be on top
@@ -72,26 +72,27 @@ const reduceConvosSuccess = (state, action) => {
   };
 };
 
-const reduceConvoUnreadChange = (state, action) => {
-  const peerID = action.payload.peerID;
-
-  if (action.payload.unread === 0) {
-    console.timeEnd('testFunk');
-  }
-
-  if (
-    state.convos[peerID] &&
-    state.convos[peerID].unread !== action.payload.unread
-  ) {
-    state.convos[peerID].unread = action.payload.unread;
-  }
-};
-
 const reduceConvosFail = (state, action) => {
   state.fetchingConvos = false;
   state.convosFetchFailed = true;
   state.convosFetchError = action.payload;
 };
+
+const reduceConvoChange = (state, action) => {
+  const peerID = action.payload.peerID;
+
+  state.convos[peerID] = {
+    ...state.convos[peerID],
+    ...action.payload.convo,
+  };
+  
+  if (action.payload.messages) {
+    state.messages = {
+      ...state.messages,
+      ...action.payload.messages,
+    }
+  }
+}
 
 const reduceConvoActivated = (state, action) => {
   state.activeConvo = {
@@ -176,13 +177,13 @@ export default createReducer(initialState, {
   [convosRequest]: reduceConvosRequest,
   [convosSuccess]: reduceConvosSuccess,
   [convosFail]: reduceConvosFail,
+  [convoChange]: reduceConvoChange,
   [convoActivated]: reduceConvoActivated,
   [convoMessagesRequest]: reduceConvoMessagesRequest,
   [convoMessagesSuccess]: reduceConvoMessagesSuccess,
   [convoMessagesFail]: reduceConvoMessagesFail,
   [deactivateConvo]: reduceDeactivateConvo,
   [messageChange]: reduceMessageChange,
-  [convoUnreadChange]: reduceConvoUnreadChange,
   [AUTH_LOGOUT]: reduceAuthLogout
 });
 

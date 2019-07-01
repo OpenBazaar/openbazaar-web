@@ -10,8 +10,11 @@ export const convosRequest = createAction('CHAT_CONVOS_REQUEST');
 export const convosSuccess = createAction('CHAT_CONVOS_SUCCESS');
 export const convosFail = createAction('CHAT_CONVOS_FAILURE');
 
-export const convoUnreadChange = createAction('CHAT_CONVO_UNREAD_CHANGE');
-export const convoLastMessageChange = createAction('CHAT_CONVO_LAST_MESSAGE_CHANGE');
+
+export const convoChange = createAction('CHAT_CONVO_CHANGE');
+
+// export const convoUnreadChange = createAction('CHAT_CONVO_UNREAD_CHANGE');
+// export const convoLastMessageChange = createAction('CHAT_CONVO_LAST_MESSAGE_CHANGE');
 
 export const activateConvo = createAction('CHAT_CONVO_ACTIVATE');
 export const deactivateConvo = createAction('CHAT_CONVO_DEACTIVATE');

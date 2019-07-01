@@ -92,46 +92,46 @@ async function sendDirectMessage(node, peerID, message) {
 }
 
 export async function sendMessage(type, peerID, payload, options = {}) {
-  return new Promise((resolve, reject) => {
-    console.log('will send message');
-    setTimeout(() => {
-      console.log('decision time');
+  // return new Promise((resolve, reject) => {
+  //   console.log('will send message');
+  //   setTimeout(() => {
+  //     console.log('decision time');
 
-      if (getRandomInt(0, 1)) {
-        resolve();
-      } else {
-        reject('You silly little amaranto!');
-      }
-    }, getRandomInt(300, 3000))
-  });
+  //     if (getRandomInt(0, 1)) {
+  //       resolve();
+  //     } else {
+  //       reject('You silly little amaranto!');
+  //     }
+  //   }, getRandomInt(300, 3000))
+  // });
 
-  // if (!isValidMessageType(type)) {
-  //   throw new Error(`${type} is not a valid message type.`);
-  // }
+  if (!isValidMessageType(type)) {
+    throw new Error(`${type} is not a valid message type.`);
+  }
 
-  // if (typeof peerID !== 'string' || !peerID) {
-  //   throw new Error('A peerID must be provided as a non-empty string.');
-  // }
+  if (typeof peerID !== 'string' || !peerID) {
+    throw new Error('A peerID must be provided as a non-empty string.');
+  }
 
-  // if (typeof payload !== 'object') {
-  //   throw new Error('A payload must be provided as an object.');
-  // }
+  if (typeof payload !== 'object') {
+    throw new Error('A payload must be provided as an object.');
+  }
 
-  // const messageType = messageTypesData[type];
-  // const node = options.node || await getNode();
+  const messageType = messageTypesData[type];
+  const node = options.node || await getNode();
 
-  // if (!(node instanceof IPFS)) {
-  //   throw new Error('An IPFS node instance is required.');
-  // }
+  if (!(node instanceof IPFS)) {
+    throw new Error('An IPFS node instance is required.');
+  }
 
-  // const message = generateMessage(messageType, peerID, payload);
+  const message = generateMessage(messageType, peerID, payload);
   
-  // try {
-  //   await sendDirectMessage(node, peerID, message);
-  // } catch (e) {
-  //   console.error('Unable to send via a direct message.')
-  //   console.error(e);
-  // }
+  try {
+    await sendDirectMessage(node, peerID, message);
+  } catch (e) {
+    console.error('Unable to send via a direct message.')
+    console.error(e);
+  }
 }
 
 export async function openDirectMessage(encodedMessage, peerID, options = {}) {
