@@ -35,6 +35,11 @@ class Convo extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    let needScroll = (
+      (!prevProps.messages || !prevProps.messages.length) &&
+      (this.props.messages && this.props.messages.length)
+    );
+
     // If we have a new message at the bottom and it's an outgoing message
     // or we're scrolled at or near the bottom, we'll scroll to the bottom
     // so the new message is shown.
@@ -59,10 +64,13 @@ class Convo extends Component {
         this.setState({
           messagesScrollTop: this.constructor.scrollBottomHeight
         });
+        needScroll = true;        
       }      
     }
 
-    this.scrollMessages();
+    if (needScroll) {
+      this.scrollMessages();
+    }
   }
 
   scrolledNearBottom() {

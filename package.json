@@ -21,6 +21,7 @@
     "multihashes": "^0.4.14",
     "node-polyglot": "^2.3.0",
     "node-sass": "^4.11.0",
+    "object-sizeof": "^1.4.0",
     "peer-id": "^0.12.2",
     "pouchdb-adapter-http": "^6.4.3",
     "pouchdb-adapter-idb": "^6.4.3",

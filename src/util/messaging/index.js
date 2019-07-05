@@ -130,7 +130,7 @@ export async function sendMessage(type, peerID, payload, options = {}) {
     await sendDirectMessage(node, peerID, message);
   } catch (e) {
     console.error('Unable to send via a direct message.')
-    console.error(e);
+    throw e;
   }
 }
 

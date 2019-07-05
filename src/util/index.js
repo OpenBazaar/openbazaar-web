@@ -39,3 +39,39 @@ export function swallowException(fn, fallbackReturnVal = '') {
 export function setAsyncTimeout(fn, ms) {
   return new Promise(resolve => setTimeout(() => resolve(fn()), ms));
 }
+
+// todo: doc me up
+// validate args
+export function animationFrameInterval(
+  process,
+  shouldContinue,
+  options = {}
+) {
+  const opts = {
+    maxOpsPerFrame: 25,
+  }
+
+  return new Promise((resolve, reject) => {
+    const executeProcess = () => {
+      let opsThisFrame = 0;
+
+      if (shouldContinue()) {
+        requestAnimationFrame(() => {
+          while (
+            opsThisFrame < opts.maxOpsPerFrame &&
+            shouldContinue()
+          ) {
+            process();
+            opsThisFrame++;
+          }
+
+          executeProcess();
+        });
+      } else {
+        resolve();
+      }
+    }
+
+    executeProcess();
+  });
+}

@@ -193,9 +193,9 @@ export const getConvos = createSelector(
   ['convos'],
   convos =>
     orderBy(
-      Object.keys(convos).map(convoPeerId => ({
-        peerID: convoPeerId,
-        ...convos[convoPeerId],
+      Object.keys(convos).map(convoPeerID => ({
+        peerID: convoPeerID,
+        ...convos[convoPeerID],
       })),
       ['sortTimestamp'],
       ['desc']
@@ -218,19 +218,42 @@ export const getActiveConvoMessage = createSelector(
     )
 );
 
-export const getChatState = rawChatState => {
-  let activeConvo = rawChatState.activeConvo;
+// export const getChatState = rawChatState => {
+//   let activeConvo = rawChatState.activeConvo;
 
-  if (activeConvo && activeConvo.messages) {
-    activeConvo = {
-      ...activeConvo,
-      messages: getActiveConvoMessage(rawChatState),
-    }
-  }
+//   if (activeConvo && activeConvo.messages) {
+//     activeConvo = {
+//       ...activeConvo,
+//       messages: getActiveConvoMessage(rawChatState),
+//     }
+//   }
 
-  return {
-    ...rawChatState,
-    convos: getConvos(rawChatState),
-    activeConvo,
+//   return {
+//     ...rawChatState,
+//     convos: getConvos(rawChatState),
+//     activeConvo,
+//   }
+// };
+
+export const getMoo = createSelector(
+  ['activeConvo.messages'],
+  // TODO: This is very ineficient since anytime any change is made to a message
+  // or a new message comes in, the list will be resorted, which could be expensive
+  // on chats with a lot of messages. Probably better to have the saga provide an
+  // already sorted list and the saga can be smarter about selectively sorting.
+  messages => {
+    return Object.keys(messages)
+      .map(messageID => messages[messageID]);
   }
-};
+);
+
+export const getChatState = rawChatState => ({
+  ...rawChatState,
+  activeConvo: !rawChatState.activeConvo ?
+    null :
+    {
+      ...rawChatState.activeConvo,
+      messages: getMoo(rawChatState),
+    },
+  convos: getConvos(rawChatState),
+});
