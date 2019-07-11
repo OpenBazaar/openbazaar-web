@@ -13,6 +13,7 @@ import {
   debounce,
 } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
+import { createAction } from 'redux-starter-kit';
 import { animationFrameInterval } from 'util/index';
 import { sendMessage as sendChatMessage } from 'util/messaging/index';
 import messageTypes from 'util/messaging/types';
@@ -33,18 +34,20 @@ import {
   convoMarkRead,
 } from 'actions/chat';
 import { directMessage } from 'actions/messaging';
+import { AUTH_LOGOUT } from 'actions/auth';
 import sizeOf from 'object-sizeof';
 
 window.orderBy = orderBy;
 window.sizeof = sizeOf;
 
-let _messageDocs;
-let _chatData;
+let _messageDocs = null;
+let _chatData = null;
+let unsentMessages = [];
 
 window.muchData = () => {
   const promises = [];
 
-  for (var i = 0; i < 4000; i++) {
+  for (var i = 0; i < 400; i++) {
     promises.push(() => window.inboundChatMessage());
   }
 
@@ -86,11 +89,15 @@ const getChatData = async peerID => {
             const filterOutMeta = arr =>
               arr.filter(doc => !doc.id.startsWith('_design'));
 
-            const sentMessages = filterOutMeta(docs[0].rows);
-            const unsentMessages = filterOutMeta(docs[1].rows);
+            const messagesSent = filterOutMeta(docs[0].rows);
+            const messagesUnsent = filterOutMeta(docs[1].rows);
 
-            const combined = unsentMessages
-              .concat(sentMessages);
+            unsentMessages = messagesUnsent.map(msg => msg.id);
+
+            const combined = messagesUnsent
+              .concat(messagesSent);
+
+            console.log(`${combined.length} total messages`);              
 
             const decrypted = [];
 
@@ -137,10 +144,10 @@ const getChatData = async peerID => {
             acc[peerID]._sorted = orderBy(
               Object.keys(acc[peerID].messages).map(messageID => ({
                 messageID,
-                ...acc[peerID].messages[messageID].timestamp,
+                timestamp: acc[peerID].messages[messageID].timestamp,
               })),
               ['timestamp'],
-              ['desc']
+              ['asc']
             ).map(message => message.messageID);
           }
 
@@ -253,62 +260,28 @@ function* getConvos(action) {
 // TODO: cancel existing async tasks on deactivate convo and logout
 // this might make the noAuthNoChat middleware moot.
 
-// const messagesCache = {};
-
-// For now, just fetching all the messages. Later, we'll probably
-// want to do some form of pagination since the number of messages can get
-// quite large and rendering them in one go could be too heavy.
-// todo: should we cache the queries?
 const getMessagesList = async (db, peerID) => {
-  return {};
-  console.time('messList');
-
-  const messagesCol = await getChatMessagesCol(db);
-  const docs = await messagesCol
-    .find({
-      peerID: {
-        $eq: peerID
-      },
-    })
-    // .sort({ timestamp: 'asc' })
-    .exec();
-
-  const unsentMessagesCol = await getUnsentChatMessagesCol(db);
-  const unsentDocs = await unsentMessagesCol
-    .find({
-      peerID: {
-        $eq: peerID
-      },
-    })
-    // .sort({ timestamp: 'asc' })
-    .exec();
-
+  const convoData = await getChatData(peerID);
+  let sorted = [];
   let messages = {};
 
-  docs.forEach(doc => {
-    messages[doc.messageID] = {
-      ...omit(doc.toJSON(), ['_rev']),
-      sent: true,
-      sending: false,
-    };
-  });
+  if (convoData) {
+    sorted = convoData.sorted;
+    messages = Object.keys(convoData.messages)
+      .reduce((acc, messageID) => {
+        acc[messageID] = {
+          ...convoData.messages[messageID],
+          sent: !inTransitMessages[messageID] && !unsentMessages.includes(messageID),
+          sending: !!inTransitMessages[messageID],
+        };
+        return acc;
+      }, {});
+  }
 
-  unsentDocs.forEach(doc => {
-    if (!messages[doc.messageID]) {
-      messages[doc.messageID] = {
-        ...omit(doc.toJSON(), ['_rev']),
-        sent: false,
-        sending: !!(
-          inTransitMessages[peerID] &&
-          inTransitMessages[peerID][doc.messageID]
-        ),
-      };
-    }
-  });
-
-  console.timeEnd('messList');
-
-  return messages;
+  return {
+    sorted,
+    messages,
+  };
 };
 
 function* getConvoMessages(action) {
@@ -321,7 +294,7 @@ function* getConvoMessages(action) {
     yield put(
       convoMessagesSuccess({
         peerID,
-        messages
+        ...messages,
       })
     );
   } catch (e) {
@@ -341,9 +314,13 @@ function* handleActivateConvo(action) {
   yield put(convoMessagesRequest({ peerID }));
 }
 
+const dispatchConvoChange = createAction('CHAT_DISPATCH_CONVO_CHANGE');
 const convoChangeTimeoutChannels = {};
 
 function* handleMessageDbChange(action) {
+  console.log('you changed dog');
+  console.dir(action);
+
   const state = yield select();
   const {
     peerID,
@@ -362,12 +339,17 @@ function* handleMessageDbChange(action) {
     // pass
   }
 
+  // If both a messageChange and convoChange action will be dispatched, make sure
+  // the messageChange goes first since the convoChange reducer may depend on that
+  // data already being there.
+
   if (['INSERT', 'UPDATE'].includes(action.payload.operation)) {
-    let dispatchConvoChangeAction = action.payload.operation === 'INSERT';
+    let unreadCountChanged = action.payload.operation === 'INSERT' && !outgoing;
 
     if (action.payload.operation === 'UPDATE' &&
+      !outgoing &&
       (!curConvo || curConvo.read !== read)) {
-      dispatchConvoChangeAction = true;
+      unreadCountChanged = true;
     }
 
     if (!outgoing) {
@@ -378,24 +360,17 @@ function* handleMessageDbChange(action) {
       }
     }
 
-    // todo: only include the unread count if it changed
-    let changeData = {
-      peerID,
-      convo: {
-        unread: (convoUnreads[peerID] &&
-          convoUnreads[peerID].size) || 0,
-      },
-    };
+    let changeData = { peerID };
 
-    // 1: first message of new convo
-    // ----> send unread count 1|0, lastMessage: <embeded>
-    // 2: updated message
-    // ----> if unread count or last message changed, send
-    //       them over. reducer must know to remove the previous
-    //       last message, if it's not for the active convo.
-    // 3: deleted message
-    // ----> If that ws the only message in the convo, remove
-    //       convo.
+    if (unreadCountChanged) {
+      changeData = {
+        ...changeData,
+        convo: {
+          unread: (convoUnreads[peerID] &&
+            convoUnreads[peerID].size) || 0,
+        },
+      }
+    }
 
     let curLastMessage;
 
@@ -405,42 +380,36 @@ function* handleMessageDbChange(action) {
       // pass
     }
 
-    if (curLastMessage && curLastMessage.timestamp < timestamp) {
-      dispatchConvoChangeAction = true;
-      changeData = {
-        ...changeData,
-        convo: {
-          ...changeData.convo,
-          // todo: maybe embed the full last message here and elimanate the
-          // seperate messages?
-          lastMessage: messageID,
-        },
-        messages: {
-          [messageID]: action.payload.data,
-        }
-      }
+    if (
+      action.payload.operation === 'INSERT' ||
+      !curLastMessage ||
+      curLastMessage.timestamp < timestamp      
+    ) {
+      changeData.lastMessage = messageID;
     }
 
-    if (dispatchConvoChangeAction) {
+    if (unreadCountChanged || changeData.lastMessage) {
       if (convoChangeTimeoutChannels[peerID]) {
         convoChangeTimeoutChannels[peerID].close();
       }
 
-      const createTimeout = () => eventChannel(emitter => {
-        const timeout = setTimeout(() => {
-          emitter('something');
-        }, 100)
+      yield put(dispatchConvoChange(changeData));
 
-        return () => clearTimeout(timeout);
-      });
+      // const createTimeout = () => eventChannel(emitter => {
+      //   const timeout = setTimeout(() => {
+      //     emitter('something');
+      //   }, 100)
 
-      const channel = convoChangeTimeoutChannels[peerID] = yield call(createTimeout);
-      // todo: does the spawned debounce also need to be canceled?
-      yield debounce(100, channel, function* () {
-        convoChangeTimeoutChannels[peerID].close();
-        delete convoChangeTimeoutChannels[peerID];        
-        yield put(convoChange(changeData));
-      });
+      //   return () => clearTimeout(timeout);
+      // });
+
+      // const channel = convoChangeTimeoutChannels[peerID] = yield call(createTimeout);
+      // // todo: does the spawned debounce also need to be canceled?
+      // yield debounce(100, channel, function* () {
+      //   convoChangeTimeoutChannels[peerID].close();
+      //   delete convoChangeTimeoutChannels[peerID];        
+      //   yield put(convoChange(changeData));
+      // });
     }
   }
 }
@@ -644,6 +613,10 @@ function* handleCancelMessage(action) {
   if (unsentMessage) yield call([unsentMessage, 'remove']);
 }
 
+function* handleDispatchConvoChange(action) {
+  yield put(convoChange(action.payload));
+}
+
 function* handleConvoMarkRead(action) {
   console.time('markAsRead');
 
@@ -687,10 +660,12 @@ function* handleConvoMarkRead(action) {
     { maxOpsPerFrame: 25 }
   );
 
+  console.time('markAsReadBulkDocs');
   yield call(
     [db.chatmessage.pouch, 'bulkDocs'],
     encryptedUpdateDocs
   );
+  console.timeEnd('markAsReadBulkDocs');
 
   console.timeEnd('markAsRead');
 }
@@ -760,6 +735,11 @@ function handleMessageChange(action) {
   // }
 }
 
+function handleLogout() {
+  _messageDocs = null;
+  _chatData = null;
+}
+
 export function* convosRequestWatcher() {
   yield takeEvery(convosRequest, getConvos);
 }
@@ -794,4 +774,12 @@ export function* directMessageWatcher() {
 
 export function* cancelMessageWatcher() {
   yield takeEvery(cancelMessage, handleCancelMessage);
+}
+
+export function* dispatchConvoChangeWatcher() {
+  yield debounce(100, dispatchConvoChange, handleDispatchConvoChange);
+}
+
+export function* logoutWatcher() {
+  yield takeEvery(AUTH_LOGOUT, handleLogout);
 }

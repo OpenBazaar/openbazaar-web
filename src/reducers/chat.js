@@ -94,10 +94,43 @@ const reduceConvoChange = (state, action) => {
   }
 }
 
+// todo: doc me up.
+const pruneMessages = (pruneList = [], messagesObj = {}, excludeList = []) => {
+  return Object.keys(messagesObj)
+    .reduce((acc, messageID) => {
+      if (excludeList.includes(messageID) || !pruneList.includes(messageID)) {
+        acc[messageID] = { ...messagesObj[messageID] };
+      }
+
+      return acc;
+    }, {});
+}
+
+const reduceDeactivateConvo = state => {
+  if (state.activeConvo !== null) {
+    state.messages = pruneMessages(
+      state.activeConvo.messages,
+      state.messages,
+      Object.keys(state.convos || {})
+        .map(peerID => state.convos[peerID].lastMessage)
+    );
+    state.activeConvo = null;
+  }
+};
+
 const reduceConvoActivated = (state, action) => {
+  if (state.activeConvo !== null) {
+    state.messages = pruneMessages(
+      state.activeConvo.messages,
+      state.messages,
+      Object.keys(state.convos || {})
+        .map(peerID => state.convos[peerID].lastMessage)
+    );
+  }
+
   state.activeConvo = {
     peerID: action.payload.peerID,
-    messages: action.payload.messages || {},
+    messages: [],
     fetchingMessages: false,
     messageFetchFailed: false,
     messageFetchError: null
@@ -122,7 +155,12 @@ const reduceConvoMessagesSuccess = (state, action) => {
       fetchingMessages: false,
       messageFetchFailed: false,
       messageFetchError: null,
-      messages: action.payload.messages
+      messages: action.payload.sorted,
+    };
+
+    state.messages = {
+      ...state.messages,
+      ...action.payload.messages,
     };
   }
 };
@@ -136,10 +174,6 @@ const reduceConvoMessagesFail = (state, action) => {
       messageFetchError: action.payload.error
     };
   }
-};
-
-const reduceDeactivateConvo = state => {
-  state.activeConvo = null;
 };
 
 const reduceMessageChange = (state, action) => {
@@ -249,11 +283,11 @@ export const getMoo = createSelector(
 
 export const getChatState = rawChatState => ({
   ...rawChatState,
-  activeConvo: !rawChatState.activeConvo ?
-    null :
-    {
-      ...rawChatState.activeConvo,
-      messages: getMoo(rawChatState),
-    },
+  // activeConvo: !rawChatState.activeConvo ?
+  //   null :
+  //   {
+  //     ...rawChatState.activeConvo,
+  //     messages: getMoo(rawChatState),
+  //   },
   convos: getConvos(rawChatState),
 });

@@ -1,7 +1,4 @@
 // TODO: make a createAction where args could be validated
-// TODO: make a createAction where args could be validated
-// TODO: make a createAction where args could be validated
-// TODO: make a createAction where args could be validated
 import { createAction } from 'redux-starter-kit';
 
 export const open = createAction('CHAT_OPEN');
@@ -12,9 +9,6 @@ export const convosFail = createAction('CHAT_CONVOS_FAILURE');
 
 export const convoChange = createAction('CHAT_CONVO_CHANGE');
 export const convoRemove = createAction('CHAT_CONVO_REMOVE');
-
-// export const convoUnreadChange = createAction('CHAT_CONVO_UNREAD_CHANGE');
-// export const convoLastMessageChange = createAction('CHAT_CONVO_LAST_MESSAGE_CHANGE');
 
 export const activateConvo = createAction('CHAT_CONVO_ACTIVATE');
 export const deactivateConvo = createAction('CHAT_CONVO_DEACTIVATE');

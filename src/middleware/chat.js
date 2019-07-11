@@ -1,7 +1,7 @@
 import { omit } from 'lodash';
 import { get as getDb } from 'util/database';
 import { AUTH_LOGIN_SUCCESS } from 'actions/auth';
-import { convoChange, messageDbChange } from 'actions/chat';
+import { messageDbChange } from 'actions/chat';
 
 const middleware = store => next => action => {
   if (action.type === AUTH_LOGIN_SUCCESS) {
@@ -14,7 +14,7 @@ const middleware = store => next => action => {
           messageDbChange({
             fromSync: !changeEvent.db,
             operation: changeEvent.data.op,
-            data: omit(changeEvent.data.v, ['_rev'])
+            data: omit(changeEvent.data.v, ['_rev']),
           })
         )
       );

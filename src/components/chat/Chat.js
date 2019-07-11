@@ -129,7 +129,14 @@ class Chat extends Component {
     });
   }
 
-  handleMessageRetrySend(message) {
+  handleMessageRetrySend(messageID) {
+    const message = this.props.messages[messageID];
+
+    if (!message) {
+      console.warn('Unable to retry the message. The message data is not available.');
+      return;
+    }
+
     this.props.actions.sendMessage({
       messageID: message.messageID,
       peerID: message.peerID,
@@ -156,6 +163,8 @@ class Chat extends Component {
 
   render() {
     let convos = null;
+
+    console.log('Entire chat re-rendered.');
 
     if (this.props.convosFetchFailed) {
       if (this.props.chatOpen) {

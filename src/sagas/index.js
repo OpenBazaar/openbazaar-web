@@ -11,6 +11,7 @@ import {
   convoMarkReadWatcher,
   directMessageWatcher,
   cancelMessageWatcher,
+  logoutWatcher,
 } from './chat';
 import { getCachedProfileWatcher } from './profile';
 
@@ -26,4 +27,5 @@ export default function* root() {
   yield spawn(convoMarkReadWatcher);
   yield spawn(directMessageWatcher);
   yield spawn(cancelMessageWatcher);
+  yield spawn(logoutWatcher);
 }
