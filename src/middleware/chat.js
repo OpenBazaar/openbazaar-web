@@ -1,4 +1,3 @@
-import { omit } from 'lodash';
 import { get as getDb } from 'util/database';
 import { AUTH_LOGIN_SUCCESS } from 'actions/auth';
 import { messageDbChange } from 'actions/chat';
@@ -8,19 +7,28 @@ const middleware = store => next => action => {
     // subscribe to chat db updates
     getDb().then(db => {
       // todo: shouldn't collection names be plural?
-      // todo: shouldn't collection names be plural?
-      db.chatmessage.$.subscribe(changeEvent =>
+      // todo: throttle and batch messageDbChange events. Shouldn't be done here
+      // though, probably in some middleware.
+      db.chatmessage.$.subscribe(changeEvent => {
+        console.log(Date.now());
+        // store.dispatch(
+        //   messageDbChange({
+        //     operation: changeEvent.data.op,
+        //     data: changeEvent.data.v,
+        //     sent: true,
+        //   })
+        // );
+      });
+
+      db.unsentchatmessages.$.subscribe(changeEvent => {
         store.dispatch(
           messageDbChange({
-            fromSync: !changeEvent.db,
             operation: changeEvent.data.op,
-            data: omit(changeEvent.data.v, ['_rev']),
+            data: changeEvent.data.v,
+            sent: false,
           })
-        )
-      );
-
-      // db.chatmessage.$.subscribe(changeEvent => {
-      // });
+        );
+      });
     });
   } else if (
     action.type.startsWith('CHAT_') &&

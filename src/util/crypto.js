@@ -129,7 +129,7 @@ export function encrypt(pubKeyBytes, textBytes) {
     Buffer.from(cipherText)
   ]);
 
-  return jointCiphertext;
+  return jointCiphertext.toString('base64');
 }
 
 export function decrypt(privKeyBytes, text) {

@@ -1,6 +1,7 @@
 import uuid from 'uuid/v1';
 import { getRandomInt } from 'util/number';
 import * as RxDB from 'rxdb';
+import RxDBWatchForChangesModule from 'rxdb/plugins/watch-for-changes';
 import pouchDbAdapterIdb from 'pouchdb-adapter-idb';
 import pouchDbAdapterHttp from 'pouchdb-adapter-http';
 import PouchAdapterMemory from 'pouchdb-adapter-memory';
@@ -30,6 +31,7 @@ const collections = [
 RxDB.plugin(pouchDbAdapterIdb);
 RxDB.plugin(pouchDbAdapterHttp); //enable syncing over http
 RxDB.plugin(PouchAdapterMemory);
+RxDB.plugin(RxDBWatchForChangesModule);
 
 // const syncUrl = process.env.REACT_APP_DB_SYNC_URL;
 
@@ -51,8 +53,12 @@ const _create = async (name, password) => {
   // create collections
   await Promise.all(collections.map(data => db.collection({ ...data })));
 
+  const colNames = collections.filter(col => col.sync).map(col => col.name);
+
+  colNames.forEach(colName => db[colName].watchForChanges());
+
   // sync
-  collections.filter(col => col.sync).map(col => col.name);
+  // colNames
     // .map(colName => {
     //   return db[colName].sync({
     //     remote: `${syncUrl}/${name}_${colName}`
