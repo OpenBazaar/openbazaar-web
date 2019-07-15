@@ -36,10 +36,6 @@ class Chat extends Component {
   componentDidMount() {
     if (this.props.convos.length) {
       this.getConvoProfiles();
-
-      // if (!this.props.activeConvo) {
-      //   this.activateFirstConvo();
-      // }
     }
 
     this.props.actions.convosRequest();
@@ -48,10 +44,6 @@ class Chat extends Component {
   componentDidUpdate(prevProps) {
     if (!prevProps.convos || !prevProps.convos.length) {
       this.getConvoProfiles();
-
-      // if (!this.props.activeConvo) {
-      //   this.activateFirstConvo();
-      // }
     }
 
     if (
@@ -149,12 +141,6 @@ class Chat extends Component {
     this.props.actions.cancelMessage({ messageID });
   }
 
-  // activateFirstConvo() {
-  //   if (this.props.convos && this.props.convos.length) {
-  //     this.props.actions.activateConvo(this.props.convos[0].peerID);
-  //   }
-  // }
-
   getConvoProfiles() {
     this.props.convos.forEach(convo =>
       this.props.actions.profile.requestCached({ peerID: convo.peerID })
@@ -163,8 +149,6 @@ class Chat extends Component {
 
   render() {
     let convos = null;
-
-    console.log('Entire chat re-rendered.');
 
     if (this.props.convosFetchFailed) {
       if (this.props.chatOpen) {
@@ -197,7 +181,6 @@ class Chat extends Component {
       convos = (
         <div className="gutterVSm">
           {this.props.convos
-            // .concat(this.props.convos)
             .map(convo => {
               const selected =
                 this.props.activeConvo &&
@@ -226,28 +209,22 @@ class Chat extends Component {
     }
 
     let chatConvo;
-    const convoData = this.props.activeConvo || this.state.oldActiveConvo;
+    const convoData = this.props.activeConvo;
 
     if (convoData) {
       chatConvo = (
         <ChatConvo
           {...convoData}
           key={convoData.peerID}
-          onCloseClick={
-            this.props.activeConvo ? this.handleConvoCloseClick : null
-          }
+          onCloseClick={this.handleConvoCloseClick}
           messageInputValue={
             this.state.messageInputValues[convoData.peerID] || ''
           }
-          onMessageInputChange={
-            this.props.activeConvo ? this.handleMessageInputChange : () => {}
-          }
+          onMessageInputChange={this.handleMessageInputChange}
           messagesFetchFailed={convoData.messageFetchFailed}
           messagesFetchError={convoData.messageFetchError}
           onClickRetryMessageFetch={
-            this.props.activeConvo ?
-              () => this.handleRetryMessageFetch(convoData.peerID) :
-              () => {}
+            () => this.handleRetryMessageFetch(convoData.peerID)
           }
           onMessagesScroll={el => {
             // Store the scroll position so it can be restored if they return

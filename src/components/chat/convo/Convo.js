@@ -125,21 +125,10 @@ class Convo extends Component {
       messages = (
         <div className="ChatConvo-messages gutterV">
           {this.props.messages.map(messageID => {
-            // let avatarHashes;
-
-            // try {
-            //   avatarHashes = message.outgoing
-            //     ? this.props.auth.profile.avatarHashes
-            //     : this.props.profile[message.peerID].avatarHashes;
-            // } catch (e) {
-            //   // pass
-            // }
-
             return (
               <Message
                 key={messageID}
                 id={messageID}
-                // avatarHashes={avatarHashes}
                 onRetryClick={() =>
                   this.props.onMessageRetrySend(messageID)
                 }

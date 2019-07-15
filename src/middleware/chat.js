@@ -10,14 +10,13 @@ const middleware = store => next => action => {
       // todo: throttle and batch messageDbChange events. Shouldn't be done here
       // though, probably in some middleware.
       db.chatmessage.$.subscribe(changeEvent => {
-        console.log(Date.now());
-        // store.dispatch(
-        //   messageDbChange({
-        //     operation: changeEvent.data.op,
-        //     data: changeEvent.data.v,
-        //     sent: true,
-        //   })
-        // );
+        store.dispatch(
+          messageDbChange({
+            operation: changeEvent.data.op,
+            data: changeEvent.data.v,
+            sent: true,
+          })
+        );
       });
 
       db.unsentchatmessages.$.subscribe(changeEvent => {

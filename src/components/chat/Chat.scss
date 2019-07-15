@@ -73,7 +73,7 @@
     left: 0;
     right: 0;
     transform: translateY(100%);
-    transition: transform 500ms;
+    // transition: transform 500ms;
     height: $chatHeight;
 
     @include mq($until: mobileLandscape) {
@@ -104,6 +104,8 @@
 
     &.Chat-convoOpen {
       .Chat-chatHeads {
+        // todo: this needs to animate at the same rate of the chat convo sliding up
+        // ^^^ if and when we reimpliment the animation
         height: calc(100% - #{$chatHeight});
 
         @include mq($until: mobileLandscape) {
