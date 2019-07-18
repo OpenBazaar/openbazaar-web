@@ -82,7 +82,11 @@ const _create = async (options = {}) => {
       node.libp2p.start(async () => {
         console.log('libp2p is started');
 
-        await node.relayConnect();
+        try {
+          await node.relayConnect();
+        } catch (e) {
+          // pass
+        }
 
         // handle incoming messages
         console.log(`Listinging for incoming messages with the protocol: ${IPFS.OB_PROTOCOL}`);

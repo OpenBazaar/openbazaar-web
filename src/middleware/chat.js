@@ -7,16 +7,15 @@ const middleware = store => next => action => {
     // subscribe to chat db updates
     getDb().then(db => {
       // todo: shouldn't collection names be plural?
-      // todo: throttle and batch messageDbChange events. Shouldn't be done here
-      // though, probably in some middleware.
+      // todo: throttle and batch messageDbChange events.
       db.chatmessage.$.subscribe(changeEvent => {
-        store.dispatch(
-          messageDbChange({
-            operation: changeEvent.data.op,
-            data: changeEvent.data.v,
-            sent: true,
-          })
-        );
+        // store.dispatch(
+        //   messageDbChange({
+        //     operation: changeEvent.data.op,
+        //     data: changeEvent.data.v,
+        //     sent: true,
+        //   })
+        // );
       });
 
       db.unsentchatmessages.$.subscribe(changeEvent => {

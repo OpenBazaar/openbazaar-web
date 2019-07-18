@@ -12,7 +12,7 @@ import {
   convoMessagesSuccess,
   convoMessagesFail,
   deactivateConvo,
-  messageChange,
+  // messageChange,
 } from 'actions/chat';
 import { AUTH_LOGOUT } from 'actions/auth';
 
@@ -79,19 +79,25 @@ const reduceConvosFail = (state, action) => {
 };
 
 const reduceConvoChange = (state, action) => {
-  const peerID = action.payload.peerID;
+  const {
+    peerID,
+    removed,
+  } = action.payload;
+
+  if (removed) {
+    delete state.convos[peerID];
+    return;    
+  }
+
+  state.messages = {
+    ...state.messages,
+    ...action.payload.messages,
+  }
 
   state.convos[peerID] = {
     ...state.convos[peerID],
-    ...action.payload.convo,
+    ...action.payload.data,
   };
-  
-  if (action.payload.messages) {
-    state.messages = {
-      ...state.messages,
-      ...action.payload.messages,
-    }
-  }
 }
 
 // todo: doc me up.
@@ -176,30 +182,9 @@ const reduceConvoMessagesFail = (state, action) => {
   }
 };
 
-const reduceMessageChange = (state, action) => {
-  if (
-    !(
-      state.activeConvo &&
-      action.payload.peerID !== state.activeConvo.peerID
-    )
-  ) return;
-
-  if (action.payload.type === 'INSERT') {
-    state.activeConvo.messages = {
-      ...state.activeConvo.messages,
-      [action.payload.data.messageID]: {
-        ...action.payload.data,
-      },
-    };
-  } else if (action.payload.type === 'UPDATE') {
-    state.activeConvo.messages[action.payload.data.messageID] = {
-      ...state.activeConvo.messages[action.payload.data.messageID],
-      ...action.payload.data,
-    };
-  } else {
-    delete state.activeConvo.messages[action.payload.data.messageID];
-  }
-}
+// const reduceMessageChange = (state, action) => {
+//   state.messages[action.payload.messageID] = action.payload;
+// }
 
 const reduceAuthLogout = state => {
   return initialState;
@@ -217,7 +202,7 @@ export default createReducer(initialState, {
   [convoMessagesSuccess]: reduceConvoMessagesSuccess,
   [convoMessagesFail]: reduceConvoMessagesFail,
   [deactivateConvo]: reduceDeactivateConvo,
-  [messageChange]: reduceMessageChange,
+  // [messageChange]: reduceMessageChange,
   [AUTH_LOGOUT]: reduceAuthLogout
 });
 
@@ -236,58 +221,7 @@ export const getConvos = createSelector(
     )
 );
 
-export const getActiveConvoMessage = createSelector(
-  ['activeConvo.messages'],
-  // TODO: This is very ineficient since anytime any change is made to a message
-  // or a new message comes in, the list will be resorted, which could be expensive
-  // on chats with a lot of messages. Probably better to have the saga provide an
-  // already sorted list and the saga can be smarter about selectively sorting.
-  messages =>
-    orderBy(
-      Object.keys(messages)
-        .map(messageID => ({
-          ...messages[messageID],
-        })),
-      ['timestamp']
-    )
-);
-
-// export const getChatState = rawChatState => {
-//   let activeConvo = rawChatState.activeConvo;
-
-//   if (activeConvo && activeConvo.messages) {
-//     activeConvo = {
-//       ...activeConvo,
-//       messages: getActiveConvoMessage(rawChatState),
-//     }
-//   }
-
-//   return {
-//     ...rawChatState,
-//     convos: getConvos(rawChatState),
-//     activeConvo,
-//   }
-// };
-
-export const getMoo = createSelector(
-  ['activeConvo.messages'],
-  // TODO: This is very ineficient since anytime any change is made to a message
-  // or a new message comes in, the list will be resorted, which could be expensive
-  // on chats with a lot of messages. Probably better to have the saga provide an
-  // already sorted list and the saga can be smarter about selectively sorting.
-  messages => {
-    return Object.keys(messages)
-      .map(messageID => messages[messageID]);
-  }
-);
-
 export const getChatState = rawChatState => ({
   ...rawChatState,
-  // activeConvo: !rawChatState.activeConvo ?
-  //   null :
-  //   {
-  //     ...rawChatState.activeConvo,
-  //     messages: getMoo(rawChatState),
-  //   },
   convos: getConvos(rawChatState),
 });
