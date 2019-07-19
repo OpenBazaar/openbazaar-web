@@ -60,10 +60,16 @@ class Chat extends Component {
     }
 
     if (
-      (this.props.chatOpen &&
-        !prevProps.activeConvo &&
-        this.props.activeConvo) ||
-      (this.props.chatOpen && !prevProps.chatOpen && this.props.activeConvo)
+      this.props.chatOpen &&
+      (
+        (!prevProps.activeConvo && this.props.activeConvo) ||
+        (!prevProps.chatOpen && this.props.activeConvo) ||
+        (
+          prevProps.activeConvo &&
+          this.props.activeConvo &&
+          prevProps.activeConvo !== this.props.activeConvo
+        )
+      )
     ) {
       const convo = this.props.convos.find(
         convo => convo.peerID === this.props.activeConvo.peerID

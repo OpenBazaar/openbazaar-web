@@ -42,7 +42,6 @@ window.sizeof = sizeOf;
 
 let _messageDocs = null;
 let _chatData = null;
-let unsentMessages = [];
 
 window.muchData = () => {
   const promises = [];
@@ -356,6 +355,9 @@ const setMessage = function* (peerID, message, options = {}) {
 const getChatData = async peerID => {
   if (!_chatData) {
     console.time('getMessages');
+
+    let unsentMessages = [];
+
     if (!_messageDocs) {
       _messageDocs = new Promise((resolve, reject) => {
         let db;
@@ -417,7 +419,13 @@ const getChatData = async peerID => {
 
     const docs = await _messageDocs;
     _chatData = {};
-    docs.forEach(doc => _setMessage(doc.peerID, doc));
+    docs.forEach(doc =>
+      _setMessage(doc.peerID, {
+        ...doc,
+        sent: !inTransitMessages[doc.messageID] &&
+          !unsentMessages.includes(doc.messageID),
+        sending: !!inTransitMessages[doc.messageID],
+      }));
     _messageDocs = null;
     console.timeEnd('getMessages');
   }
@@ -428,34 +436,6 @@ const getChatData = async peerID => {
 
 console.log('milly');
 window.milly = getChatData;
-
-let chatMessagesCol;
-
-const getChatMessagesCol = async database => {
-  if (chatMessagesCol) return chatMessagesCol;
-  console.time('getChatCol');
-  const db = database || (await getDb());
-  chatMessagesCol = await db.collections.chatmessage.inMemory();
-  // chatMessagesCol = db.collections.chatmessage;
-  console.timeEnd('getChatCol');
-  return chatMessagesCol;  
-};
-
-let unsentChatMessagesCol;
-
-const getUnsentChatMessagesCol = async database => {
-  if (unsentChatMessagesCol) return unsentChatMessagesCol;
-  console.time('getUnsentChatCol');
-  const db = database || (await getDb());
-  unsentChatMessagesCol = await db.collections.unsentchatmessages.inMemory();
-  // unsentChatMessagesCol = db.collections.unsentchatmessages;
-  console.timeEnd('getUnsentChatCol');
-  return unsentChatMessagesCol;
-};
-
-window.mip = function* () {
-  yield put(convosRequest());
-}
 
 function* getConvos(action) {
   try {
@@ -505,20 +485,7 @@ const getMessagesList = async (db, peerID) => {
 
   if (convoData) {
     sorted = convoData.sorted;
-    messages = Object.keys(convoData.messages)
-      .reduce((acc, messageID) => {
-        acc[messageID] = {
-          ...convoData.messages[messageID],
-          // todo: move this in getChatData
-          // todo: move this in getChatData
-          // todo: move this in getChatData
-          // todo: move this in getChatData
-          // todo: move this in getChatData
-          sent: !inTransitMessages[messageID] && !unsentMessages.includes(messageID),
-          sending: !!inTransitMessages[messageID],
-        };
-        return acc;
-      }, {});
+    messages = convoData.messages;
   }
 
   return {
@@ -808,18 +775,6 @@ function* handleSendMessage(action) {
       // pass
     }
   }
-}
-
-async function getUnsentChatMessage(messageID) {
-  return await(
-    (await getUnsentChatMessagesCol())
-      .findOne({
-        messageID: {
-          $eq: messageID,
-        },
-      })
-      .exec()
-  );
 }
 
 function* handleCancelMessage(action) {

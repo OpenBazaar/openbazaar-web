@@ -13,6 +13,7 @@ import {
   convoMessagesFail,
   deactivateConvo,
   // messageChange,
+  activeConvoMessagesChange,
 } from 'actions/chat';
 import { AUTH_LOGOUT } from 'actions/auth';
 
@@ -101,6 +102,7 @@ const reduceConvoChange = (state, action) => {
 }
 
 // todo: doc me up.
+// todo: unit test me.
 const pruneMessages = (pruneList = [], messagesObj = {}, excludeList = []) => {
   return Object.keys(messagesObj)
     .reduce((acc, messageID) => {
@@ -117,8 +119,7 @@ const reduceDeactivateConvo = state => {
     state.messages = pruneMessages(
       state.activeConvo.messages,
       state.messages,
-      Object.keys(state.convos || {})
-        .map(peerID => state.convos[peerID].lastMessage)
+      getConvoLastMessages(state)
     );
     state.activeConvo = null;
   }
@@ -129,8 +130,7 @@ const reduceConvoActivated = (state, action) => {
     state.messages = pruneMessages(
       state.activeConvo.messages,
       state.messages,
-      Object.keys(state.convos || {})
-        .map(peerID => state.convos[peerID].lastMessage)
+      getConvoLastMessages(state)
     );
   }
 
@@ -186,6 +186,43 @@ const reduceConvoMessagesFail = (state, action) => {
 //   state.messages[action.payload.messageID] = action.payload;
 // }
 
+const reduceActiveConvoMessagesChange = (state, action) => {
+  if (state.activeConvo === null) return;
+
+  console.dir(action);
+
+  const {
+    sorted,
+    messages,
+    removed,
+  } = action.payload;
+
+  if (sorted) {
+    state.activeConvo.messages = sorted;
+  }
+
+  if (
+    typeof messages === 'object' &&
+    Object.keys(messages).length
+  ) {
+    state.messages = {
+      ...state.messages,
+      ...messages,
+    }
+  }
+
+  if (
+    Array.isArray(removed) &&
+    removed.length
+  ) {
+    state.messages = pruneMessages(
+      removed,
+      state.messages,
+      getConvoLastMessages(state)
+    );
+  }
+}
+
 const reduceAuthLogout = state => {
   return initialState;
 };
@@ -203,10 +240,19 @@ export default createReducer(initialState, {
   [convoMessagesFail]: reduceConvoMessagesFail,
   [deactivateConvo]: reduceDeactivateConvo,
   // [messageChange]: reduceMessageChange,
+  [activeConvoMessagesChange]: reduceActiveConvoMessagesChange,
   [AUTH_LOGOUT]: reduceAuthLogout
 });
 
 // selectors
+
+const getConvoLastMessages = createSelector(
+  ['convos'],
+  convos => (
+    Object.keys(convos || {})
+      .map(peerID => convos[peerID].lastMessage)    
+  )
+)
 
 export const getConvos = createSelector(
   ['convos'],

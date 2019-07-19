@@ -68,7 +68,7 @@ class Message extends Component {
       <div className="flexCol gutterVTn" style={{ marginTop: '5px' }}>
         <div className={this.props.message.outgoing ? 'flexHRight' : ''}>
           <div
-            className="padSm border clrBr clrS"
+            className={`padSm border clrBr clrS ${this.props.message.read ? '' : 'txB'}`}
             style={messageStyle}
           >
             {this.props.message.message}
