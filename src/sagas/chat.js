@@ -59,7 +59,7 @@ window.muchData = () => {
 
 const _cloneConvo = (base = {}) => {
   return {
-    messages: base.messages || {},
+    messages: { ...base.messages } || {},
     unread: base.unread || 0,
     _sorted: base._sorted,
     get sorted() {
@@ -156,45 +156,52 @@ const createTimeoutChannel = time =>
 
 let pendingActiveConvoMessageChange = null;
 
-// todo: explain what, who and how are being throttled.
+/*
+ * This method will dispatch an activeConvoMessagesChange and conditionally
+ * debounce it. If the changed data is a message being marked as read or
+ * vice-versa, then any such changes will be debounced into a single change
+ * action that contains the cumulitive changed data. Otherwise, the change data
+ * will immediatally be dispatched.
+ */
 const dispatchActiveConvoMessagesChangeAction = function* (payload) {
-  console.log('SAY');
   if (!payload.unreadUpdate) {
-    console.log('HEY');
+    // If it's not an update of the read bool, fire the action right away.
+    console.dir(payload);
     yield put(activeConvoMessagesChange(payload));
   } else {
-    console.log('WILLY');
     if (pendingActiveConvoMessageChange) {
       pendingActiveConvoMessageChange.channel.close();
     }
 
+    pendingActiveConvoMessageChange = pendingActiveConvoMessageChange || {};
     pendingActiveConvoMessageChange.channel =
       yield call(createTimeoutChannel, 100);
 
-    let joinedPayload = pendingActiveConvoMessageChange.payload;
-    
-    joinedPayload = {
+    const prevPayload = { ...pendingActiveConvoMessageChange.payload } || {};
+
+    pendingActiveConvoMessageChange.payload = {
       messages: {
-        ...joinedPayload.messages,
+        ...prevPayload.messages,
         ...payload.messages,
       },
       removed: [
         ...new Set(
-          [...joinedPayload.removed || [], ...payload.removed || []]
+          [...prevPayload.removed || [], ...payload.removed || []]
         )
       ],
-    };
-
+    }
+    
     if (payload.sorted) {
-      joinedPayload.sorted = payload.sorted;
-    } else if (pendingActiveConvoMessageChange.payload.sorted) {
-      joinedPayload.sorted =
-        pendingActiveConvoMessageChange.payload.sorted;
+      pendingActiveConvoMessageChange.payload.sorted = payload.sorted;
+    } else if (
+      pendingActiveConvoMessageChange.payload &&
+      pendingActiveConvoMessageChange.payload.sorted
+    ) {
+      pendingActiveConvoMessageChange.payload.sorted =
+        prevPayload.sorted;
     }
 
     yield takeEvery(pendingActiveConvoMessageChange.channel, function* () {
-      console.log('dat one *activa* yo');
-      window.activa = pendingActiveConvoMessageChange.payload;
       yield put(activeConvoMessagesChange(pendingActiveConvoMessageChange.payload));
     });
   }
@@ -232,9 +239,12 @@ const setMessage = function* (peerID, message, options = {}) {
     _setMessage(peerID, message);
   
   const curConvo = chatData[peerID];
-  const isUpdate = !opts.remove &&
+
+  const isUpdate = !!(
+    !opts.remove &&
     prevConvo &&
-    prevConvo.messages[message.messageID];
+    prevConvo.messages[message.messageID]
+  );
   const isInsert = !opts.remove && !isUpdate;
 
   let convoChangeData;
@@ -280,9 +290,6 @@ const setMessage = function* (peerID, message, options = {}) {
     activeConvoMessageChangeData = {
       removed: [],
       ...data,
-      // todo: explain me
-      // todo: explain me
-      // todo: explain me
       unreadUpdate:
         isUpdate &&
         prevConvo.messages[message.messageID].read !==
@@ -307,8 +314,10 @@ const setMessage = function* (peerID, message, options = {}) {
     } else {
       const data = {
         messages: {
-          ...curConvo.messages[message.messageID],
-        },        
+          [message.messageID]: {
+            ...curConvo.messages[message.messageID],
+          }
+        },
       };
 
       if (
@@ -324,7 +333,9 @@ const setMessage = function* (peerID, message, options = {}) {
   }
 
   if (convoChangeData) {
-    // todo: debounce explanatation comment
+    // We will deobunce the convoChange action so, for example, if you
+    // mark a convo as read with 1000 unread messages, it results in only
+    // a single convoChange action.
     if (convoChangeChannels[peerID]) {
       convoChangeChannels[peerID].close();
     }
@@ -332,7 +343,6 @@ const setMessage = function* (peerID, message, options = {}) {
     convoChangeChannels[peerID] = yield call(createTimeoutChannel, 100);
 
     yield takeEvery(convoChangeChannels[peerID], function* () {
-      console.log('dat one convo change flava');
       yield put(convoChange(convoChangeData));
     });
   }
@@ -340,11 +350,6 @@ const setMessage = function* (peerID, message, options = {}) {
   if (activeConvoMessageChangeData) {
     yield call(dispatchActiveConvoMessagesChangeAction, activeConvoMessageChangeData);
   }
-
-  // TODO: put in some middleware to batch / debounce / throttle those
-  // actions, otherwise something like marking a convo with many unread
-  // message as read will result in many many actions and re-renders.
-  console.log('BREATH in and breat out');
 }
 
 // doc me up
