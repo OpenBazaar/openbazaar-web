@@ -75,6 +75,7 @@ async function sendDirectMessage(node, peerID, message) {
           console.error('Unable to send the direct message');
           console.error(err);
           reject(err);
+          return;
         }
 
         console.log('pushing outgoing message - outMess');

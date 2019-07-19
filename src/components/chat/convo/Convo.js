@@ -54,23 +54,21 @@ class Convo extends Component {
       if (
         (
           !prevLastMessage ||
-          prevLastMessage.messageID !== lastMessage.messageID
+          prevLastMessage !== lastMessage
         ) &&
         (
-          lastMessage.outgoing ||
+          this.props.lastMessageOutgoing ||
           this.scrolledNearBottom()
         )
       ) {
         this.setState({
           messagesScrollTop: this.constructor.scrollBottomHeight
-        });
-        needScroll = true;        
-      }      
+        }, () => this.scrollMessages());
+        needScroll = false;
+      }
     }
 
-    if (needScroll) {
-      this.scrollMessages();
-    }
+    if (needScroll) this.scrollMessages();
   }
 
   scrolledNearBottom() {

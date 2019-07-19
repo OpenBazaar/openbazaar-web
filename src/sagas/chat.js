@@ -2,6 +2,7 @@ import {
   omit,
   orderBy,
 } from 'lodash';
+import arrayMove from 'array-move';
 import multihashes from 'multihashes';
 import crypto from 'crypto';
 import { get as getDb } from 'util/database';
@@ -133,7 +134,11 @@ const _setMessage = (peerID, message) => {
       i--;
     }
 
-    convo.sorted = [..._sorted.slice(0, i), curMessage.messageID, ..._sorted.slice(i)];
+    if (_sorted.includes(message.messageID)) {
+      convo.sorted = arrayMove(convo.sorted, _sorted.indexOf(message.messageID), i);
+    } else {
+      convo.sorted = [..._sorted.slice(0, i), curMessage.messageID, ..._sorted.slice(i)];
+    }
   }
 
   convo.messages[curMessage.messageID] = curMessage;
@@ -165,7 +170,6 @@ let pendingActiveConvoMessageChange = null;
 const dispatchActiveConvoMessagesChangeAction = function* (payload) {
   if (!payload.unreadUpdate) {
     // If it's not an update of the read bool, fire the action right away.
-    console.dir(payload);
     yield put(activeConvoMessagesChange(payload));
   } else {
     if (pendingActiveConvoMessageChange) {
@@ -215,19 +219,27 @@ const setMessage = function* (peerID, message, options = {}) {
       'Please call getChatData().');
   }
 
-  if (typeof message !== 'object') {
-    throw new Error('The message must be provided as an object.');
-  }
+  // todo: peerID required if not removing, otherwise optional.
 
-  // todo: not when remove: true 
-  if (typeof message.messageID !== 'string' || !message.messageID.length) {
-    throw new Error('The message must contain a messageID as a non-empty string.');
-  }
+  // todo: optional peerID lookup. if message not found warn with
+  // text about insert requiring peerID.
 
   const opts = {
     remove: false,
     ...options,
   };
+
+  if (!opts.remove) {
+    if (typeof message !== 'object') {
+      throw new Error('The message must be provided as an object.');
+    }
+
+    if (typeof message.messageID !== 'string' || !message.messageID.length) {
+      throw new Error('The message must contain a messageID as a non-empty string.');
+    }
+  } else {
+    // validate remove args here.
+  }
 
   const state = yield select();
   const chatData = yield call(getChatData);
@@ -683,30 +695,25 @@ function* handleSendMessage(action) {
     subject: '',
   }
 
+  yield call(setMessage, peerID, {
+    ...(
+      !isRetry ?
+        messageData :
+        { messageID }
+    ),
+    sending: true,
+    sent: false,
+  });
+
   inTransitMessages[peerID] = inTransitMessages[peerID] || {};
   inTransitMessages[peerID][messageID] = true;
-
-  // yield put(messageChange({
-  //   // todo: constantize this?
-  //   type: isRetry ?
-  //     'UPDATE' : 'INSERT',
-  //   data: {
-  //     ...messageData,
-  //     sent: false,
-  //     sending: true,
-  //     // On a retry, we won't update the timestamp in the UI until it succeeds,
-  //     // since we don't want the meessagee needlessly changeing sort order.
-  //     timestamp: isRetry ?
-  //       action.payload.timestamp : timestamp,
-  //   },
-  // }));
 
   const db = yield call(getDb);
   let unsentMessageDoc;
   
   try {
     unsentMessageDoc = yield call(
-      [db.collections.unsentchatmessages, 'insert'],
+      [db.collections.unsentchatmessages, 'upsert'],
       messageData,
     );
   } catch (e) {
@@ -741,32 +748,40 @@ function* handleSendMessage(action) {
     messageSendFailed = true;
   } finally {
     delete inTransitMessages[peerID][messageID];
-    // yield put(messageChange({
-    //   type: 'UPDATE',
-    //   data: {
-    //     ...messageData,
-    //     sent: !messageSendFailed,
-    //     sending: false,
-    //     timestamp: isRetry && messageSendFailed ?
-    //       action.payload.timestamp : timestamp,
-    //   },
-    // }));
-    if (messageSendFailed) return;
   }
 
-  try {
-    yield call(
-      [db.collections.chatmessage, 'insert'],
-      messageData
-    );
-  } catch (e) {
-    const msg = message.length > 10 ?
-      `${message.slice(0, 10)}…` : message;
-    console.error(`Unable to save the sent message "${msg}" in the ` +
-      'chat messages DB.');
-    console.error(e);
-    return;
+  let sentMessageInsertedDoc;
+
+  if (!messageSendFailed) {
+    try {
+      sentMessageInsertedDoc = yield call(
+        [db.collections.chatmessage, 'insert'],
+        messageData
+      );
+    } catch (e) {
+      const msg = message.length > 10 ?
+        `${message.slice(0, 10)}…` : message;
+      console.error(`Unable to save the sent message "${msg}" in the ` +
+        'chat messages DB.');
+      console.error(e);
+    }
   }
+
+  const completedData = {
+    sent: !messageSendFailed,
+    sending: false,
+    timestamp: isRetry && messageSendFailed ?
+      action.payload.timestamp : timestamp,
+  }
+
+  // _rev is needed for bulkDocs operations, so putting it in the cache
+  if (sentMessageInsertedDoc) {
+    completedData._rev = sentMessageInsertedDoc.get('_rev');
+  }
+
+  yield call(setMessage, peerID, { messageID, ...completedData });
+
+  if (messageSendFailed || !sentMessageInsertedDoc) return;
 
   if (unsentMessageDoc) {
     try {
@@ -787,14 +802,31 @@ function* handleCancelMessage(action) {
     throw new Error('A messageID is required in order to cancel a message.');
   }
 
-  yield 'skippy';
-  // yield put(messageChange({
-  //   type: 'DELETE',
-  //   data: { messageID },
-  // }));  
+  yield call(setMessage, null, messageID, { remove: true });
 
-  // const unsentMessage = yield call(getUnsentChatMessage, messageID);
-  // if (unsentMessage) yield call([unsentMessage, 'remove']);
+  const db = yield call(getDb);
+  let unsentMessageDoc;
+  
+  try {
+    unsentMessageDoc =
+      yield call(
+        async () => await db.collections.unsentchatmessages
+          .findOne()
+          .where('messageID')
+          .eq(messageID)
+          .exec()
+          .then()
+      );
+  } catch {
+    // pass
+  }
+
+  console.log('spider');
+  window.spider = unsentMessageDoc;
+
+  if (unsentMessageDoc) {
+    yield call([unsentMessageDoc, 'remove']);
+  }
 }
 
 function* handleConvoMarkRead(action) {

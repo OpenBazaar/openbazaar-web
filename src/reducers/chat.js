@@ -189,8 +189,6 @@ const reduceConvoMessagesFail = (state, action) => {
 const reduceActiveConvoMessagesChange = (state, action) => {
   if (state.activeConvo === null) return;
 
-  console.dir(action);
-
   const {
     sorted,
     messages,

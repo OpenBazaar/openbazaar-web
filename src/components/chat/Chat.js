@@ -144,6 +144,7 @@ class Chat extends Component {
   }
 
   handleMessageCancel(messageID) {
+    console.log('filbert');
     this.props.actions.cancelMessage({ messageID });
   }
 
@@ -250,6 +251,15 @@ class Chat extends Component {
           }
           onMessageRetrySend={message => this.handleMessageRetrySend(message)}
           onMessageCancel={messageID => this.handleMessageCancel(messageID)}
+          lastMessageOutgoing={
+            !!(
+              convoData.messages &&
+              convoData.messages[convoData.messages.length - 1] &&
+              this.props.messages[
+                convoData.messages[convoData.messages.length - 1]
+              ].outgoing
+            )
+          }
         />
       );
     }

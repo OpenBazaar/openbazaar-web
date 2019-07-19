@@ -39,14 +39,14 @@ class Message extends Component {
           </div>
           <button
             className="btnAsLink clrTErr"
-            onClick={this.props.message.onRetryClick}
+            onClick={this.props.onRetryClick}
           >
             {getPoly().t('chatConvo.message.btnRetry')}
           </button>
           <div className="clrT2">|</div>
           <button
             className="btnAsLink clrTErr"
-            onClick={this.props.message.onCancelClick}
+            onClick={this.props.onCancelClick}
           >
             {getPoly().t('chatConvo.message.btnCancel')}
           </button>
@@ -68,7 +68,7 @@ class Message extends Component {
       <div className="flexCol gutterVTn" style={{ marginTop: '5px' }}>
         <div className={this.props.message.outgoing ? 'flexHRight' : ''}>
           <div
-            className={`padSm border clrBr clrS ${this.props.message.read ? '' : 'txB'}`}
+            className="padSm border clrBr clrS"
             style={messageStyle}
           >
             {this.props.message.message}
