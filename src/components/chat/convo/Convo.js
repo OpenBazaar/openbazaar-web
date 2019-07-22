@@ -10,12 +10,12 @@ import 'styles/layout.scss';
 import './Convo.scss';
 
 class Convo extends Component {
-  state = {
-    messagesScrollTop:
-      typeof this.props.initialMessagesScrollTop === 'number'
-        ? this.props.initialMessagesScrollTop
-        : this.constructor.scrollBottomHeight
-  };
+  // state = {
+  //   messagesScrollTop:
+  //     typeof this.props.initialMessagesScrollTop === 'number'
+  //       ? this.props.initialMessagesScrollTop
+  //       : this.constructor.scrollBottomHeight
+  // };
 
   static scrolledNearBottom(el) {
     return el.scrollHeight - (el.scrollTop + el.offsetHeight) <= 10;
@@ -31,15 +31,12 @@ class Convo extends Component {
   }
 
   componentDidMount() {
-    this.scrollMessages();
+    this.scrollMessages(
+      this.props.initialMessagesScrollTop || this.constructor.scrollBottomHeight
+    );
   }
 
-  componentDidUpdate(prevProps) {
-    let needScroll = (
-      (!prevProps.messages || !prevProps.messages.length) &&
-      (this.props.messages && this.props.messages.length)
-    );
-
+  getSnapshotBeforeUpdate(prevProps) {
     // If we have a new message at the bottom and it's an outgoing message
     // or we're scrolled at or near the bottom, we'll scroll to the bottom
     // so the new message is shown.
@@ -61,15 +58,18 @@ class Convo extends Component {
           this.scrolledNearBottom()
         )
       ) {
-        this.setState({
-          messagesScrollTop: this.constructor.scrollBottomHeight
-        }, () => this.scrollMessages());
-        needScroll = false;
+        return { scrollTo: this.constructor.scrollBottomHeight };
       }
     }
 
-    if (needScroll) this.scrollMessages();
+    return null;
   }
+
+  componentDidUpdate(prevProps, prevState, snapShot) {
+    if (snapShot && typeof snapShot.scrollTo === 'number') {
+      this.scrollMessages(snapShot.scrollTo);
+    }
+  }  
 
   scrolledNearBottom() {
     return this.constructor.scrolledNearBottom(this.messagesWrapEl);
@@ -88,11 +88,9 @@ class Convo extends Component {
     this.setState({ messagesScrollTop: null });
   }
 
-  scrollMessages() {
-    if (typeof this.state.messagesScrollTop === 'number') {
-      this.programaticallyScrolling = true;
-      this.messagesWrapEl.scrollTop = this.state.messagesScrollTop;
-    }
+  scrollMessages(amount) {
+    this.programaticallyScrolling = true;
+    this.messagesWrapEl.scrollTop = amount;
   }
 
   handleMessageInputKeyUp(e) {
