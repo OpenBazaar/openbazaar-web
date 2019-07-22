@@ -947,34 +947,38 @@ function* handleDirectMessage(action) {
       `${message.message.slice(0, 10)}…` : message.message;    
 
     console.log(`writing "${msg}" from ${peerID} to the database`);
-    console.dir(message);
 
     const db = yield call(getDb);
     const state = yield select();
 
+    const msgData = {
+      peerID,
+      message: message.message,
+      messageID: message.messageId,
+      timestamp: (
+        (new Date(
+          Number(
+            String(message.timestamp.seconds) +
+            String(message.timestamp.nanos)
+          )
+        )).toISOString()
+      ),
+      subject: message.subject,
+      outgoing: false,
+      read: !!(
+        state.chat &&
+          state.chat.chatOpen &&
+          state.chat.activeConvo &&
+          state.chat.activeConvo.peerID === peerID
+      ),
+    };
+
+    let chatDoc;
+
     try {
-      yield call(
+      chatDoc = yield call(
         [db.collections.chatmessage, 'insert'],
-        {
-          peerID,
-          message: message.message,
-          messageID: message.messageId,
-          timestamp: (
-            (new Date(
-              Number(
-                String(message.timestamp.seconds) +
-                String(message.timestamp.nanos)
-              )
-            )).toISOString()
-          ),
-          subject: message.subject,
-          outgoing: false,
-          read: state.chat &&
-            state.chat.chatOpen &&
-            state.chat.activeConvo &&
-            state.chat.activeConvo.peerID === peerID ?
-              true : false,
-        }
+        msgData,
       );
     } catch (e) {
       // TODO: maybe some type of retry? A db insertion failure I would think
@@ -982,8 +986,19 @@ function* handleDirectMessage(action) {
       console.error(`Unable to insert direct message ${msg} from ${peerID} ` +
         'into the database.');
       console.error(e);
-      return;      
     }
+
+    const setMessageData = {
+      ...msgData,
+      sending: false,
+      sent: false,
+    };
+    
+    if (chatDoc) {
+      setMessageData._rev = chatDoc.get('_rev');
+    }
+
+    yield call(setMessage, setMessageData);
   }
 }
 

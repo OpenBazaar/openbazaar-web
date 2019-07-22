@@ -10,8 +10,11 @@ import 'styles/type.scss';
 
 class Message extends Component {
   render() {
-    const messageStyle = !this.props.message.sent && !this.props.message.sending ?
-      { opacity: 0.6 } : {};
+    const messageStyle =
+      this.props.message.outgoing &&
+      !this.props.message.sent &&
+      !this.props.message.sending ?
+        { opacity: 0.6 } : {};
     const avatarWrapStyle = messageStyle;
 
     const avatar = (
@@ -24,7 +27,7 @@ class Message extends Component {
 
     let timestampLine;
 
-    if (this.props.message.sent) {
+    if (this.props.message.sent || !this.props.message.outgoing) {
       timestampLine = moment(this.props.message.timestamp).fromNow();
     } else if (this.props.message.sending) {
       timestampLine = (
