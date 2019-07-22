@@ -9,13 +9,13 @@ const middleware = store => next => action => {
       // todo: shouldn't collection names be plural?
       // todo: throttle and batch messageDbChange events.
       db.chatmessage.$.subscribe(changeEvent => {
-        // store.dispatch(
-        //   messageDbChange({
-        //     operation: changeEvent.data.op,
-        //     data: changeEvent.data.v,
-        //     sent: true,
-        //   })
-        // );
+        store.dispatch(
+          messageDbChange({
+            operation: changeEvent.data.op,
+            data: changeEvent.data.v,
+            sent: true,
+          })
+        );
       });
 
       db.unsentchatmessages.$.subscribe(changeEvent => {

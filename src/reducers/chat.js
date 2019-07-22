@@ -87,6 +87,9 @@ const reduceConvoChange = (state, action) => {
 
   if (removed) {
     delete state.convos[peerID];
+    if (peerID === state.activeConvo.peerID) {
+      state.activeConvo = null;
+    }
     return;    
   }
 

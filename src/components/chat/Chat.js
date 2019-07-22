@@ -144,7 +144,6 @@ class Chat extends Component {
   }
 
   handleMessageCancel(messageID) {
-    console.log('filbert');
     this.props.actions.cancelMessage({ messageID });
   }
 

@@ -94,7 +94,9 @@ const _removeMessage = (peerID, messageID) => {
     convo._sorted &&
     convo._sorted.includes(messageID)
   ) {
-    convo._sorted.splice(convo._sorted.indexOf(messageID), 1);
+    const newSorted = [...convo._sorted];
+    newSorted.splice(newSorted.indexOf(messageID), 1);
+    convo._sorted = newSorted;
   }
 
   if (!Object.keys(convo.messages).length) {
@@ -213,32 +215,53 @@ const dispatchActiveConvoMessagesChangeAction = function* (payload) {
 const convoChangeChannels = {};
 
 // todo: when remove:true message is messageID
-const setMessage = function* (peerID, message, options = {}) {
+const setMessage = function* (message, options = {}) {
   if (!_chatData) {
     throw new Error('The chat data must be populated before calling this function. ' +
       'Please call getChatData().');
   }
-
-  // todo: peerID required if not removing, otherwise optional.
-
-  // todo: optional peerID lookup. if message not found warn with
-  // text about insert requiring peerID.
 
   const opts = {
     remove: false,
     ...options,
   };
 
-  if (!opts.remove) {
-    if (typeof message !== 'object') {
-      throw new Error('The message must be provided as an object.');
-    }
+  let messageID;
+  let peerID = message ? message.peerID : null;
 
-    if (typeof message.messageID !== 'string' || !message.messageID.length) {
-      throw new Error('The message must contain a messageID as a non-empty string.');
-    }
+  if (typeof message !== 'object') {
+    throw new Error('A message should be provided as an object.');
+  }
+
+  if (typeof message.messageID !== 'string' || !message.messageID) {
+    throw new Error('The message object must contain a messageID string.');
   } else {
-    // validate remove args here.
+    messageID = message.messageID;
+  }
+
+  if (!opts.remove) {
+    if (Object.keys(message).length < 2) {
+      throw new Error('The message object should contain at least one property ' +
+        'in addition to the messageID.');
+    }
+  }
+
+  if (!peerID) {
+    const peerData = Object.keys(_chatData)
+      .find(peer => {
+        const message = _chatData[peer] && _chatData[peer].messages ?
+          _chatData[peer].messages[messageID] : null;
+        if (message) {
+          peerID = peer;
+        }
+        return !!message;
+      });
+
+    if (!peerData) {
+      if (opts.remove) return;
+      throw new Error('Unable to find the peer for the given messageID. If this is ' +
+        'a new message, please pass in the peerID.');
+    }
   }
 
   const state = yield select();
@@ -246,7 +269,7 @@ const setMessage = function* (peerID, message, options = {}) {
   const prevConvo = chatData[peerID];
 
   opts.remove ?
-    _removeMessage(peerID, message) :
+    _removeMessage(peerID, messageID) :
     _setMessage(peerID, message);
   
   const curConvo = chatData[peerID];
@@ -254,7 +277,7 @@ const setMessage = function* (peerID, message, options = {}) {
   const isUpdate = !!(
     !opts.remove &&
     prevConvo &&
-    prevConvo.messages[message.messageID]
+    prevConvo.messages[messageID]
   );
   const isInsert = !opts.remove && !isUpdate;
 
@@ -303,8 +326,8 @@ const setMessage = function* (peerID, message, options = {}) {
       ...data,
       unreadUpdate:
         isUpdate &&
-        prevConvo.messages[message.messageID].read !==
-          curConvo.messages[message.messageID].read
+        prevConvo.messages[messageID].read !==
+          curConvo.messages[messageID].read
     };
   }
 
@@ -321,20 +344,26 @@ const setMessage = function* (peerID, message, options = {}) {
   // changed message data.
   if (activeConvoPeerID === peerID) {
     if (options.remove) {
-      setActiveConvoMessageChangeData({ removed: [ message ] });
+      const data = { removed: [ messageID ] };
+      
+      if (curConvo) {
+        data.sorted = curConvo.sorted;
+      }
+
+      setActiveConvoMessageChangeData(data);
     } else {
       const data = {
         messages: {
           [message.messageID]: {
-            ...curConvo.messages[message.messageID],
+            ...curConvo.messages[messageID],
           }
         },
       };
 
       if (
         isInsert ||
-        prevConvo.messages[message.messageID].timestamp !==
-          curConvo.messages[message.messageID].timestamp
+        prevConvo.messages[messageID].timestamp !==
+          curConvo.messages[messageID].timestamp
       ) {
         data.sorted = curConvo.sorted;
       }
@@ -695,7 +724,7 @@ function* handleSendMessage(action) {
     subject: '',
   }
 
-  yield call(setMessage, peerID, {
+  yield call(setMessage, {
     ...(
       !isRetry ?
         messageData :
@@ -779,7 +808,11 @@ function* handleSendMessage(action) {
     completedData._rev = sentMessageInsertedDoc.get('_rev');
   }
 
-  yield call(setMessage, peerID, { messageID, ...completedData });
+  yield call(setMessage, {
+    peerID,
+    messageID,
+    ...completedData
+  });
 
   if (messageSendFailed || !sentMessageInsertedDoc) return;
 
@@ -802,7 +835,7 @@ function* handleCancelMessage(action) {
     throw new Error('A messageID is required in order to cancel a message.');
   }
 
-  yield call(setMessage, null, messageID, { remove: true });
+  yield call(setMessage, { messageID }, { remove: true });
 
   const db = yield call(getDb);
   let unsentMessageDoc;
@@ -820,9 +853,6 @@ function* handleCancelMessage(action) {
   } catch {
     // pass
   }
-
-  console.log('spider');
-  window.spider = unsentMessageDoc;
 
   if (unsentMessageDoc) {
     yield call([unsentMessageDoc, 'remove']);
@@ -845,8 +875,8 @@ function* handleConvoMarkRead(action) {
   for (let i = 0; i < updateMessages.length; i++) {
     yield spawn(
       setMessage,
-      peerID,
       {
+        peerID,
         messageID: updateMessages[i],
         read: true
       });
