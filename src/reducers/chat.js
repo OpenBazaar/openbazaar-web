@@ -12,7 +12,6 @@ import {
   convoMessagesSuccess,
   convoMessagesFail,
   deactivateConvo,
-  // messageChange,
   activeConvoMessagesChange,
 } from 'actions/chat';
 import { AUTH_LOGOUT } from 'actions/auth';
@@ -44,11 +43,6 @@ const reduceConvosRequest = (state, action) => {
 // todo: explain the idea in more detail... balancing float to top
 // with no likey jumpy jumpers.
 const getConvoTimestamp = (state, convoData, lastMessage) => {
-  console.dir(JSON.parse(JSON.stringify(state)));
-  console.dir(convoData);
-  console.dir(lastMessage);
-  console.log('\n');
-
   const prevConvo = state.convos[convoData.peerID];
   const ageTimestamp = timestamp => {
     const date = new Date(lastMessage.timestamp);

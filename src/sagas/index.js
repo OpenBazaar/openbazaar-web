@@ -6,7 +6,6 @@ import {
   convoMessagesRequestWatcher,
   convosRequestWatcher,
   messageDbChangeWatcher,
-  // messageChangeWatcher,
   sendMessageWatcher,
   convoMarkReadWatcher,
   directMessageWatcher,
@@ -22,7 +21,6 @@ export default function* root() {
   yield spawn(convosRequestWatcher);
   yield spawn(getCachedProfileWatcher);
   yield spawn(messageDbChangeWatcher);
-  // yield spawn(messageChangeWatcher);
   yield spawn(sendMessageWatcher);
   yield spawn(convoMarkReadWatcher);
   yield spawn(directMessageWatcher);

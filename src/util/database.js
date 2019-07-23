@@ -42,7 +42,6 @@ const _create = async (name, password) => {
     name: name.slice(0, 10),
     adapter: 'idb',
     password,
-    // queryChangeDetection: true,
   });
 
   if (process.env.NODE_ENV === 'development') {

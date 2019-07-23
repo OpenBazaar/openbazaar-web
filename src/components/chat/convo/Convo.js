@@ -10,13 +10,6 @@ import 'styles/layout.scss';
 import './Convo.scss';
 
 class Convo extends Component {
-  // state = {
-  //   messagesScrollTop:
-  //     typeof this.props.initialMessagesScrollTop === 'number'
-  //       ? this.props.initialMessagesScrollTop
-  //       : this.constructor.scrollBottomHeight
-  // };
-
   static scrolledNearBottom(el) {
     return el.scrollHeight - (el.scrollTop + el.offsetHeight) <= 10;
   }
