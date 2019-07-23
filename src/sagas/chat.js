@@ -41,8 +41,8 @@ import sizeOf from 'object-sizeof';
 window.orderBy = orderBy;
 window.sizeof = sizeOf;
 
-let _messageDocs = null;
 let _chatData = null;
+let _gettingChatData = null;
 
 window.muchData = () => {
   const promises = [];
@@ -84,6 +84,7 @@ const _cloneConvo = (base = {}) => {
 
 const _removeMessage = (peerID, messageID) => {
   if (
+    !_chatData ||
     !_chatData[peerID] ||
     !_chatData[peerID].messages ||
     !_chatData[peerID].messages[messageID]
@@ -216,10 +217,7 @@ const convoChangeChannels = {};
 
 // todo: when remove:true message is messageID
 const setMessage = function* (message, options = {}) {
-  if (!_chatData) {
-    throw new Error('The chat data must be populated before calling this function. ' +
-      'Please call getChatData().');
-  }
+  yield call(getChatData);
 
   const opts = {
     remove: false,
@@ -395,84 +393,80 @@ const setMessage = function* (message, options = {}) {
 // doc me up
 const getChatData = async peerID => {
   if (!_chatData) {
-    console.time('getMessages');
+    if (!_gettingChatData) {
+      console.time('getMessages');
 
-    let unsentMessages = [];
+      _gettingChatData = new Promise(async (chatDataResolve, chatDataReject) => {
 
-    if (!_messageDocs) {
-      _messageDocs = new Promise((resolve, reject) => {
-        let db;
+        let unsentMessages = [];
+        const db  = await getDb();
 
-        getDb()
-          .then(dbInstance => {
-            db = dbInstance;
+        console.time('allDocs');
+        const docs = await Promise.all([
+          db.collections.chatmessage.pouch
+            .allDocs({
+              include_docs: true,
+            }),
+          db.collections.unsentchatmessages.pouch
+            .allDocs({
+              include_docs: true,
+            }),
+        ]);
+        console.timeEnd('allDocs');
 
-            console.time('allDocs');
+        // Some weird meta records of some sort are coming in here. For now, we'll
+        // just filter them out.
+        const filterOutMeta = arr =>
+          arr.filter(doc => !doc.id.startsWith('_design'));
 
-            return Promise.all([
-              db.collections.chatmessage.pouch
-                .allDocs({
-                  include_docs: true,
-                }),
-              db.collections.unsentchatmessages.pouch
-                .allDocs({
-                  include_docs: true,
-                }),
-            ]);
-          }).then(docs => {
-            console.timeEnd('allDocs');
+        const messagesSent = filterOutMeta(docs[0].rows);
+        const messagesUnsent = filterOutMeta(docs[1].rows);
 
-            // Some weird meta records of some sort are coming in here. For now, we'll
-            // just filter them out.
-            const filterOutMeta = arr =>
-              arr.filter(doc => !doc.id.startsWith('_design'));
+        unsentMessages = messagesUnsent.map(msg => msg.id);
 
-            const messagesSent = filterOutMeta(docs[0].rows);
-            const messagesUnsent = filterOutMeta(docs[1].rows);
+        const combined = messagesUnsent
+          .concat(messagesSent);
 
-            unsentMessages = messagesUnsent.map(msg => msg.id);
+        console.log(`${combined.length} total messages`);              
 
-            const combined = messagesUnsent
-              .concat(messagesSent);
+        const decrypted = [];
 
-            console.log(`${combined.length} total messages`);              
+        // todo: don't fail everything if one decrypt fails.
+        await animationFrameInterval(
+          () => {
+            const doc = combined[decrypted.length];
 
-            const decrypted = [];
+            decrypted.push({
+              ...db.collections.chatmessage._crypter.decrypt({
+                ...omit(doc.doc, ['_id']),
+              }),
+              messageID: doc.id,
+            });                
+          },
+          () => decrypted.length < combined.length,
+          { maxOpsPerFrame: 25 }
+        );
 
-            // todo: don't fail everything if one decrypt fails.
-            animationFrameInterval(
-              () => {
-                const doc = combined[decrypted.length];
-
-                decrypted.push({
-                  ...db.collections.chatmessage._crypter.decrypt({
-                    ...omit(doc.doc, ['_id']),
-                  }),
-                  messageID: doc.id,
-                });                
-              },
-              () => decrypted.length < combined.length,
-              { maxOpsPerFrame: 25 }
-            ).then(() => resolve(decrypted));
-          });
-      });      
+        _chatData = {};
+        decrypted.forEach(doc =>
+          _setMessage(doc.peerID, {
+            ...doc,
+            sent: !inTransitMessages[doc.messageID] &&
+              !unsentMessages.includes(doc.messageID),
+            sending: !!inTransitMessages[doc.messageID],
+          }));
+        chatDataResolve(_chatData);
+        console.timeEnd('getMessages');
+      });
     }
-
-    const docs = await _messageDocs;
-    _chatData = {};
-    docs.forEach(doc =>
-      _setMessage(doc.peerID, {
-        ...doc,
-        sent: !inTransitMessages[doc.messageID] &&
-          !unsentMessages.includes(doc.messageID),
-        sending: !!inTransitMessages[doc.messageID],
-      }));
-    _messageDocs = null;
-    console.timeEnd('getMessages');
   }
 
-  return peerID ?
-    _chatData[peerID] : _chatData;
+  const chatData = await _gettingChatData;
+  console.log('sparky');
+  window.sparky = chatData;
+
+  return !!peerID ?
+    chatData[peerID] : chatData;
 };
 
 console.log('milly');
@@ -1014,7 +1008,7 @@ function handleMessageChange(action) {
 }
 
 function handleLogout() {
-  _messageDocs = null;
+  _gettingChatData = null;
   _chatData = null;
 }
 
