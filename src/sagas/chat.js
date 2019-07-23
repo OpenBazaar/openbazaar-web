@@ -288,7 +288,7 @@ const setMessage = function* (message, options = {}) {
       ...convoChangeData,
       ...topLevel,
       data: {
-        ...((convoChangeData && convoChangeData.data) || {}),
+        ...(convoChangeData && convoChangeData.data) || {},
         ...data,
       },
     };
@@ -462,15 +462,10 @@ const getChatData = async peerID => {
   }
 
   const chatData = await _gettingChatData;
-  console.log('sparky');
-  window.sparky = chatData;
 
   return !!peerID ?
     chatData[peerID] : chatData;
 };
-
-console.log('milly');
-window.milly = getChatData;
 
 function* getConvos(action) {
   try {
@@ -498,7 +493,6 @@ function* getConvos(action) {
       });
 
     console.timeEnd('getConvos');
-    window.getConvos = convos;
 
     yield put(convosSuccess({
       convos,

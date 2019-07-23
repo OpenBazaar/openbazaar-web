@@ -41,6 +41,36 @@ const reduceConvosRequest = (state, action) => {
   state.convosFetchError = null;
 };
 
+// todo: explain the idea in more detail... balancing float to top
+// with no likey jumpy jumpers.
+const getConvoTimestamp = (state, convoData, lastMessage) => {
+  console.dir(JSON.parse(JSON.stringify(state)));
+  console.dir(convoData);
+  console.dir(lastMessage);
+  console.log('\n');
+
+  const prevConvo = state.convos[convoData.peerID];
+  const ageTimestamp = timestamp => {
+    const date = new Date(lastMessage.timestamp);
+    date.setFullYear(date.getFullYear() - 100);
+    return date.toISOString();    
+  };
+
+  if (!prevConvo) {
+    // The idea is for convos with unread messages to be on top
+    return !convoData.unread ?
+      ageTimestamp(lastMessage.timestamp) : lastMessage.timestamp;
+  } else {
+    // If the convo is being updated and going from unread to read,
+    // we'll float it to the top.
+    if (!prevConvo.unread && prevConvo.unread) {
+      return ageTimestamp(lastMessage.timestamp);
+    } else {
+      return convoData.sortTimestamp;
+    }
+  }
+}
+
 const reduceConvosSuccess = (state, action) => {
   state.fetchingConvos = false;
   state.convosFetchFailed = false;
@@ -48,20 +78,16 @@ const reduceConvosSuccess = (state, action) => {
 
   state.convos = Object.keys(action.payload.convos)
     .reduce((acc, peerID) => {
-      const convo =action.payload.convos[peerID];
+      const convo = action.payload.convos[peerID];
       const message = action.payload.messages[convo.lastMessage];
-      let sortTimestamp = message.timestamp;
-
-      if (!convo.unread) {
-        // the idea is for convos with unread messages to be on top
-        const date = new Date(message.timestamp);
-        date.setFullYear(date.getFullYear() - 100);
-        sortTimestamp = date.toISOString();
-      }
 
       acc[peerID] = {
         ...convo,
-        sortTimestamp,
+        sortTimestamp: getConvoTimestamp(
+          state,
+          convo,
+          message,
+        ),
       }
 
       return acc;
@@ -93,15 +119,30 @@ const reduceConvoChange = (state, action) => {
     return;    
   }
 
-  state.messages = {
-    ...state.messages,
-    ...action.payload.messages,
-  }
-
-  state.convos[peerID] = {
+  const convo = {
     ...state.convos[peerID],
     ...action.payload.data,
   };
+
+  if (action.payload.message) {
+    const messageID = action.payload.message.messageID;
+    const messages = state.messages = {
+      ...state.messages,
+      [messageID]: {
+        ...state.messages[messageID],
+        ...action.payload.message
+      },
+    }
+
+    convo.sortTimestamp = getConvoTimestamp(
+      state,
+      convo,
+      messages[convo.lastMessage],
+    );
+  }
+
+  
+  state.convos[peerID] = convo;
 }
 
 // todo: doc me up.
