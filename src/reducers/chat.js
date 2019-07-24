@@ -220,10 +220,6 @@ const reduceConvoMessagesFail = (state, action) => {
   }
 };
 
-// const reduceMessageChange = (state, action) => {
-//   state.messages[action.payload.messageID] = action.payload;
-// }
-
 const reduceActiveConvoMessagesChange = (state, action) => {
   if (state.activeConvo === null) return;
 
@@ -275,7 +271,6 @@ export default createReducer(initialState, {
   [convoMessagesSuccess]: reduceConvoMessagesSuccess,
   [convoMessagesFail]: reduceConvoMessagesFail,
   [deactivateConvo]: reduceDeactivateConvo,
-  // [messageChange]: reduceMessageChange,
   [activeConvoMessagesChange]: reduceActiveConvoMessagesChange,
   [AUTH_LOGOUT]: reduceAuthLogout
 });

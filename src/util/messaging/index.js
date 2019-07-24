@@ -93,19 +93,6 @@ async function sendDirectMessage(node, peerID, message) {
 }
 
 export async function sendMessage(type, peerID, payload, options = {}) {
-  // return new Promise((resolve, reject) => {
-  //   console.log('will send message');
-  //   setTimeout(() => {
-  //     console.log('decision time');
-
-  //     if (getRandomInt(0, 1)) {
-  //       resolve();
-  //     } else {
-  //       reject('You silly little amaranto!');
-  //     }
-  //   }, getRandomInt(300, 3000))
-  // });
-
   if (!isValidMessageType(type)) {
     throw new Error(`${type} is not a valid message type.`);
   }

@@ -19,8 +19,6 @@
   }
 
   .ModalRoot-innerWrap {
-    // margin-top: 50px;
-    // max-width: 100vw;
     position: absolute;
     top: 50px;
     left: 0;
@@ -29,10 +27,8 @@
     @include chatOpenTransition(right);
 
     .ModalRoot-contentWrap {
-      // position: relative;
       width: $modalWidthL;
       max-width: 100%;
-      // @include chatOpenTransition(margin-right);
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
@@ -46,8 +42,6 @@
     cursor: pointer;
 
     &:hover {
-      // todo: theme this dog up
-      // todo: theme this dog up
       // todo: theme this dog up
       background-color: black;
       color: white;
