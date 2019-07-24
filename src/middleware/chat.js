@@ -3,7 +3,7 @@ import { AUTH_LOGIN_SUCCESS } from 'actions/auth';
 import { messageDbChange } from 'actions/chat';
 
 const middleware = store => next => action => {
-  if (action.type === AUTH_LOGIN_SUCCESS) {
+  if (action.type === AUTH_LOGIN_SUCCESS && false) {
     // subscribe to chat db updates
     getDb().then(db => {
       // todo: shouldn't collection names be plural?

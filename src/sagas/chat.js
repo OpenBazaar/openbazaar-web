@@ -12,7 +12,7 @@ import {
   put,
   call,
   select,
-  spawn,
+  fork,
 } from 'redux-saga/effects';
 import { animationFrameInterval } from 'util/index';
 import { sendMessage as sendChatMessage } from 'util/messaging/index';
@@ -566,6 +566,8 @@ function* handleMessageDbChange(action) {
   // event from a non-synced one, we'll do a little data introspection to find
   // what's useful for us.
 
+  // TODO: note about calling setMessage before a db change.
+
   if (
     action.payload.operation === 'DELETE' ||
     !action.payload.sent
@@ -586,6 +588,7 @@ function* handleMessageDbChange(action) {
   if (
     !message || message.read !== read
   ) {
+    console.log('round and around and around and around we go');
     yield call(setMessage, {
       ...action.payload.data,
       sent: true,
@@ -826,10 +829,20 @@ function* handleCancelMessage(action) {
   }
 }
 
+const convoMarkingAsRead = {};
+
 function* handleConvoMarkRead(action) {
   console.time('markAsRead');
 
   const peerID = action.payload.peerID;
+
+  if (convoMarkingAsRead[peerID]) {
+    console.log('no soup for you. no soup for you.');
+    return;
+  }
+
+  convoMarkingAsRead[peerID] = true;
+
   const convoData = yield call(getChatData, peerID);
   const updateMessages = Object.keys(convoData.messages || {})
     .filter(messageID => {
@@ -840,7 +853,7 @@ function* handleConvoMarkRead(action) {
   console.time('markAsReadSetMessage');
 
   for (let i = 0; i < updateMessages.length; i++) {
-    yield spawn(
+    yield fork(
       setMessage,
       {
         peerID,
@@ -866,6 +879,7 @@ function* handleConvoMarkRead(action) {
   yield call(
     animationFrameInterval,
     () => {
+      console.log('boom');
       const msg = {
         ...convoData.messages[updateMessages[encryptedUpdateMessagesDb.length]]
       };      
@@ -898,6 +912,8 @@ function* handleConvoMarkRead(action) {
   );
   console.timeEnd('markAsReadBulkDocs');
   console.timeEnd('markAsRead');
+
+  convoMarkingAsRead[peerID] = false;
 }
 
 function* handleDirectMessage(action) {

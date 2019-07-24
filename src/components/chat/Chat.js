@@ -14,7 +14,6 @@ import './Chat.scss';
 
 class Chat extends Component {
   state = {
-    oldActiveConvo: null,
     messageInputValues: {}
   };
 
@@ -44,19 +43,6 @@ class Chat extends Component {
   componentDidUpdate(prevProps) {
     if (!prevProps.convos || !prevProps.convos.length) {
       this.getConvoProfiles();
-    }
-
-    if (
-      prevProps.activeConvo &&
-      !this.props.activeConvo &&
-      !(
-        this.state.oldActiveConvo &&
-        this.state.oldActiveConvo.peerID === prevProps.peerID
-      )
-    ) {
-      // The oldActiveConvo is kept around so that the chat convo
-      // component will visually remain in the UI as it slides down.
-      this.setState({ oldActiveConvo: prevProps.activeConvo });
     }
 
     if (

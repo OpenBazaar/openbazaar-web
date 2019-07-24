@@ -100,6 +100,7 @@ const _create = async (name, password) => {
       messageID: uuid(),
       message,
       outgoing: false,
+      read: false,
       timestamp: new Date().toISOString()
     };
 
