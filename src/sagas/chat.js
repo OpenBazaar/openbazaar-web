@@ -568,7 +568,7 @@ function* handleMessageDbChange(action) {
 
   if (
     action.payload.operation === 'DELETE' ||
-    !action.payload.data.sent
+    !action.payload.sent
   ) return;
 
   const {
@@ -586,7 +586,11 @@ function* handleMessageDbChange(action) {
   if (
     !message || message.read !== read
   ) {
-    yield call(setMessage, { ...action.payload.data });
+    yield call(setMessage, {
+      ...action.payload.data,
+      sent: true,
+      sending: false,
+    });
   }
 }
 
