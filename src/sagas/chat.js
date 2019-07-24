@@ -644,9 +644,6 @@ function generateChatMessageData(message, options = {}) {
 
 const inTransitMessages = {};
 
-// todo: doc overloaded retry and explain params difference. Or
-// maybe a seperate handleRetryMessage to understand the intent?
-
 /*
  * If sending a new message, only the peerID and message (actual text of the
  * message) should be provided. If retrying a failed message, it is necessary

@@ -108,9 +108,12 @@ class Chat extends Component {
   }
 
   handleMessageInputChange(e) {
-    const messageInputValues = this.state.messageInputValues;
-    messageInputValues[this.props.activeConvo.peerID] = e.target.value;
-    this.setState({ messageInputValues });
+    this.setState({
+      messageInputValues: {
+        ...this.state.messageInputValues,
+        [this.props.activeConvo.peerID]: e.target.value,
+      },
+    });
   }
 
   handleRetryMessageFetch(peerID) {
@@ -235,7 +238,7 @@ class Chat extends Component {
           onMessagesScroll={el => {
             // Store the scroll position so it can be restored if they return
             // to the convo. If theyre scrolled near the bottom, then we'll just
-            // put a hug number so the scroll position remains at the bottom
+            // put a huge number so the scroll position remains at the bottom
             // even if new messages have arrived.
             this.convoMessagesScroll[
               convoData.peerID

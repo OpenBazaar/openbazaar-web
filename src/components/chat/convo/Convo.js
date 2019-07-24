@@ -18,22 +18,26 @@ class Convo extends Component {
 
   constructor(props) {
     super(props);
+    this.hasUpdated = false;
     this.programaticallyScrolling = false;
     this.handleMessagesScroll = this.handleMessagesScroll.bind(this);
     this.handleMessageInputKeyUp = this.handleMessageInputKeyUp.bind(this);
   }
 
   componentDidMount() {
-    this.scrollMessages(
-      this.props.initialMessagesScrollTop || this.constructor.scrollBottomHeight
-    );
+    setTimeout(() => {
+      this.scrollMessages(
+        typeof this.props.initialMessagesScrollTop === 'number' ?
+          this.props.initialMessagesScrollTop : this.constructor.scrollBottomHeight
+      );
+    });
   }
 
   getSnapshotBeforeUpdate(prevProps) {
     // If we have a new message at the bottom and it's an outgoing message
     // or we're scrolled at or near the bottom, we'll scroll to the bottom
     // so the new message is shown.
-    if (this.props.messages.length) {
+    if (this.props.messages.length && this.hasUpdated) {
       const prevLastMessage = prevProps.messages &&
         prevProps.messages.length &&
         prevProps.messages[prevProps.messages.length - 1];
@@ -59,9 +63,10 @@ class Convo extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapShot) {
-    if (snapShot && typeof snapShot.scrollTo === 'number') {
+    if (this.hasUpdated && snapShot && typeof snapShot.scrollTo === 'number') {
       this.scrollMessages(snapShot.scrollTo);
     }
+    this.hasUpdated = true;
   }  
 
   scrolledNearBottom() {
@@ -77,8 +82,6 @@ class Convo extends Component {
     if (typeof this.props.onMessagesScroll === 'function') {
       this.props.onMessagesScroll(e.target);
     }
-
-    this.setState({ messagesScrollTop: null });
   }
 
   scrollMessages(amount) {

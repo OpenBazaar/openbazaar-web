@@ -33,7 +33,7 @@ RxDB.plugin(pouchDbAdapterHttp); //enable syncing over http
 RxDB.plugin(PouchAdapterMemory);
 RxDB.plugin(RxDBWatchForChangesModule);
 
-const syncUrl = process.env.REACT_APP_DB_SYNC_URL;
+// const syncUrl = process.env.REACT_APP_DB_SYNC_URL;
 
 let curDb = null;
 
@@ -57,12 +57,12 @@ const _create = async (name, password) => {
   // colNames.forEach(colName => db[colName].watchForChanges());
 
   // sync
-  colNames
-    .map(colName => {
-      return db[colName].sync({
-        remote: `${syncUrl}/${name}_${colName}`
-      });
-    });
+  // colNames
+  //   .map(colName => {
+  //     return db[colName].sync({
+  //       remote: `${syncUrl}/${name}_${colName}`
+  //     });
+  //   });
 
   const peerIDs = [
     'Qmbr7QtmKCVZ5g5mePNZHaetCKF9gryXxiLcyrdBPbMbnd',
