@@ -18,7 +18,6 @@ const initialState = {
   loggingIn: false,
   loggedIn: false,
   profile: null,
-  identity: null,
   needOnboarding: false
 };
 
@@ -27,7 +26,6 @@ const logout = (state, action) => {
   state.loggedIn = false;
   state.profile = null;
   state.needOnboarding = false;
-  state.identity = null;
 };
 
 const generatingMnemonic = (state, action) => {
@@ -51,7 +49,6 @@ const loggingIn = (state, action) => {
   state.loggingIn = true;
   state.loggedIn = false;
   state.profile = null;
-  state.identity = null;
 };
 
 const loginSuccess = (state, action) => {
@@ -59,7 +56,6 @@ const loginSuccess = (state, action) => {
   state.loggedIn = true;
   state.profile = action.profile || null;
   state.needOnboarding = !state.profile;
-  state.identity = action.identity;
 };
 
 const loginFail = (state, action) => {

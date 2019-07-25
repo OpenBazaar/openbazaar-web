@@ -4,7 +4,6 @@ import { get as getNode } from 'util/ipfs/index';
 import protobuf from 'protobufjs';
 import messageJSON from 'pb/message.json';
 import { typesData as messageTypesData } from './types';
-import { getRandomInt } from 'util/number';
 
 let protoRoot;
 
