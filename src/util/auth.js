@@ -14,11 +14,11 @@ export function getIdentity() {
 }
 
 export function login(mnemonic) {
-  if (!isValidMenmonic(mnemonic)) {
-    throw new Error('Please provide a valid mnemonic.');
-  }
-
   return new Promise((resolve, reject) => {
+    if (!isValidMenmonic(mnemonic)) {
+      reject('Please provide a valid mnemonic.');
+    }
+
     const nameHash = hash(mnemonic, { hmacSeed: 'ob-db-name' });
     const pwHash = hash(mnemonic, { hmacSeed: 'ob-db-password' });
     let profile;
@@ -58,7 +58,6 @@ export function login(mnemonic) {
         if (_identity.dbName) destroyDb(_identity.dbName);
         _identity = null;
         reject(error);
-        throw error;
       });
   });  
 }

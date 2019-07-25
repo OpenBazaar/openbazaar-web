@@ -30,14 +30,14 @@ export const onOwnProfileObtained = (dispatch, profile) => {
   });
 };
 
-export const login = (props = {}) => (dispatch, getState) => {
+export const login = (props = {}) => async (dispatch, getState) => {
   if (!isValidMenmonic(props.mnemonic)) {
     throw new Error('Please provide a valid mnemonic.');
   }
 
   dispatch({ type: AUTH_LOGGING_IN });
 
-  authLogin
+  return authLogin(props.mnemonic)
     .then(data => {
       const profile = data.profile;
 
@@ -59,7 +59,7 @@ export const login = (props = {}) => (dispatch, getState) => {
 
 export const logout = (props = {}) => {
   authLogout();
-  
+
   return {
     type: AUTH_LOGOUT
   };

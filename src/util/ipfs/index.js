@@ -206,8 +206,9 @@ export const destroy = peerID => {
   // What happens if you try to reconnect to a node that is
   // being destroyed?
   if (curNode && curNode.peerID === peerID) {
+    const destroyNode = curNode;
     curNode = null;
-    return curNode.promise.then(node => node.stop());
+    return destroyNode.promise.then(node => node.stop());
   }
 
   return Promise.resolve();
