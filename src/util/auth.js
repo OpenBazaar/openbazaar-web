@@ -21,7 +21,6 @@ export function login(mnemonic) {
 
     const nameHash = hash(mnemonic, { hmacSeed: 'ob-db-name' });
     const pwHash = hash(mnemonic, { hmacSeed: 'ob-db-password' });
-    let profile;
 
     Promise.all([nameHash, pwHash, identityKeyFromSeed(mnemonic)])
       .then(vals => {
@@ -44,10 +43,15 @@ export function login(mnemonic) {
         ]);
       })
       // todo: probably better to explicitly pull profile based on peerID.
-      .then(vals => vals[0].profile.find().exec())
-      .then(profiles => {
-        profile = profiles && profiles[0] ? profiles[0] : null;
-
+      .then(vals =>
+        vals[0]
+          .profile
+          .findOne()
+          .where('peerID')
+          .eq(_identity.peerID)
+          .exec()
+      )
+      .then(profile => {
         resolve({
           identity: _identity,
           profile,

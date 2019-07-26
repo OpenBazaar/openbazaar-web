@@ -75,11 +75,14 @@ class NavMenu extends Component {
   render() {
     let trigger = null;
 
-    if (this.props.auth.profile) {
+    if (this.props.auth.loggedIn) {
       trigger = (
         <Avatar
           size="medium"
-          avatarHashes={this.props.auth.profile.avatarHashes}
+          avatarHashes={
+            this.props.auth.profile ?
+              this.props.auth.profile.avatarHashes : {}
+          }
           onClick={this.handleTriggerClick}
         />
       );
