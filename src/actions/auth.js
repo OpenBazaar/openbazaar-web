@@ -1,9 +1,6 @@
-import {
-  generatePeerId,
-  isValidMenmonic,
-} from 'util/crypto';
+import bip39 from 'bip39';
+import { isValidMenmonic } from 'util/crypto';
 import { login as authLogin, logout as authLogout } from 'util/auth';
-import { get as getDb, destroy as destroyDb } from 'util/database';
 
 export const AUTH_LOGOUT = 'AUTH_LOGOUT';
 export const AUTH_GENERATING_MNEMONIC = 'AUTH_GENERATING_MNEMONIC';
@@ -65,26 +62,13 @@ export const logout = (props = {}) => {
   };
 };
 
-let generatingMnemonic = null;
-
 export const generateMnemonic = (props = {}) => (dispatch, getState) => {
-  if (generatingMnemonic) return generatingMnemonic;
-
   dispatch({ type: AUTH_GENERATING_MNEMONIC });
 
-  return generatePeerId()
-    .then(data => {
-      dispatch({
-        type: AUTH_GENERATE_MNEMONIC_SUCCESS,
-        data
-      });
-    })
-    .catch(error => {
-      console.error(error);
-      dispatch({
-        type: AUTH_GENERATE_MNEMONIC_FAIL,
-        error
-      });
-    })
-    .then(() => (generatingMnemonic = null));
+  const mnemonic = bip39.generateMnemonic();
+  
+  dispatch({
+    type: AUTH_GENERATE_MNEMONIC_SUCCESS,
+    data: { mnemonic },
+  });
 };

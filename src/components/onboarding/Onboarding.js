@@ -64,6 +64,7 @@ class Onboarding extends Component {
         .catch(e => {
           this.props.actions.modals.open({
             Component: SimpleMessage,
+            // todo: translate me
             title: 'Unable to save your onboarding data',
             body: e.message || ''
           });

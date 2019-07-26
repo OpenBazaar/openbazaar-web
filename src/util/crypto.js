@@ -9,39 +9,6 @@ import ed2curve from 'ed2curve';
 import { randomBytes } from 'crypto';
 
 /*
- * Generates a peerID from the given menmonic. If not providing a menonic,
- * then this function will genrate one for you.
- */
-export function generatePeerId(mnemonic) {
-  return new Promise(function(resolve, reject) {
-    if (!mnemonic) {
-      mnemonic = bip39.generateMnemonic();
-    }
-
-    const bip39seed = bip39.mnemonicToSeed(mnemonic, 'Secret Passphrase');
-    const hmac = sha256.hmac.create('OpenBazaar seed');
-    hmac.update(bip39seed);
-    const seed = new Uint8Array(hmac.array());
-    keys.generateKeyPairFromSeed('ed25519', seed, (err, keypair) => {
-      PeerId.createFromPubKey(
-        keys.marshalPublicKey(keypair.public),
-        (err, key) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-
-          resolve({
-            mnemonic,
-            peerID: key._idB58String
-          });
-        }
-      );
-    });
-  });
-}
-
-/*
  * Returns a Uint8Array(64) hash of the given text.
  */
 export const hash = async (text, options = {}) => {
@@ -75,7 +42,7 @@ export function identityKeyFromSeed(mnemonic, bits = 4096) {
     const bip39seed = bip39.mnemonicToSeed(mnemonic, 'Secret Passphrase');
     const hmac = sha256.hmac.create('OpenBazaar seed');
     hmac.update(bip39seed);
-    const seed = new Uint8Array(hmac.array());
+    const seed = Buffer.from(hmac.array());    
 
     keys.generateKeyPairFromSeed('ed25519', seed, bits, (err, keypair) => {
       if (!err) {

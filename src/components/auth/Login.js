@@ -104,7 +104,6 @@ class Login extends Component {
   }
 
   handleRefreshMnemonicClick() {
-    // this.props.actions.auth.refreshMnemonic();
     this.props.actions.auth.generateMnemonic();
   }
 

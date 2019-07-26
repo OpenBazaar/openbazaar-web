@@ -1,3 +1,4 @@
+import { getIdentity } from 'util/auth';
 import { getRandomAvatar } from 'data/sampleAvatars';
 import { save as profileSave } from 'models/profile';
 import { onOwnProfileObtained } from 'actions/auth';
@@ -16,7 +17,7 @@ export const save = (props = {}) => (dispatch, getState) => {
   let peerID = null;
 
   try {
-    peerID = getState().auth.identity.peerID;
+    peerID = getIdentity().peerID;
   } catch (e) {
     // pass
   }
