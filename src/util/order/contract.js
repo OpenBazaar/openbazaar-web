@@ -11,19 +11,19 @@ function getProtoContractsRoot() {
     protobuf.Root.fromJSON(contractsJSON);
 }
 
-// todo: at least for testing purposes make allow the ability for identity
-// and profile to be passed in
 export async function createContractWithOrder(data = {}, options = {}) {
-  const identity = getIdentity();
+  // Mainy allowing the identity and profile to be passed in to make testing easier. In most
+  // cases, you won't be passing them in.
+  const identity = options.identity || getIdentity();
 
   if (!identity) {
     throw new Error('Unable to get the identity. Ensure you are logged in.');
   }
 
-  const profile = await getOwnProfile();
+  const profile = options.profile || await getOwnProfile();
 
   if (!profile) {
-    throw new Error('Unable to obtain own profile');
+    throw new Error('Unable to obtain own profile.');
   }
 
   const contract = {
