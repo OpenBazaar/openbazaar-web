@@ -1,4 +1,5 @@
 import { get as getDB } from 'util/database';
+import { getIdentity } from 'util/auth';
 import { addRequiredError, addInvalidTypeError } from './';
 
 // todo: doc me up
@@ -52,6 +53,22 @@ export const save = (data = {}) => {
       });
   });
 };
+
+export async function getOwnProfile() {
+  const identity = getIdentity();
+
+  if (!identity) {
+    throw new Error('Unable to obtain the indentity. Ensure you are logged in.');
+  }
+
+  const db = await getDB();
+
+  return db.profile
+    .findOne()
+    .where('peerID')
+    .eq(identity.peerID)
+    .exec();
+}
 
 export function getName(profile) {
   if (typeof profile !== 'object') {

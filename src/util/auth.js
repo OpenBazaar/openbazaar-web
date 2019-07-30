@@ -1,11 +1,13 @@
 import bip39 from 'bip39';
 import { fromSeed as bip32fromSeed } from 'bip32';
 import { fromByteArray } from 'base64-js';
+import { ECPair, script } from 'bitcoinjs-lib';
 import {
   isValidMenmonic,
   hash,
   identityKeyFromSeed
 } from 'util/crypto';
+import { getOwnProfile } from 'models/profile';
 import { get as getIpfsNode, destroy as destroyIpfsNode } from 'util/ipfs';
 import { get as getDb, destroy as destroyDb } from 'util/database';
 
@@ -14,11 +16,6 @@ let _identity = null;
 export function getIdentity() {
   return _identity;
 }
-
-console.log('sparky b64');
-window.sparky = getIdentity;
-window.b64 = fromByteArray;
-window.buffer = Buffer;
 
 export function login(mnemonic) {
   return new Promise((resolve, reject) => {
@@ -36,15 +33,15 @@ export function login(mnemonic) {
         const peerID = vals[2].peerIDB58;
         const dbName = `ob${vals[0].toString('hex')}`;
 
-        const setBitcoinKeys = (obj, peerIDBytes) => {
-          console.log('sugar');
-          window.sugar = peerIDBytes;
-          console.log(peerIDBytes.length);
+        const setBitcoinKeys = obj => {
           const bip39seed = bip39.mnemonicToSeed(mnemonic, '');
           const bip32 = bip32fromSeed(bip39seed);          
-          obj._bitcoinPublicKey = bip32.publicKey;
-          console.log(Buffer.isBuffer(peerIDBytes));
-          obj._bitcoinSig = bip32.sign(peerIDBytes, true);
+          const ecPair = ECPair.fromPrivateKey(bip32.privateKey);
+
+          obj._bitcoinPublicKey = ecPair.publicKey;
+          const sig = ecPair.sign(vals[2].peerID.slice(0, 32));
+          const encodedSig = script.signature.encode(sig, 1);
+          obj._bitcoinSig = encodedSig.slice(0, encodedSig.length - 1);
         }
 
         _identity = {
@@ -71,14 +68,7 @@ export function login(mnemonic) {
         ]);
       })
       // todo: probably better to explicitly pull profile based on peerID.
-      .then(vals =>
-        vals[0]
-          .profile
-          .findOne()
-          .where('peerID')
-          .eq(_identity.peerID)
-          .exec()
-      )
+      .then(() => getOwnProfile())
       .then(profile => {
         resolve({
           identity: _identity,
@@ -97,6 +87,7 @@ export function login(mnemonic) {
 }
 
 export function logout() {
+  if (!_identity) return;
   if (_identity.peerID) destroyIpfsNode(_identity.peerID);
   if (_identity.dbName) destroyDb(_identity.dbName);
   _identity = null;
