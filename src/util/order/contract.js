@@ -1,6 +1,8 @@
 import protobuf from 'protobufjs';
 import { fromByteArray } from 'base64-js';
+import { ECPair } from 'bitcoinjs-lib';
 import contractsJSON from 'pb/contracts.json';
+import { generatePbTimestamp } from 'pb/util';
 import { getIdentity } from 'util/auth';
 import { getOwnProfile } from 'models/profile';
 
@@ -10,6 +12,32 @@ function getProtoContractsRoot() {
   return protoRoot ||
     protobuf.Root.fromJSON(contractsJSON);
 }
+
+function getRatingKeysForOrder(purchaseData = {}, ts, bip32) {
+  const ratingsKeys = [];
+
+  if (Array.isArray(purchaseData.items)) {
+    // For now, we're mirroring some ob-go tech debt...
+    // FIXME: bug here. This should use a different key for each item. This code doesn't look like
+    // it will do that. Also the fix for this will also need to be included in the rating signing
+    // code.    
+    purchaseData.items.forEach(item => {
+      const pubKey = bip32.neutered();
+      const ratingKey = pubKey.derive(ts.seconds);
+      ratingsKeys.push(
+        ECPair
+          .fromPublicKey(ratingKey.publicKey)
+          .publicKey
+          .toString('base64')
+      )
+    });
+  }
+
+  return ratingsKeys;
+}
+
+console.log('e');
+window.e = ECPair;
 
 export async function createContractWithOrder(data = {}, options = {}) {
   // Mainy allowing the identity and profile to be passed in to make testing easier. In most
@@ -25,6 +53,8 @@ export async function createContractWithOrder(data = {}, options = {}) {
   if (!profile) {
     throw new Error('Unable to obtain own profile.');
   }
+
+  const timestamp = generatePbTimestamp();
 
   const contract = {
     buyerOrder: {
@@ -46,12 +76,21 @@ export async function createContractWithOrder(data = {}, options = {}) {
         handle: profile.handle,
         pubkeys: {
           identity: fromByteArray(identity.publicKey),
-          bitcoin: fromByteArray(identity.bitcoinPublicKey),
+          bitcoin: fromByteArray(identity.ecPair.publicKey),
         },
         bitcoinSig: fromByteArray(identity.bitcoinSig),
-      }
+      },
+      timestamp,
+      ratingKeys: getRatingKeysForOrder(
+        data,
+        timestamp,
+        identity.bip32,
+      ),
     }
   };
 
   return contract;
 }
+
+console.log('theGoods');
+window.theGoods = createContractWithOrder;

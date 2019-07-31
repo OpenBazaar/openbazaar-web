@@ -17,6 +17,9 @@ export function getIdentity() {
   return _identity;
 }
 
+console.log('tricky');
+window.tricky = getIdentity;
+
 export function login(mnemonic) {
   return new Promise((resolve, reject) => {
     if (!isValidMenmonic(mnemonic)) {
@@ -38,11 +41,17 @@ export function login(mnemonic) {
           const bip32 = bip32fromSeed(bip39seed);          
           const ecPair = ECPair.fromPrivateKey(bip32.privateKey);
 
-          obj._bitcoinPublicKey = ecPair.publicKey;
+          console.log('howdy');
+          window.howdy = bip32;
+
+          obj._bip32 = bip32;
+          obj._ecPair = ecPair;
           const sig = ecPair.sign(vals[2].peerID.slice(0, 32));
           const encodedSig = script.signature.encode(sig, 1);
           obj._bitcoinSig = encodedSig.slice(0, encodedSig.length - 1);
         }
+
+        setBitcoinKeys({});
 
         _identity = {
           peerID,
@@ -50,10 +59,15 @@ export function login(mnemonic) {
           privateKey,
           dbName,
           mnemonic,
-          get bitcoinPublicKey() {
-            if (this._bitcoinPublicKey) return this._bitcoinPublicKey;
+          get bip32() {
+            if (this._bip32) return this._bip32;
             setBitcoinKeys(this, vals[2].peerID);
-            return this._bitcoinPublicKey;
+            return this._bip32;
+          },
+          get ecPair() {
+            if (this._ecPair) return this._ecPair;
+            setBitcoinKeys(this, vals[2].peerID);
+            return this._ecPair;
           },
           get bitcoinSig() {
             if (this._bitcoinSig) return this._bitcoinSig;

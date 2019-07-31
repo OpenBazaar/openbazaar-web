@@ -17,6 +17,7 @@ import {
 import { animationFrameInterval } from 'util/index';
 import { sendMessage as sendChatMessage } from 'util/messaging/index';
 import messageTypes from 'util/messaging/types';
+import { generatePbTimestamp } from 'pb/util';
 import {
   convosRequest,
   convosSuccess,
@@ -595,17 +596,6 @@ function* handleMessageDbChange(action) {
       sending: false,
     });
   }
-}
-
-function generatePbTimestamp(timestamp) {
-  if (!(timestamp instanceof Date)) {
-    throw new Error('A timestamp must be provided as a Date instance.');
-  }
-
-  return {
-    seconds: Math.floor(timestamp / 1000),
-    nanos: timestamp % 1000,
-  };
 }
 
 function generateChatMessageData(message, options = {}) {
