@@ -1,5 +1,5 @@
 import protobuf from 'protobufjs';
-import { fromByteArray } from 'base64-js';
+import { fromPublicKey } from 'bip32';
 import { ECPair } from 'bitcoinjs-lib';
 import contractsJSON from 'pb/contracts.json';
 import { generatePbTimestamp } from 'pb/util';
@@ -13,31 +13,29 @@ function getProtoContractsRoot() {
     protobuf.Root.fromJSON(contractsJSON);
 }
 
-function getRatingKeysForOrder(purchaseData = {}, ts, bip32) {
+function getRatingKeysForOrder(purchaseData = {}, ts, identity, chaincode) {
   const ratingsKeys = [];
 
   if (Array.isArray(purchaseData.items)) {
-    // For now, we're mirroring some ob-go tech debt...
-    // FIXME: bug here. This should use a different key for each item. This code doesn't look like
-    // it will do that. Also the fix for this will also need to be included in the rating signing
-    // code.    
-    purchaseData.items.forEach(item => {
-      const pubKey = bip32.neutered();
-      const ratingKey = pubKey.derive(ts.seconds);
-      ratingsKeys.push(
-        ECPair
-          .fromPublicKey(ratingKey.publicKey)
-          .publicKey
-          .toString('base64')
-      )
+    const buyerHDKey = fromPublicKey(
+      identity.ratingKeyPair.publicKey,
+      chaincode
+    );
+
+    purchaseData.items.forEach((item, index) => {
+      const key = buyerHDKey.derive(index);
+      console.log('slick');
+      window.slick = key;
+      const ratingKey = ECPair.fromPublicKey(key.publicKey);
+      ratingsKeys.push(ratingKey.publicKey.toString('base64'));
     });
   }
 
   return ratingsKeys;
 }
 
-console.log('e');
-window.e = ECPair;
+  console.log('hey ho lets go on the show with flo');
+  window.Buffer = Buffer;
 
 export async function createContractWithOrder(data = {}, options = {}) {
   // Mainy allowing the identity and profile to be passed in to make testing easier. In most
@@ -55,6 +53,9 @@ export async function createContractWithOrder(data = {}, options = {}) {
   }
 
   const timestamp = generatePbTimestamp();
+  const chaincode = Buffer.from(
+    crypto.getRandomValues(new Uint8Array(32))
+  );
 
   const contract = {
     buyerOrder: {
@@ -75,16 +76,17 @@ export async function createContractWithOrder(data = {}, options = {}) {
         peerID: identity.peerID,
         handle: profile.handle,
         pubkeys: {
-          identity: fromByteArray(identity.publicKey),
-          bitcoin: fromByteArray(identity.ecPair.publicKey),
+          identity: identity.publicKey.toString('base64'),
+          bitcoin: identity.escrowKey.toString('base64'),
         },
-        bitcoinSig: fromByteArray(identity.bitcoinSig),
+        bitcoinSig: identity.escrowSig.toString('base64'),
       },
       timestamp,
       ratingKeys: getRatingKeysForOrder(
         data,
         timestamp,
-        identity.bip32,
+        identity,
+        chaincode,
       ),
     }
   };

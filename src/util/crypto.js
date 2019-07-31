@@ -6,7 +6,6 @@ import nacl from 'tweetnacl';
 import naclUtil from 'tweetnacl-util';
 import libp2pCrypto from 'libp2p-crypto';
 import ed2curve from 'ed2curve';
-import { randomBytes } from 'crypto';
 
 /*
  * Returns a Uint8Array(64) hash of the given text.
@@ -80,7 +79,7 @@ export function encrypt(pubKeyBytes, textBytes) {
   const pubkeyCurve = ed2curve.convertPublicKey(libp2pPubKey._key);
 
   // 24 bit random nonce
-  const nonce = new Uint8Array(randomBytes(24));
+  const nonce = crypto.getRandomValues(new Uint8Array(24));
 
   // Create ciphertext
   const cipherText = nacl.box(

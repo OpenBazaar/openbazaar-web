@@ -13,7 +13,6 @@
     "bitcoinjs-lib": "^5.1.2",
     "bitcoinjs-message": "^2.1.0",
     "connected-react-router": "^6.2.2",
-    "crypto": "^1.0.1",
     "ed2curve": "^0.2.1",
     "elliptic": "^6.5.0",
     "history": "^4.7.2",

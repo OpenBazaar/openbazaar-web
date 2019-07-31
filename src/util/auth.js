@@ -1,5 +1,6 @@
 import bip39 from 'bip39';
 import { fromSeed as bip32fromSeed } from 'bip32';
+import sha256 from 'js-sha256';
 import { fromByteArray } from 'base64-js';
 import { ECPair, script } from 'bitcoinjs-lib';
 import {
@@ -36,22 +37,17 @@ export function login(mnemonic) {
         const peerID = vals[2].peerIDB58;
         const dbName = `ob${vals[0].toString('hex')}`;
 
-        const setBitcoinKeys = obj => {
-          const bip39seed = bip39.mnemonicToSeed(mnemonic, '');
-          const bip32 = bip32fromSeed(bip39seed);          
-          const ecPair = ECPair.fromPrivateKey(bip32.privateKey);
+        let _escrowECPair;
 
-          console.log('howdy');
-          window.howdy = bip32;
+        const getEscrowECPair = masterKey => {
+          if (!_escrowECPair) {
+            const twoZeroNine = masterKey.deriveHardened(209);
+            const escrowHDKey = twoZeroNine.deriveHardened(0);
+            _escrowECPair = ECPair.fromPrivateKey(escrowHDKey.privateKey);
 
-          obj._bip32 = bip32;
-          obj._ecPair = ecPair;
-          const sig = ecPair.sign(vals[2].peerID.slice(0, 32));
-          const encodedSig = script.signature.encode(sig, 1);
-          obj._bitcoinSig = encodedSig.slice(0, encodedSig.length - 1);
-        }
-
-        setBitcoinKeys({});
+          }
+          return _escrowECPair;
+        }        
 
         _identity = {
           peerID,
@@ -59,21 +55,40 @@ export function login(mnemonic) {
           privateKey,
           dbName,
           mnemonic,
-          get bip32() {
-            if (this._bip32) return this._bip32;
-            setBitcoinKeys(this, vals[2].peerID);
-            return this._bip32;
+          get masterKey() {
+            if (!this._masterKey) {
+              const bip39seed = bip39.mnemonicToSeed(mnemonic, 'Secret Passphrase');
+              const hmac = sha256.hmac.create('Bitcoin seed');
+              hmac.update(bip39seed);
+              const seed = Buffer.from(hmac.array());
+              this._masterKey = bip32fromSeed(seed);
+            }
+            return this._masterKey;
           },
-          get ecPair() {
-            if (this._ecPair) return this._ecPair;
-            setBitcoinKeys(this, vals[2].peerID);
-            return this._ecPair;
+          get escrowKey() {
+            if (!this._escrowKey) {
+              this._escrowKey = getEscrowECPair(this.masterKey).publicKey;
+            }
+            return this._escrowKey;
           },
-          get bitcoinSig() {
-            if (this._bitcoinSig) return this._bitcoinSig;
-            setBitcoinKeys(this, vals[2].peerID);
-            return this._bitcoinSig;
+          get escrowSig() {
+            if (!this._escrowSig) {
+              const sig = getEscrowECPair(this.masterKey)
+                .sign(vals[2].peerID.slice(0, 32));
+              const encodedSig = script.signature.encode(sig, 1);
+              this._escrowSig = encodedSig.slice(0, encodedSig.length - 1);
+            }
+            return this._escrowSig;
           },
+          get ratingKeyPair() {
+            if (!this._ratingKey) {
+              const twoZeroNine = this.masterKey.deriveHardened(209);
+              const ratingHDKey = twoZeroNine.deriveHardened(1);
+              const ecPair = ECPair.fromPrivateKey(ratingHDKey.privateKey);
+              this._ratingKey = ecPair;
+            }
+            return this._ratingKey;
+          }
         };
 
         return Promise.all([
