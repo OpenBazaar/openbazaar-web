@@ -18,7 +18,7 @@ function getRatingKeysForOrder(purchaseData = {}, ts, identity, chaincode) {
 
   if (Array.isArray(purchaseData.items)) {
     const buyerHDKey = fromPublicKey(
-      identity.ratingKeyPair.publicKey,
+      identity.ratingKey,
       chaincode
     );
 

@@ -18,9 +18,6 @@ export function getIdentity() {
   return _identity;
 }
 
-console.log('tricky');
-window.tricky = getIdentity;
-
 export function login(mnemonic) {
   return new Promise((resolve, reject) => {
     if (!isValidMenmonic(mnemonic)) {
@@ -58,10 +55,7 @@ export function login(mnemonic) {
           get masterKey() {
             if (!this._masterKey) {
               const bip39seed = bip39.mnemonicToSeed(mnemonic, '');
-              const hmac = sha256.hmac.create('Bitcoin seed');
-              hmac.update(bip39seed);
-              const seed = Buffer.from(hmac.array());
-              this._masterKey = bip32fromSeed(seed);
+              this._masterKey = bip32fromSeed(bip39seed);
             }
             return this._masterKey;
           },
@@ -80,12 +74,12 @@ export function login(mnemonic) {
             }
             return this._escrowSig;
           },
-          get ratingKeyPair() {
+          get ratingKey() {
             if (!this._ratingKey) {
               const twoZeroNine = this.masterKey.deriveHardened(209);
               const ratingHDKey = twoZeroNine.deriveHardened(1);
               const ecPair = ECPair.fromPrivateKey(ratingHDKey.privateKey);
-              this._ratingKey = ecPair;
+              this._ratingKey = ecPair.publicKey;
             }
             return this._ratingKey;
           }
