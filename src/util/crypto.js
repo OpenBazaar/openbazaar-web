@@ -38,7 +38,7 @@ export const hash = async (text, options = {}) => {
 
 export function identityKeyFromSeed(mnemonic, bits = 4096) {
   return new Promise((resolve, reject) => {
-    const bip39seed = bip39.mnemonicToSeed(mnemonic, 'Secret Passphrase');
+    const bip39seed = bip39.mnemonicToSeed(mnemonic, '');
     const hmac = sha256.hmac.create('OpenBazaar seed');
     hmac.update(bip39seed);
     const seed = Buffer.from(hmac.array());    

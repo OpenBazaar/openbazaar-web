@@ -57,7 +57,7 @@ export function login(mnemonic) {
           mnemonic,
           get masterKey() {
             if (!this._masterKey) {
-              const bip39seed = bip39.mnemonicToSeed(mnemonic, 'Secret Passphrase');
+              const bip39seed = bip39.mnemonicToSeed(mnemonic, '');
               const hmac = sha256.hmac.create('Bitcoin seed');
               hmac.update(bip39seed);
               const seed = Buffer.from(hmac.array());

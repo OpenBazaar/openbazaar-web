@@ -24,8 +24,6 @@ function getRatingKeysForOrder(purchaseData = {}, ts, identity, chaincode) {
 
     purchaseData.items.forEach((item, index) => {
       const key = buyerHDKey.derive(index);
-      console.log('slick');
-      window.slick = key;
       const ratingKey = ECPair.fromPublicKey(key.publicKey);
       ratingsKeys.push(ratingKey.publicKey.toString('base64'));
     });
@@ -34,8 +32,8 @@ function getRatingKeysForOrder(purchaseData = {}, ts, identity, chaincode) {
   return ratingsKeys;
 }
 
-  console.log('hey ho lets go on the show with flo');
-  window.Buffer = Buffer;
+console.log('hey ho lets go on the show with a Buffer flo');
+window.Buffer = Buffer;
 
 export async function createContractWithOrder(data = {}, options = {}) {
   // Mainy allowing the identity and profile to be passed in to make testing easier. In most
@@ -88,7 +86,8 @@ export async function createContractWithOrder(data = {}, options = {}) {
         identity,
         chaincode,
       ),
-    }
+    },
+    chaincode: chaincode.toString('base64'),
   };
 
   return contract;
