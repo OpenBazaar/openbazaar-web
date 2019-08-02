@@ -20,5 +20,6 @@ export const convoMarkRead = createAction('CHAT_CONVO_MARK_READ');
 export const sendMessage = createAction('CHAT_MESSAGE_SEND');
 export const cancelMessage = createAction('CHAT_MESSAGE_CANCEL');
 export const messageDbChange = createAction('CHAT_CONVO_MESSAGE_DB_CHANGE');
-export const activeConvoMessagesChange =
-  createAction('CHAT_CONVO_ACTIVE_CONVO_MESSAGES_CHANGE');
+export const activeConvoMessagesChange = createAction(
+  'CHAT_CONVO_ACTIVE_CONVO_MESSAGES_CHANGE'
+);

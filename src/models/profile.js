@@ -58,7 +58,9 @@ export async function getOwnProfile() {
   const identity = getIdentity();
 
   if (!identity) {
-    throw new Error('Unable to obtain the indentity. Ensure you are logged in.');
+    throw new Error(
+      'Unable to obtain the indentity. Ensure you are logged in.'
+    );
   }
 
   const db = await getDB();

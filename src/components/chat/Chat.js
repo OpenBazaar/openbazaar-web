@@ -47,15 +47,11 @@ class Chat extends Component {
 
     if (
       this.props.chatOpen &&
-      (
-        (!prevProps.activeConvo && this.props.activeConvo) ||
+      ((!prevProps.activeConvo && this.props.activeConvo) ||
         (!prevProps.chatOpen && this.props.activeConvo) ||
-        (
-          prevProps.activeConvo &&
+        (prevProps.activeConvo &&
           this.props.activeConvo &&
-          prevProps.activeConvo !== this.props.activeConvo
-        )
-      )
+          prevProps.activeConvo !== this.props.activeConvo))
     ) {
       const convo = this.props.convos.find(
         convo => convo.peerID === this.props.activeConvo.peerID
@@ -78,11 +74,9 @@ class Chat extends Component {
   }
 
   handleChatHeadClick(peerID) {
-    if (
-      this.props.activeConvo &&
-      this.props.activeConvo.peerID === peerID
-    ) return;
-      
+    if (this.props.activeConvo && this.props.activeConvo.peerID === peerID)
+      return;
+
     this.props.actions.activateConvo(peerID);
     if (!this.props.chatOpen) {
       this.props.actions.open();
@@ -97,8 +91,8 @@ class Chat extends Component {
     this.setState({
       messageInputValues: {
         ...this.state.messageInputValues,
-        [this.props.activeConvo.peerID]: e.target.value,
-      },
+        [this.props.activeConvo.peerID]: e.target.value
+      }
     });
   }
 
@@ -120,7 +114,9 @@ class Chat extends Component {
     const message = this.props.messages[messageID];
 
     if (!message) {
-      console.warn('Unable to retry the message. The message data is not available.');
+      console.warn(
+        'Unable to retry the message. The message data is not available.'
+      );
       return;
     }
 
@@ -128,7 +124,7 @@ class Chat extends Component {
       messageID: message.messageID,
       peerID: message.peerID,
       timestamp: message.timestamp,
-      message: message.message,
+      message: message.message
     });
   }
 
@@ -175,30 +171,30 @@ class Chat extends Component {
     } else {
       convos = (
         <div className="gutterVSm">
-          {this.props.convos
-            .map(convo => {
-              const selected =
-                this.props.activeConvo &&
-                this.props.activeConvo.peerID === convo.peerID;
-              let lastMessage = '';
+          {this.props.convos.map(convo => {
+            const selected =
+              this.props.activeConvo &&
+              this.props.activeConvo.peerID === convo.peerID;
+            let lastMessage = '';
 
-              try {
-                lastMessage = this.props.messages[convo.lastMessage].message || '';
-              } catch (e) {
-                // pass
-              }
+            try {
+              lastMessage =
+                this.props.messages[convo.lastMessage].message || '';
+            } catch (e) {
+              // pass
+            }
 
-              return (
-                <ChatHead
-                  {...convo}
-                  key={convo.peerID}
-                  selected={selected}
-                  onClick={() => this.handleChatHeadClick(convo.peerID)}
-                  profile={this.props.profile[convo.peerID] || null}
-                  lastMessage={lastMessage}
-                />
-              );
-            })}
+            return (
+              <ChatHead
+                {...convo}
+                key={convo.peerID}
+                selected={selected}
+                onClick={() => this.handleChatHeadClick(convo.peerID)}
+                profile={this.props.profile[convo.peerID] || null}
+                lastMessage={lastMessage}
+              />
+            );
+          })}
         </div>
       );
     }
@@ -218,8 +214,8 @@ class Chat extends Component {
           onMessageInputChange={this.handleMessageInputChange}
           messagesFetchFailed={convoData.messageFetchFailed}
           messagesFetchError={convoData.messageFetchError}
-          onClickRetryMessageFetch={
-            () => this.handleRetryMessageFetch(convoData.peerID)
+          onClickRetryMessageFetch={() =>
+            this.handleRetryMessageFetch(convoData.peerID)
           }
           onMessagesScroll={el => {
             // Store the scroll position so it can be restored if they return

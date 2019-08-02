@@ -382,16 +382,10 @@
         "Coupon": {
           "oneofs": {
             "code": {
-              "oneof": [
-                "hash",
-                "discountCode"
-              ]
+              "oneof": ["hash", "discountCode"]
             },
             "discount": {
-              "oneof": [
-                "percentDiscount",
-                "priceDiscount"
-              ]
+              "oneof": ["percentDiscount", "priceDiscount"]
             }
           },
           "fields": {
@@ -999,10 +993,7 @@
             "Output": {
               "oneofs": {
                 "scriptOrAddress": {
-                  "oneof": [
-                    "script",
-                    "address"
-                  ]
+                  "oneof": ["script", "address"]
                 }
               },
               "fields": {

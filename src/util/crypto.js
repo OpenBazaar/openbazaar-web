@@ -41,7 +41,7 @@ export function identityKeyFromSeed(mnemonic, bits = 4096) {
     const bip39seed = bip39.mnemonicToSeed(mnemonic, '');
     const hmac = sha256.hmac.create('OpenBazaar seed');
     hmac.update(bip39seed);
-    const seed = Buffer.from(hmac.array());    
+    const seed = Buffer.from(hmac.array());
 
     keys.generateKeyPairFromSeed('ed25519', seed, bits, (err, keypair) => {
       if (!err) {

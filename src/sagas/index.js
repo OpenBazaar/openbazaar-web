@@ -10,7 +10,7 @@ import {
   convoMarkReadWatcher,
   directMessageWatcher,
   cancelMessageWatcher,
-  logoutWatcher,
+  logoutWatcher
 } from './chat';
 import { getCachedProfileWatcher } from './profile';
 

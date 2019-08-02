@@ -7,8 +7,7 @@ import { directMessage } from 'actions/messaging';
 let _store;
 
 export function init(store) {
-  if (typeof store !== 'object' ||
-    !Object.keys(store).length) {
+  if (typeof store !== 'object' || !Object.keys(store).length) {
     throw new Error('Please provide a store object');
   }
 
@@ -17,10 +16,12 @@ export function init(store) {
 
 const ensureInitialized = () => {
   if (!_store) {
-    throw new Error('Please initialize the module via init() before ' +
-      'calling this function.');
+    throw new Error(
+      'Please initialize the module via init() before ' +
+        'calling this function.'
+    );
   }
-}
+};
 
 // todo: doc me up including:
 // todo: more robust arg checking here possible?
@@ -47,9 +48,9 @@ const getIpfsNodeInitOpts = (peerID, privateKey) => {
     config: {
       Addresses: {
         Swarm: [
-         '/ip4/0.0.0.0/tcp/4002',
-         // '/ip4/127.0.0.1/tcp/9999/ws'
-        ],
+          '/ip4/0.0.0.0/tcp/4002'
+          // '/ip4/127.0.0.1/tcp/9999/ws'
+        ]
       },
       Bootstrap: [
         '/dns4/bootstrap1.openbazaar.org/tcp/443/wss/ipfs/QmWUdwXW3bTXS19MtMjmfpnRYgssmbJCwnq8Lf9vjZwDii',
@@ -58,10 +59,10 @@ const getIpfsNodeInitOpts = (peerID, privateKey) => {
       ],
       Discovery: {
         MDNS: {
-          Enabled: false,
-        },
-      },
-    },
+          Enabled: false
+        }
+      }
+    }
   };
 };
 
@@ -89,13 +90,19 @@ const _create = async (options = {}) => {
         }
 
         // handle incoming messages
-        console.log(`Listinging for incoming messages with the protocol: ${IPFS.OB_PROTOCOL}`);
+        console.log(
+          `Listinging for incoming messages with the protocol: ${
+            IPFS.OB_PROTOCOL
+          }`
+        );
         node.libp2p.handle(IPFS.OB_PROTOCOL, (protocol, conn) => {
           console.log('Pulling in incoming message');
 
           conn.getPeerInfo((err, peerInfo) => {
             if (err) {
-              console.error(`Unable to obtain the peerInfo for a direct message: ${err}`);
+              console.error(
+                `Unable to obtain the peerInfo for a direct message: ${err}`
+              );
               return;
             }
 
@@ -114,10 +121,12 @@ const _create = async (options = {}) => {
 
                 openDirectMessage(msg, sender, { node })
                   .then(openedMessage => {
-                    _store.dispatch(directMessage({
-                      ...openedMessage,
-                      peerID: sender,
-                    }));
+                    _store.dispatch(
+                      directMessage({
+                        ...openedMessage,
+                        peerID: sender
+                      })
+                    );
                   })
                   .catch(e => {
                     console.error('Unable to open direct message.');

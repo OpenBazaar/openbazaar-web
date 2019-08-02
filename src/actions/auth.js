@@ -40,12 +40,12 @@ export const login = (props = {}) => async (dispatch, getState) => {
 
       dispatch({
         type: AUTH_LOGIN_SUCCESS,
-        profile: profile ? profile.toJSON() : null,
+        profile: profile ? profile.toJSON() : null
       });
 
       if (profile) {
         onOwnProfileObtained(dispatch, profile);
-      }      
+      }
     })
     .catch(err => {
       dispatch({
@@ -66,9 +66,9 @@ export const generateMnemonic = (props = {}) => (dispatch, getState) => {
   dispatch({ type: AUTH_GENERATING_MNEMONIC });
 
   const mnemonic = bip39.generateMnemonic();
-  
+
   dispatch({
     type: AUTH_GENERATE_MNEMONIC_SUCCESS,
-    data: { mnemonic },
+    data: { mnemonic }
   });
 };

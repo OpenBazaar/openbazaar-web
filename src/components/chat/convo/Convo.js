@@ -27,8 +27,9 @@ class Convo extends Component {
   componentDidMount() {
     setTimeout(() => {
       this.scrollMessages(
-        typeof this.props.initialMessagesScrollTop === 'number' ?
-          this.props.initialMessagesScrollTop : this.constructor.scrollBottomHeight
+        typeof this.props.initialMessagesScrollTop === 'number'
+          ? this.props.initialMessagesScrollTop
+          : this.constructor.scrollBottomHeight
       );
     });
   }
@@ -38,22 +39,15 @@ class Convo extends Component {
     // or we're scrolled at or near the bottom, we'll scroll to the bottom
     // so the new message is shown.
     if (this.props.messages.length && this.hasUpdated) {
-      const prevLastMessage = prevProps.messages &&
+      const prevLastMessage =
+        prevProps.messages &&
         prevProps.messages.length &&
         prevProps.messages[prevProps.messages.length - 1];
-      const lastMessage = this.props.messages[
-        this.props.messages.length - 1
-      ];
+      const lastMessage = this.props.messages[this.props.messages.length - 1];
 
       if (
-        (
-          !prevLastMessage ||
-          prevLastMessage !== lastMessage
-        ) &&
-        (
-          this.props.lastMessageOutgoing ||
-          this.scrolledNearBottom()
-        )
+        (!prevLastMessage || prevLastMessage !== lastMessage) &&
+        (this.props.lastMessageOutgoing || this.scrolledNearBottom())
       ) {
         return { scrollTo: this.constructor.scrollBottomHeight };
       }
@@ -67,7 +61,7 @@ class Convo extends Component {
       this.scrollMessages(snapShot.scrollTo);
     }
     this.hasUpdated = true;
-  }  
+  }
 
   scrolledNearBottom() {
     return this.constructor.scrolledNearBottom(this.messagesWrapEl);
@@ -121,12 +115,8 @@ class Convo extends Component {
               <Message
                 key={messageID}
                 id={messageID}
-                onRetryClick={() =>
-                  this.props.onMessageRetrySend(messageID)
-                }
-                onCancelClick={() =>
-                  this.props.onMessageCancel(messageID)
-                }
+                onRetryClick={() => this.props.onMessageRetrySend(messageID)}
+                onCancelClick={() => this.props.onMessageCancel(messageID)}
               />
             );
           })}

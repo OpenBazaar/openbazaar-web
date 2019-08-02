@@ -41,7 +41,7 @@ const _create = async (name, password) => {
   const db = await RxDB.create({
     name: name.slice(0, 10),
     adapter: 'idb',
-    password,
+    password
   });
 
   if (process.env.NODE_ENV === 'development') {

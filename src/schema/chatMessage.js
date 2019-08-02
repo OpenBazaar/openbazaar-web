@@ -24,7 +24,7 @@ const schema = {
     timestamp: {
       type: 'string',
       encrypted: true,
-      index: true,
+      index: true
     },
     read: {
       type: 'boolean',

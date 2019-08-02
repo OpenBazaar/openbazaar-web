@@ -3,11 +3,7 @@ import { fromSeed as bip32fromSeed } from 'bip32';
 import sha256 from 'js-sha256';
 import { fromByteArray } from 'base64-js';
 import { ECPair, script } from 'bitcoinjs-lib';
-import {
-  isValidMenmonic,
-  hash,
-  identityKeyFromSeed
-} from 'util/crypto';
+import { isValidMenmonic, hash, identityKeyFromSeed } from 'util/crypto';
 import { getOwnProfile } from 'models/profile';
 import { get as getIpfsNode, destroy as destroyIpfsNode } from 'util/ipfs';
 import { get as getDb, destroy as destroyDb } from 'util/database';
@@ -41,10 +37,9 @@ export function login(mnemonic) {
             const twoZeroNine = masterKey.deriveHardened(209);
             const escrowHDKey = twoZeroNine.deriveHardened(0);
             _escrowECPair = ECPair.fromPrivateKey(escrowHDKey.privateKey);
-
           }
           return _escrowECPair;
-        }        
+        };
 
         _identity = {
           peerID,
@@ -67,8 +62,9 @@ export function login(mnemonic) {
           },
           get escrowSig() {
             if (!this._escrowSig) {
-              const sig = getEscrowECPair(this.masterKey)
-                .sign(vals[2].peerID.slice(0, 32));
+              const sig = getEscrowECPair(this.masterKey).sign(
+                vals[2].peerID.slice(0, 32)
+              );
               const encodedSig = script.signature.encode(sig, 1);
               this._escrowSig = encodedSig.slice(0, encodedSig.length - 1);
             }
@@ -95,7 +91,7 @@ export function login(mnemonic) {
       .then(profile => {
         resolve({
           identity: _identity,
-          profile,
+          profile
         });
       })
       .catch(error => {
@@ -106,7 +102,7 @@ export function login(mnemonic) {
         console.error(error);
         reject(error);
       });
-  });  
+  });
 }
 
 export function logout() {

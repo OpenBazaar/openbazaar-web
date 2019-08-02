@@ -13,14 +13,17 @@ class Message extends Component {
     const messageStyle =
       this.props.message.outgoing &&
       !this.props.message.sent &&
-      !this.props.message.sending ?
-        { opacity: 0.6 } : {};
+      !this.props.message.sending
+        ? { opacity: 0.6 }
+        : {};
     const avatarWrapStyle = messageStyle;
 
     const avatar = (
       <Avatar
         size="small"
-        avatarHashes={(this.props.profile && this.props.profile.avatarHashes) || null}
+        avatarHashes={
+          (this.props.profile && this.props.profile.avatarHashes) || null
+        }
         href={`/${this.props.message.peerID}`}
       />
     );
@@ -31,7 +34,9 @@ class Message extends Component {
       timestampLine = moment(this.props.message.timestamp).fromNow();
     } else if (this.props.message.sending) {
       timestampLine = (
-        <span className="clrT2"><Spinner size="text" /></span>
+        <span className="clrT2">
+          <Spinner size="text" />
+        </span>
       );
     } else {
       // send error
@@ -54,7 +59,7 @@ class Message extends Component {
             {getPoly().t('chatConvo.message.btnCancel')}
           </button>
         </div>
-      )
+      );
     }
 
     timestampLine = (
@@ -63,17 +68,16 @@ class Message extends Component {
           !this.props.message.outgoing ? '' : 'flexHRight'
         }`}
         // prevents jumping when the timestamp line switches between states
-        style={{height: '11px'}}
-      >{timestampLine}</div>
+        style={{ height: '11px' }}
+      >
+        {timestampLine}
+      </div>
     );
 
     const msgText = (
       <div className="flexCol gutterVTn" style={{ marginTop: '5px' }}>
         <div className={this.props.message.outgoing ? 'flexHRight' : ''}>
-          <div
-            className="padSm border clrBr clrS"
-            style={messageStyle}
-          >
+          <div className="padSm border clrBr clrS" style={messageStyle}>
             {this.props.message.message}
           </div>
         </div>
@@ -88,10 +92,7 @@ class Message extends Component {
         <div className="flex gutterHSm">
           <div className="flexExpand">&nbsp;</div>
           {msgText}
-          <div
-            className="flexNoShrink"
-            style={avatarWrapStyle}
-          >
+          <div className="flexNoShrink" style={avatarWrapStyle}>
             {avatar}
           </div>
         </div>
@@ -114,7 +115,7 @@ function mapStateToProps(state, props) {
 
   return {
     message,
-    profile: (state.profile && state.profile[message.peerID]) || {},
+    profile: (state.profile && state.profile[message.peerID]) || {}
   };
 }
 

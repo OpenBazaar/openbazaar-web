@@ -2,14 +2,14 @@
 // and a corresponding entry in the typesData object. Also validate the contents
 // of each typesData object.
 const types = {
-  CHAT: 1,
-}
+  CHAT: 1
+};
 
 export default types;
 
 export const typesData = {
   [types.CHAT]: {
     value: 1,
-    name: 'Chat',
-  },
-}
+    name: 'Chat'
+  }
+};

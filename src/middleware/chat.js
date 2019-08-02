@@ -13,7 +13,7 @@ const middleware = store => next => action => {
           messageDbChange({
             operation: changeEvent.data.op,
             data: changeEvent.data.v,
-            sent: true,
+            sent: true
           })
         );
       });
@@ -23,7 +23,7 @@ const middleware = store => next => action => {
           messageDbChange({
             operation: changeEvent.data.op,
             data: changeEvent.data.v,
-            sent: false,
+            sent: false
           })
         );
       });

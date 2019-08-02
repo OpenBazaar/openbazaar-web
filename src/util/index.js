@@ -42,14 +42,10 @@ export function setAsyncTimeout(fn, ms) {
 
 // todo: doc me up
 // validate args
-export function animationFrameInterval(
-  process,
-  shouldContinue,
-  options = {}
-) {
+export function animationFrameInterval(process, shouldContinue, options = {}) {
   const opts = {
-    maxOpsPerFrame: 25,
-  }
+    maxOpsPerFrame: 25
+  };
 
   return new Promise((resolve, reject) => {
     const executeProcess = () => {
@@ -57,10 +53,7 @@ export function animationFrameInterval(
 
       if (shouldContinue()) {
         requestAnimationFrame(() => {
-          while (
-            opsThisFrame < opts.maxOpsPerFrame &&
-            shouldContinue()
-          ) {
+          while (opsThisFrame < opts.maxOpsPerFrame && shouldContinue()) {
             process();
             opsThisFrame++;
           }
@@ -70,7 +63,7 @@ export function animationFrameInterval(
       } else {
         resolve();
       }
-    }
+    };
 
     executeProcess();
   });
