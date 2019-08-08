@@ -4,7 +4,7 @@ import { ECPair } from 'bitcoinjs-lib';
 import contractsJSON from 'pb/contracts.json';
 import { generatePbTimestamp } from 'pb/util';
 import { getIdentity } from 'util/auth';
-import { cat } from 'utils/ipfs';
+import { cat } from 'util/ipfs/cat';
 import { getOwnProfile } from 'models/profile';
 
 let protoRoot;
@@ -33,7 +33,7 @@ console.log('hey ho lets go on the show with a Buffer flo');
 window.Buffer = Buffer;
 
 async function getSignedListing(contract, item) {
-  const catListing = cat(item.listingHash);
+  const listing = (await cat(item.listingHash)).data;
 }
 
 export async function createContractWithOrder(data = {}, options = {}) {
@@ -84,21 +84,24 @@ export async function createContractWithOrder(data = {}, options = {}) {
     }
   };
 
-  const addedListings = {};
+  const listingHashes = [];
+  let signedListings;
 
-  data.items.forEach(item => {
-    // const item = {};
-    let listing = addedListings[item.listingHash];
+  try {
+    signedListings = await Promise.all(
+      data.items.filter(item => {
+        if (!listingHashes.includes(item.listingHash)) {
+          listingHashes.push(item.listingHash);
+          return true;
+        };
 
-    /* It is possible that multiple items could refer to the same listing if the buyer is ordering
-       multiple items with different variants. If it is multiple items of the same variant they can just
-       use the quantity field. But different variants require two separate item entries. However,
-       in this case we do not need to add the listing to the contract twice. Just once is sufficient.
-       So let's check to see if that's the case here and handle it. */
-
-    if (!listing) {
-    }
-  });
+        return false;
+      }).map(item => getSignedListing(contract, item))
+    );
+  } catch (e) {
+    console.error(e);
+    throw new Error(`Unable to obtain signed listings: ${e.message}`);
+  }
 
   return contract;
 }

@@ -43,27 +43,24 @@ export function identityKeyFromSeed(mnemonic, bits = 4096) {
     hmac.update(bip39seed);
     const seed = Buffer.from(hmac.array());
 
-    keys.generateKeyPairFromSeed('ed25519', seed, bits, (err, keypair) => {
+    keys.generateKeyPairFromSeed('ed25519', seed, bits, async (err, keypair) => {
       if (!err) {
-        PeerId.createFromPubKey(
-          keys.marshalPublicKey(keypair.public),
-          (err, peerID) => {
-            if (err) {
-              reject(err);
-              return;
-            }
+        try {
+          const peerID = await PeerId.createFromPubKey(keys.marshalPublicKey(keypair.public));
 
-            // todo: strip the 'Key' suffix from pub and priv
-            resolve({
-              peerID: peerID.toBytes(),
-              peerIDB58: peerID.toB58String(),
-              publicKey: keypair.public.bytes,
-              privateKey: keypair.bytes
-            });
-          }
-        );
+          // todo: strip the 'Key' suffix from pub and priv
+          resolve({
+            peerID: peerID.toBytes(),
+            peerIDB58: peerID.toB58String(),
+            publicKey: keypair.public.bytes,
+            privateKey: keypair.bytes
+          });          
+        } catch (e) {
+          reject(e);
+        }
       } else {
         reject(err);
+        return;
       }
     });
   });

@@ -1,6 +1,5 @@
 import bip39 from 'bip39';
 import { fromSeed as bip32fromSeed } from 'bip32';
-import sha256 from 'js-sha256';
 import { fromByteArray } from 'base64-js';
 import { ECPair, script } from 'bitcoinjs-lib';
 import { isValidMenmonic, hash, identityKeyFromSeed } from 'util/crypto';
@@ -86,7 +85,6 @@ export function login(mnemonic) {
           getIpfsNode(peerID, fromByteArray(privateKey))
         ]);
       })
-      // todo: probably better to explicitly pull profile based on peerID.
       .then(() => getOwnProfile())
       .then(profile => {
         resolve({
