@@ -1,16 +1,21 @@
 import protobuf from 'protobufjs';
 import { fromPublicKey } from 'bip32';
 import { ECPair } from 'bitcoinjs-lib';
+import { CURRENT_LISTING_VERSION } from 'constants';
 import contractsJSON from 'pb/contracts.json';
 import { generatePbTimestamp } from 'pb/util';
 import { getIdentity } from 'util/auth';
 import { cat } from 'util/ipfs/cat';
 import { getOwnProfile } from 'models/profile';
 
-let protoRoot;
+let protoContractsRoot;
 
 function getProtoContractsRoot() {
-  return protoRoot || protobuf.Root.fromJSON(contractsJSON);
+  if (!protoContractsRoot) {
+    protoContractsRoot = protobuf.Root.fromJSON(contractsJSON);
+  }
+  
+  return protoContractsRoot;
 }
 
 function getRatingKeysForOrder(purchaseData = {}, ts, identity, chaincode) {
@@ -32,8 +37,34 @@ function getRatingKeysForOrder(purchaseData = {}, ts, identity, chaincode) {
 console.log('hey ho lets go on the show with a Buffer flo');
 window.Buffer = Buffer;
 
-async function getSignedListing(contract, item) {
+function validateListingVersionNumber(listing) {
+  if (typeof listing !== 'object') {
+    throw new Error('The listing is not an object.');
+  }
+
+  if (typeof listing.metadata !== 'object') {
+    throw new Error('The listing metadata is not an object.');
+  }
+
+  if (listing.metadata.version > CURRENT_LISTING_VERSION) {
+    throw new Error('Unsupported listing version, you must upgrade to purchase this listing.');
+  }
+}
+
+async function getSignedListing(item) {
   const listing = (await cat(item.listingHash)).data;
+  // const SignedListingPB = getProtoContractsRoot().lookupType('SignedListing');
+  // const pbErr = PB.verify(payload);
+
+  // if (pbErr) {
+  //   throw new Error(
+  //     'The payload does verify according to the protobuf schema for the ' +
+  //       'given type.'
+  //   );
+  // }
+
+  // const pb = PB.create(payload);
+  validateListingVersionNumber();
 }
 
 export async function createContractWithOrder(data = {}, options = {}) {

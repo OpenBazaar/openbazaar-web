@@ -5,10 +5,14 @@ import protobuf from 'protobufjs';
 import messageJSON from 'pb/message.json';
 import { typesData as messageTypesData } from './types';
 
-let protoRoot;
+let protoMessageRoot;
 
 function getProtoMessageRoot() {
-  return protoRoot || protobuf.Root.fromJSON(messageJSON);
+  if (!protoMessageRoot) {
+    protoMessageRoot = protobuf.Root.fromJSON(messageJSON);
+  }
+  
+  return protoMessageRoot;
 }
 
 // doc me up
