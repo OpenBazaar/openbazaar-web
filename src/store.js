@@ -5,7 +5,7 @@ import createRootReducer from 'reducers';
 import createSagaMiddleware from 'redux-saga';
 import chat from 'middleware/chat';
 import rootSaga from 'sagas';
-import { init as initIpfs } from 'util/ipfs/index';
+import { init as initIpfs } from 'core/ipfs/index';
 
 export const history = createBrowserHistory();
 const sagaMiddleware = createSagaMiddleware();

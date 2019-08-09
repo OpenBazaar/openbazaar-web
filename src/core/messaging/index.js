@@ -1,6 +1,6 @@
-import IPFS from 'util/ipfs/ipfs';
+import IPFS from 'core/ipfs/ipfs';
 import pull from 'pull-stream';
-import { get as getNode } from 'util/ipfs/index';
+import { get as getNode } from 'core/ipfs/index';
 import protobuf from 'protobufjs';
 import messageJSON from 'pb/message.json';
 import { typesData as messageTypesData } from './types';

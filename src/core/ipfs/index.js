@@ -1,7 +1,7 @@
 import IPFS from './ipfs';
 import pull from 'pull-stream';
 import { createFromBytes } from 'peer-id';
-import { openDirectMessage } from 'util/messaging/index';
+import { openDirectMessage } from 'core/messaging/index';
 import { directMessage } from 'actions/messaging';
 
 let _store;

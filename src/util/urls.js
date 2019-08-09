@@ -1,5 +1,5 @@
 // todo: move constants.js urls here
-import { GATEWAY_URL } from 'util/constants';
+import { GATEWAY_URL } from 'core/constants';
 
 export const listingImgUrl = hash => `${GATEWAY_URL}images/${hash}`;
 

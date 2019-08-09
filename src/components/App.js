@@ -22,7 +22,7 @@ import './App.scss';
 import 'styles/layout.scss';
 import 'styles/ui/buttons.scss';
 import logo from 'img/ob-logo.png';
-import 'util/messaging/index';
+import 'core/messaging/index';
 
 class App extends Component {
   state = {

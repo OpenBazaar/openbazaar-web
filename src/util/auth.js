@@ -4,7 +4,7 @@ import { fromByteArray } from 'base64-js';
 import { ECPair, script } from 'bitcoinjs-lib';
 import { isValidMenmonic, hash, identityKeyFromSeed } from 'util/crypto';
 import { getOwnProfile } from 'models/profile';
-import { get as getIpfsNode, destroy as destroyIpfsNode } from 'util/ipfs';
+import { get as getIpfsNode, destroy as destroyIpfsNode } from 'core/ipfs';
 import { get as getDb, destroy as destroyDb } from 'util/database';
 
 let _identity = null;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { GATEWAY_URL } from 'util/constants';
+import { GATEWAY_URL } from 'core/constants';
 import { Link } from 'react-router-dom';
 import defaultAvatar from '../../img/defaultAvatar.png';
 import 'styles/theme.scss';

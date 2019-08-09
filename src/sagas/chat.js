@@ -5,8 +5,8 @@ import { get as getDb } from 'util/database';
 import { eventChannel, END } from 'redux-saga';
 import { takeEvery, put, call, select, fork } from 'redux-saga/effects';
 import { animationFrameInterval } from 'util/index';
-import { sendMessage as sendChatMessage } from 'util/messaging/index';
-import messageTypes from 'util/messaging/types';
+import { sendMessage as sendChatMessage } from 'core/messaging/index';
+import messageTypes from 'core/messaging/types';
 import { generatePbTimestamp } from 'pb/util';
 import {
   convosRequest,

@@ -1,5 +1,5 @@
 import { get } from 'axios';
-import { GATEWAY_URL } from 'util/constants';
+import { GATEWAY_URL } from 'core/constants';
 import { takeEvery, call, put } from 'redux-saga/effects';
 import { requestCached, requestCachedSuccess } from 'actions/profile';
 

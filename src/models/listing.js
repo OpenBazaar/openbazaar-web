@@ -1,5 +1,5 @@
 import { get, CancelToken } from 'axios';
-import { GATEWAY_URL } from 'util/constants';
+import { GATEWAY_URL } from 'core/constants';
 
 const getsByHash = {};
 

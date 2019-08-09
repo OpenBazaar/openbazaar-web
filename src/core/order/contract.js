@@ -1,12 +1,18 @@
 import protobuf from 'protobufjs';
 import { fromPublicKey } from 'bip32';
 import { ECPair } from 'bitcoinjs-lib';
-import { CURRENT_LISTING_VERSION } from 'constants';
+import { createFromPubKey } from 'peer-id';
+import { keys } from 'libp2p-crypto';
+import { CURRENT_LISTING_VERSION } from 'core/constants';
 import contractsJSON from 'pb/contracts.json';
-import { generatePbTimestamp } from 'pb/util';
+import { generatePbTimestamp, convertTimestamps } from 'pb/util';
 import { getIdentity } from 'util/auth';
-import { cat } from 'util/ipfs/cat';
+import { cat } from 'core/ipfs/cat';
+import { verifySignature } from 'core/signatures';
 import { getOwnProfile } from 'models/profile';
+
+console.log('sparkles');
+window.sparkles = keys;
 
 let protoContractsRoot;
 
@@ -51,21 +57,86 @@ function validateListingVersionNumber(listing) {
   }
 }
 
-async function getSignedListing(item) {
-  const listing = (await cat(item.listingHash)).data;
-  // const SignedListingPB = getProtoContractsRoot().lookupType('SignedListing');
-  // const pbErr = PB.verify(payload);
+async function validateVendorID(listing) {
+  if (typeof listing !== 'object') {
+    throw new Error('The listing is not an object.');
+  }
 
-  // if (pbErr) {
-  //   throw new Error(
-  //     'The payload does verify according to the protobuf schema for the ' +
-  //       'given type.'
-  //   );
+  if (typeof listing.vendorID !== 'object') {
+    throw new Error('The listing vendorID is not an object.');
+  }
+
+  if (typeof listing.vendorID.pubkeys !== 'object') {
+    throw new Error('The listing vendorID pubkeys is not an object.');
+  }
+
+  const peerID = await createFromPubKey(
+    listing
+      .vendorID
+      .pubkeys
+      .identity
+  );
+
+  if (peerID.toB58String() !== listing.vendorID.peerID) {
+    throw new Error('The listing peerID does not match the pubkey');
+  }
+}
+
+// export async function verifySignature(serializedPb, pkBytes, sigBytes, peerID) {
+function verifySignaturesOnListing(slPB) {
+  // verifySignature(
+  //   getProtoContractsRoot()
+  //     .lookupType('Listing')
+  //     .encode(slPB.listing)
+  //     .finish(),
+
+  // );
+
+  // // Verify identity signature on listing
+  // if err := verifySignature(
+  //   sl.Listing,
+  //   sl.Listing.VendorID.Pubkeys.Identity,
+  //   sl.Signature,
+  //   sl.Listing.VendorID.PeerID,
+  // ); err != nil {
+  //   switch err.(type) {
+  //   case invalidSigError:
+  //     return errors.New("vendor's identity signature on contact failed to verify")
+  //   case matchKeyError:
+  //     return errors.New("public key in order does not match reported buyer ID")
+  //   default:
+  //     return err
+  //   }
   // }
 
-  // const pb = PB.create(payload);
-  validateListingVersionNumber();
+  // // Verify the bitcoin signature in the ID
+  // if err := verifyBitcoinSignature(
+  //   sl.Listing.VendorID.Pubkeys.Bitcoin,
+  //   sl.Listing.VendorID.BitcoinSig,
+  //   sl.Listing.VendorID.PeerID,
+  // ); err != nil {
+  //   switch err.(type) {
+  //   case invalidSigError:
+  //     return errors.New("vendor's Bitcoin signature on GUID failed to verify")
+  //   default:
+  //     return err
+  //   }
+  // }
+  // return nil
 }
+
+async function getSignedListing(listingHash) {
+  const listing = (await cat(listingHash)).data;
+  const SignedListingPB = getProtoContractsRoot().lookupType('SignedListing');
+  const slPB = SignedListingPB.fromObject(convertTimestamps(listing));
+  // validateListingVersionNumber();
+  // await validateVendorID();
+  // // validateListing(); <--- TODO: need to implement
+  // verifySignaturesOnListing();
+}
+
+console.log('flip');
+window.flip = getSignedListing;
 
 export async function createContractWithOrder(data = {}, options = {}) {
   // Mainy allowing the identity and profile to be passed in to make testing easier. In most
@@ -127,7 +198,7 @@ export async function createContractWithOrder(data = {}, options = {}) {
         };
 
         return false;
-      }).map(item => getSignedListing(contract, item))
+      }).map(item => getSignedListing(item.listingHash))
     );
   } catch (e) {
     console.error(e);
