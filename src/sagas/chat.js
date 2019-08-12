@@ -1,6 +1,7 @@
 import { omit, orderBy } from 'lodash';
 import arrayMove from 'array-move';
 import multihashes from 'multihashes';
+import crypto from 'crypto';
 import { get as getDb } from 'util/database';
 import { eventChannel, END } from 'redux-saga';
 import { takeEvery, put, call, select, fork } from 'redux-saga/effects';

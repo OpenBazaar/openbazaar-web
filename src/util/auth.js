@@ -13,6 +13,9 @@ export function getIdentity() {
   return _identity;
 }
 
+console.log('me');
+window.me = getIdentity;
+
 export function login(mnemonic) {
   return new Promise((resolve, reject) => {
     if (!isValidMenmonic(mnemonic)) {

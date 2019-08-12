@@ -7,6 +7,9 @@ import naclUtil from 'tweetnacl-util';
 import libp2pCrypto from 'libp2p-crypto';
 import ed2curve from 'ed2curve';
 
+console.log('bun');
+window.bun = PeerId;
+
 /*
  * Returns a Uint8Array(64) hash of the given text.
  */
@@ -17,53 +20,26 @@ export const hash = async (text, options = {}) => {
     ...options
   };
 
-  return new Promise((resolve, reject) => {
-    hmac.create(opts.hash, naclUtil.decodeUTF8(opts.hmacSeed), (err, hmac) => {
-      if (!err) {
-        hmac.digest(naclUtil.decodeUTF8(text), (err, sig) => {
-          if (!err) {
-            resolve(sig);
-            return;
-          }
-
-          reject(err);
-        });
-        return;
-      }
-
-      reject(err);
-    });
-  });
+  const createdHmac = await hmac.create(opts.hash, naclUtil.decodeUTF8(opts.hmacSeed));
+  return createdHmac.digest(naclUtil.decodeUTF8(text));
 };
 
-export function identityKeyFromSeed(mnemonic, bits = 4096) {
-  return new Promise((resolve, reject) => {
-    const bip39seed = bip39.mnemonicToSeed(mnemonic, '');
-    const hmac = sha256.hmac.create('OpenBazaar seed');
-    hmac.update(bip39seed);
-    const seed = Buffer.from(hmac.array());
+export async function identityKeyFromSeed(mnemonic, bits = 4096) {
+  const bip39seed = bip39.mnemonicToSeed(mnemonic, '');
+  const hmac = sha256.hmac.create('OpenBazaar seed');
+  hmac.update(bip39seed);
+  const seed = Buffer.from(hmac.array());
+  const keypair =
+    await keys.generateKeyPairFromSeed('ed25519', seed, bits);
+  const peerID = await PeerId.createFromPubKey(keys.marshalPublicKey(keypair.public));
 
-    keys.generateKeyPairFromSeed('ed25519', seed, bits, async (err, keypair) => {
-      if (!err) {
-        try {
-          const peerID = await PeerId.createFromPubKey(keys.marshalPublicKey(keypair.public));
-
-          // todo: strip the 'Key' suffix from pub and priv
-          resolve({
-            peerID: peerID.toBytes(),
-            peerIDB58: peerID.toB58String(),
-            publicKey: keypair.public.bytes,
-            privateKey: keypair.bytes
-          });          
-        } catch (e) {
-          reject(e);
-        }
-      } else {
-        reject(err);
-        return;
-      }
-    });
-  });
+  // todo: strip the 'Key' suffix from pub and priv
+  return {
+    peerID: peerID.toBytes(),
+    peerIDB58: peerID.toB58String(),
+    publicKey: keypair.public.bytes,
+    privateKey: keypair.bytes
+  };
 }
 
 export function encrypt(pubKeyBytes, textBytes) {
