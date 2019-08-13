@@ -83,14 +83,22 @@ async function validateVendorID(listing) {
 }
 
 // export async function verifySignature(serializedPb, pkBytes, sigBytes, peerID) {
-function verifySignaturesOnListing(slPB) {
-  // verifySignature(
-  //   getProtoContractsRoot()
-  //     .lookupType('Listing')
-  //     .encode(slPB.listing)
-  //     .finish(),
+function verifySignaturesOnListing(slPB, options = {}) {
+  const identity = options.identity || getIdentity();
 
-  // );
+  if (!identity) {
+    throw new Error('Unable to get the identity. Ensure you are logged in.');
+  }
+
+  verifySignature(
+    getProtoContractsRoot()
+      .lookupType('Listing')
+      .encode(slPB.listing)
+      .finish(),
+    identity.publicKey,
+    slPB.signature,
+    identity.peerID,
+  );
 
   // // Verify identity signature on listing
   // if err := verifySignature(
@@ -127,20 +135,26 @@ function verifySignaturesOnListing(slPB) {
 
 async function getSignedListing(listingHash) {
   const listing = (await cat(listingHash)).data;
+
+  console.log('listing');
+  window.listing = listing;
+
+  validateListingVersionNumber(listing.listing);
+  await validateVendorID(listing.listing);
+  // validateListing(); <--- TODO: need to implement  
+
   const SignedListingPB = getProtoContractsRoot().lookupType('SignedListing');
   const slPB = SignedListingPB.fromObject(convertTimestamps(listing));
-  // validateListingVersionNumber();
-  // await validateVendorID();
-  // // validateListing(); <--- TODO: need to implement
-  // verifySignaturesOnListing();
+
+  verifySignaturesOnListing(slPB);
 }
 
 console.log('flip');
 window.flip = getSignedListing;
 
 export async function createContractWithOrder(data = {}, options = {}) {
-  // Mainy allowing the identity and profile to be passed in to make testing easier. In most
-  // cases, you won't be passing them in.
+  // Mainy allowing the identity and profile to be passed in to make testing easier.
+  // In most cases, you won't be passing them in.
   const identity = options.identity || getIdentity();
 
   if (!identity) {
@@ -202,7 +216,7 @@ export async function createContractWithOrder(data = {}, options = {}) {
     );
   } catch (e) {
     console.error(e);
-    throw new Error(`Unable to obtain signed listings: ${e.message}`);
+    throw new Error(`Unable to obtain the signed listings: ${e.message}`);
   }
 
   return contract;
