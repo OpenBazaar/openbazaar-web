@@ -2,17 +2,18 @@ import protobuf from 'protobufjs';
 import { fromPublicKey } from 'bip32';
 import { ECPair } from 'bitcoinjs-lib';
 import { createFromPubKey } from 'peer-id';
-import { keys } from 'libp2p-crypto';
+// import { keys } from 'libp2p-crypto';
 import { CURRENT_LISTING_VERSION } from 'core/constants';
+import { encodeCID } from 'core/util';
 import contractsJSON from 'pb/contracts.json';
 import { generatePbTimestamp, convertTimestamps } from 'pb/util';
 import { getIdentity } from 'util/auth';
 import { cat } from 'core/ipfs/cat';
-import { verifySignature } from 'core/signatures';
+import {
+  verifySignature,
+  verifyEscrowSignature,
+} from 'core/signatures';
 import { getOwnProfile } from 'models/profile';
-
-console.log('sparkles');
-window.sparkles = keys;
 
 let protoContractsRoot;
 
@@ -82,62 +83,43 @@ async function validateVendorID(listing) {
   }
 }
 
-// export async function verifySignature(serializedPb, pkBytes, sigBytes, peerID) {
-function verifySignaturesOnListing(slPB, options = {}) {
-  const identity = options.identity || getIdentity();
-
-  if (!identity) {
-    throw new Error('Unable to get the identity. Ensure you are logged in.');
-  }
-
-  verifySignature(
+async function verifySignaturesOnListing(slPB) {
+  await verifySignature(
     getProtoContractsRoot()
       .lookupType('Listing')
       .encode(slPB.listing)
       .finish(),
-    identity.publicKey,
+    slPB
+      .listing
+      .vendorID
+      .pubkeys
+      .identity,
     slPB.signature,
-    identity.peerID,
+    slPB
+      .listing
+      .vendorID
+      .peerID,
   );
 
-  // // Verify identity signature on listing
-  // if err := verifySignature(
-  //   sl.Listing,
-  //   sl.Listing.VendorID.Pubkeys.Identity,
-  //   sl.Signature,
-  //   sl.Listing.VendorID.PeerID,
-  // ); err != nil {
-  //   switch err.(type) {
-  //   case invalidSigError:
-  //     return errors.New("vendor's identity signature on contact failed to verify")
-  //   case matchKeyError:
-  //     return errors.New("public key in order does not match reported buyer ID")
-  //   default:
-  //     return err
-  //   }
-  // }
-
-  // // Verify the bitcoin signature in the ID
-  // if err := verifyBitcoinSignature(
-  //   sl.Listing.VendorID.Pubkeys.Bitcoin,
-  //   sl.Listing.VendorID.BitcoinSig,
-  //   sl.Listing.VendorID.PeerID,
-  // ); err != nil {
-  //   switch err.(type) {
-  //   case invalidSigError:
-  //     return errors.New("vendor's Bitcoin signature on GUID failed to verify")
-  //   default:
-  //     return err
-  //   }
-  // }
-  // return nil
+  verifyEscrowSignature(
+    slPB
+      .listing
+      .vendorID
+      .pubkeys
+      .bitcoin,
+    slPB
+      .listing
+      .vendorID
+      .bitcoinSig,
+    slPB
+      .listing
+      .vendorID
+      .peerID,
+  );
 }
 
 async function getSignedListing(listingHash) {
   const listing = (await cat(listingHash)).data;
-
-  console.log('listing');
-  window.listing = listing;
 
   validateListingVersionNumber(listing.listing);
   await validateVendorID(listing.listing);
@@ -145,12 +127,23 @@ async function getSignedListing(listingHash) {
 
   const SignedListingPB = getProtoContractsRoot().lookupType('SignedListing');
   const slPB = SignedListingPB.fromObject(convertTimestamps(listing));
-
   verifySignaturesOnListing(slPB);
+
+  const SignaturePB = getProtoContractsRoot().lookupType('Signature');
+  const signature = {
+    section: SignaturePB.Section.LISTING,
+    signatureBytes: slPB.signature,
+  };
+
+  return {
+    listing: slPB.listing,
+    signature: SignaturePB.create(),
+  }
 }
 
-console.log('flip');
-window.flip = getSignedListing;
+function isCurrencyAccepted(curCode, acceptedCurs) {
+  return acceptedCurs.includes(curCode);
+}
 
 export async function createContractWithOrder(data = {}, options = {}) {
   // Mainy allowing the identity and profile to be passed in to make testing easier.
@@ -165,6 +158,12 @@ export async function createContractWithOrder(data = {}, options = {}) {
 
   if (!profile) {
     throw new Error('Unable to obtain own profile.');
+  }
+
+  console.dir(data);
+  
+  if (typeof data.paymentCoin !== 'string' || !data.paymentCoin) {
+    throw new Error('The data must include a payment coin as a string.');
   }
 
   const timestamp = generatePbTimestamp();
@@ -197,7 +196,9 @@ export async function createContractWithOrder(data = {}, options = {}) {
       timestamp,
       ratingKeys: getRatingKeysForOrder(data, timestamp, identity, chaincode),
       items: []
-    }
+    },
+    vendorListings: [],
+    signatures: [],
   };
 
   const listingHashes = [];
@@ -218,6 +219,92 @@ export async function createContractWithOrder(data = {}, options = {}) {
     console.error(e);
     throw new Error(`Unable to obtain the signed listings: ${e.message}`);
   }
+
+  signedListings.forEach(sl => {
+    contract.vendorListings.push(sl.listing);
+    contract.signatures.push(sl.signature);
+  });  
+
+  for (let i = 0; i < signedListings.length; i++) {
+    const dataItem = data.items[i];
+    const item = {
+      memo: dataItem.memo,
+    };
+    const listing = signedListings[i].listing;
+
+    if (
+      !isCurrencyAccepted(
+        data.paymentCoin,
+        listing.metadata.acceptedCurrencies
+      )
+    ) {
+      throw new Error(`The payment coin ${data.paymentCoin} is not accepted ` +
+        `by listing ${data.items[i].listingHash}.`);
+    }
+
+    const serListing = getProtoContractsRoot()
+      .lookupType('Listing')
+      .encode(listing)
+      .finish();
+
+    const listingID = await encodeCID(serListing);
+    item.listingHash = listingID.toString();
+
+    const itemQuantity = dataItem.quantity;
+
+    // If purchasing a listing version >=3 then the Quantity64 field must be used
+    if (listing.metadata.version < 3) {
+      item.quantity = itemQuantity;
+    } else {
+      item.quantity64 = itemQuantity;
+    }
+
+    const contractTypes = getProtoContractsRoot()
+      .Listing
+      .Metadata
+      .ContractType;
+
+    const isCryptoCurListing =
+      listing.metadata.contractType === contractTypes['CRYPTOCURRENCY'];
+
+    if (!isCryptoCurListing) {
+      // Remove any duplicate coupons
+      item.couponCodes = [...new Set(dataItem.coupons)];
+
+      // Validate the selected options
+      // todo: need to implement the validation. For now just copying the raw data
+      // over.
+      item.options = [...listing.item.options];
+    }
+
+    // Add shipping to physical listings, and include it for digital and service
+    // listings for legacy compatibility
+    if (
+      [
+        contractTypes['PHYSICAL_GOOD'],
+        contractTypes['DIGITAL_GOOD'],
+        contractTypes['SERVICE'],
+      ].includes(listing.metadata.contractType)
+    ) {
+      item.shippingOption = { ...dataItem.shipping };
+    }
+
+    if (isCryptoCurListing) {
+      item.paymentAddress = dataItem.paymentAddress;
+      // todo: need to implement
+      // validateCryptocurrencyOrderItem(item);
+    }
+
+    contract.buyerOrder.items.push(item);
+  }
+
+  // TODO: need to implement.
+  // if containsPhysicalGood(addedListings)) {
+  //   err := validatePhysicalPurchaseOrder(contract)
+  //   if err != nil {
+  //     return nil, err
+  //   }
+  // }  
 
   return contract;
 }

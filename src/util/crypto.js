@@ -7,9 +7,6 @@ import naclUtil from 'tweetnacl-util';
 import libp2pCrypto from 'libp2p-crypto';
 import ed2curve from 'ed2curve';
 
-console.log('bun');
-window.bun = PeerId;
-
 /*
  * Returns a Uint8Array(64) hash of the given text.
  */
