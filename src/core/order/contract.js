@@ -2,8 +2,12 @@ import protobuf from 'protobufjs';
 import { fromPublicKey } from 'bip32';
 import { ECPair } from 'bitcoinjs-lib';
 import { createFromPubKey } from 'peer-id';
-import { CURRENT_LISTING_VERSION } from 'core/constants';
+import {
+  CURRENT_LISTING_VERSION,
+  MIN_SUPPORTED_LISTING_VERSION,
+} from 'core/constants';
 import { encodeCID } from 'core/util';
+import { normalizeCurCode, validateCur } from 'util/currency';
 import contractsJSON from 'pb/contracts.json';
 import { generatePbTimestamp, convertTimestamps } from 'pb/util';
 import { getIdentity } from 'util/auth';
@@ -23,6 +27,9 @@ function getProtoContractsRoot() {
   
   return protoContractsRoot;
 }
+
+console.log('root');
+window.root = getProtoContractsRoot();
 
 function getRatingKeysForOrder(purchaseData = {}, ts, identity, chaincode) {
   const ratingsKeys = [];
@@ -54,6 +61,11 @@ function validateListingVersionNumber(listing) {
 
   if (listing.metadata.version > CURRENT_LISTING_VERSION) {
     throw new Error('Unsupported listing version, you must upgrade to purchase this listing.');
+  }
+
+  if (listing.metadata.version < MIN_SUPPORTED_LISTING_VERSION) {
+    throw new Error('Unsupported listing version. The vendor will need to upgrade before this client ' +
+      'could purchase.');
   }
 }
 
@@ -144,7 +156,14 @@ function isCurrencyAccepted(curCode, acceptedCurs) {
   return acceptedCurs.includes(curCode);
 }
 
-export async function createContractWithOrder(data = {}, options = {}) {
+function getContractTypes() {
+  return getProtoContractsRoot()
+    .Listing
+    .Metadata
+    .ContractType;
+}
+
+async function createContractWithOrder(data = {}, options = {}) {
   // Mainy allowing the identity and profile to be passed in to make testing easier.
   // In most cases, you won't be passing them in.
   const identity = options.identity || getIdentity();
@@ -250,20 +269,9 @@ export async function createContractWithOrder(data = {}, options = {}) {
     const listingID = await encodeCID(serListing);
     item.listingHash = listingID.toString();
 
-    const itemQuantity = dataItem.quantity;
+    item.quantity64 = dataItem.quantity;
 
-    // If purchasing a listing version >=3 then the Quantity64 field must be used
-    if (listing.metadata.version < 3) {
-      item.quantity = itemQuantity;
-    } else {
-      item.quantity64 = itemQuantity;
-    }
-
-    const contractTypes =
-      contractRoot
-        .Listing
-        .Metadata
-        .ContractType;
+    const contractTypes = getContractTypes();
 
     const isCryptoCurListing =
       listing.metadata.contractType === contractTypes['CRYPTOCURRENCY'];
@@ -320,5 +328,140 @@ export async function createContractWithOrder(data = {}, options = {}) {
   return ContractPB.create(contract);
 }
 
+async function parseContractForListing(hash, contractPB) {
+  for (let i = 0; i++; i < contractPB.vendorListings.length) {
+    const listing = contractPB.vendorListings[i];
+    const serListing =
+      getProtoContractsRoot()
+        .lookupType('Listing')
+        .encode(listing)
+        .finish();
+
+    const listingID = await encodeCID(serListing);
+    if (hash === listingID) return listing;
+  }
+
+  return null;
+}
+
+// just mocking it for now
+function getWallet(curCode) {
+  return {
+    exchangeRates() {
+      return {
+        getExchangeRate() {
+          return Math.random();
+        }
+      }
+    }
+  };
+}
+
+function getPriceInBaseUnits(paymentCoin, pricingCur, amount) {
+  try {
+    validateCur(paymentCoin);
+  } catch (e) {
+    throw new Error(`The payment coin is not valid: ${e.message}`);
+  }
+
+  try {
+    validateCur(pricingCur);
+  } catch (e) {
+    throw new Error(`The pricingCur is not valid: ${e.message}`);
+  }
+
+  if (typeof amount !== 'number') {
+    throw new Error('The amount must be provided as a number.');
+  }
+
+  if (normalizeCurCode(paymentCoin) === normalizeCurCode(pricingCur)) {
+    return amount;
+  }
+
+  let wal;
+
+  try {
+    wal = getWallet(paymentCoin);
+  } catch (e) {
+    console.error(e);
+  }
+
+  if (!wal) {
+    throw new Error(`Unable to obtain wallet for ${paymentCoin}.`);
+  }
+
+  let exchangeRate;
+  
+  try {
+    exchangeRate = wal.getExchangeRate(pricingCur);
+  } catch (e) {
+    console.error(e);
+  }
+
+  if (typeof exchangeRate !== 'number' || exchangeRate < 0) {
+    throw new Error(`Unable to obtain a valid exchange rate for ${paymentCoin}.`);
+  }
+
+  return (1 / exchangeRate) * amount;
+}
+
+// CalculateOrderTotal - calculate the total in base units
+function calculateOrderTotal(contractPB) {
+  console.log('sizzle');
+  window.sizzle = contractPB;
+
+  const physicalGoods = {};
+  
+  contractPB.buyerOrder.items.forEach(item => {
+    const hash = item.listingHash;
+    const listing = parseContractForListing(hash, contractPB);
+    
+    if (!listing) {
+      throw new Error(`Unable to obtain the listing for item: ${hash}`);
+    }
+
+    if (
+      listing.metadata.contractType === getContractTypes('PHYSICAL_GOOD')
+    ) {
+      physicalGoods[item.listingHash] = listing;
+    }
+
+    let priceInBaseUnits;
+
+    if (
+      listing.metadata.format ===
+        getProtoContractsRoot().Listing.Metadata.Format['MARKET_PRICE']
+    ) {
+      throw new Error(`The pricing format of MARKET_PRICE is currently not supported.`);
+    } else {
+      //.getPriceInSatoshi(contract.BuyerOrder.Payment.Coin, l.Metadata.PricingCurrency, l.Item.Price)
+      // priceInBaseUnits = getPriceInBaseUnits(
+      //   contract.buyerOrder.Payment.Coin
+      // );
+    }
+  });
+}
+
 console.log('theGoods');
 window.theGoods = createContractWithOrder;
+
+export async function purchase(data) {
+  const contractPb = await createContractWithOrder(data);
+
+  // Direct payment
+  // just doing direct for now
+  const payment = {
+    // method: pb.Order_Payment_ADDRESS_REQUEST,
+    coin: data.paymentCoin,
+  };
+
+  // contract.BuyerOrder.Payment = payment
+
+  let total;
+
+  try {
+    total = calculateOrderTotal(contractPb);
+  } catch (e) {
+    throw new Error(`Unable to calculate the order total: ${e.stack}`);
+  }
+}

@@ -185,3 +185,21 @@ export function formatCurrency(amount, currency, options) {
 
   return formattedCurrency;
 }
+
+export function normalizeCurCode(curCode) {
+  return (
+    curCode
+      .toUpperCase()
+      .trim()
+  );
+}
+
+export function validateCur(curCode) {
+  if (typeof curCode !== 'string') {
+    throw new Error('The currency must be a string.');
+  }
+
+  if (!(/^[A-Z]+$/.test(normalizeCurCode(curCode)))) {
+    throw new Error('The currency contains one or more invalid characters.');
+  }
+}
