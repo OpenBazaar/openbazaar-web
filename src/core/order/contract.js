@@ -2,7 +2,6 @@ import protobuf from 'protobufjs';
 import { fromPublicKey } from 'bip32';
 import { ECPair } from 'bitcoinjs-lib';
 import { createFromPubKey } from 'peer-id';
-// import { keys } from 'libp2p-crypto';
 import { CURRENT_LISTING_VERSION } from 'core/constants';
 import { encodeCID } from 'core/util';
 import contractsJSON from 'pb/contracts.json';
@@ -34,7 +33,7 @@ function getRatingKeysForOrder(purchaseData = {}, ts, identity, chaincode) {
     purchaseData.items.forEach((item, index) => {
       const key = buyerHDKey.derive(index);
       const ratingKey = ECPair.fromPublicKey(key.publicKey);
-      ratingsKeys.push(ratingKey.publicKey.toString('base64'));
+      ratingsKeys.push(ratingKey.publicKey);
     });
   }
 
@@ -137,7 +136,7 @@ async function getSignedListing(listingHash) {
 
   return {
     listing: slPB.listing,
-    signature: SignaturePB.create(),
+    signature: SignaturePB.create(signature),
   }
 }
 
@@ -151,7 +150,8 @@ export async function createContractWithOrder(data = {}, options = {}) {
   const identity = options.identity || getIdentity();
 
   if (!identity) {
-    throw new Error('Unable to get the identity. Ensure you are logged in.');
+    throw new Error('Unable to get the identity. Ensure you are logged in ' +
+      'or passing in the identity.');
   }
 
   const profile = options.profile || (await getOwnProfile());
@@ -160,14 +160,13 @@ export async function createContractWithOrder(data = {}, options = {}) {
     throw new Error('Unable to obtain own profile.');
   }
 
-  console.dir(data);
-  
   if (typeof data.paymentCoin !== 'string' || !data.paymentCoin) {
     throw new Error('The data must include a payment coin as a string.');
   }
 
   const timestamp = generatePbTimestamp();
   const chaincode = Buffer.from(crypto.getRandomValues(new Uint8Array(32)));
+  const contractRoot = getProtoContractsRoot();
 
   const contract = {
     buyerOrder: {
@@ -178,7 +177,7 @@ export async function createContractWithOrder(data = {}, options = {}) {
         city: data.city,
         state: data.state,
         postalCode: data.postalCode,
-        country: 'UNITED_STATES',
+        country: contractRoot.CountryCode[data.countryCode],
         addressNotes: data.addressNotes
       },
       alternateContactInfo: data.alternateContactInfo,
@@ -188,10 +187,10 @@ export async function createContractWithOrder(data = {}, options = {}) {
         peerID: identity.peerID,
         handle: profile.handle,
         pubkeys: {
-          identity: identity.publicKey.toString('base64'),
-          bitcoin: identity.escrowKey.toString('base64')
+          identity: identity.publicKey,
+          bitcoin: identity.escrowKey,
         },
-        bitcoinSig: identity.escrowSig.toString('base64')
+        bitcoinSig: identity.escrowSig
       },
       timestamp,
       ratingKeys: getRatingKeysForOrder(data, timestamp, identity, chaincode),
@@ -242,10 +241,11 @@ export async function createContractWithOrder(data = {}, options = {}) {
         `by listing ${data.items[i].listingHash}.`);
     }
 
-    const serListing = getProtoContractsRoot()
-      .lookupType('Listing')
-      .encode(listing)
-      .finish();
+    const serListing =
+      contractRoot
+        .lookupType('Listing')
+        .encode(listing)
+        .finish();
 
     const listingID = await encodeCID(serListing);
     item.listingHash = listingID.toString();
@@ -259,10 +259,11 @@ export async function createContractWithOrder(data = {}, options = {}) {
       item.quantity64 = itemQuantity;
     }
 
-    const contractTypes = getProtoContractsRoot()
-      .Listing
-      .Metadata
-      .ContractType;
+    const contractTypes =
+      contractRoot
+        .Listing
+        .Metadata
+        .ContractType;
 
     const isCryptoCurListing =
       listing.metadata.contractType === contractTypes['CRYPTOCURRENCY'];
@@ -274,7 +275,7 @@ export async function createContractWithOrder(data = {}, options = {}) {
       // Validate the selected options
       // todo: need to implement the validation. For now just copying the raw data
       // over.
-      item.options = [...listing.item.options];
+      item.options = [...dataItem.options];
     }
 
     // Add shipping to physical listings, and include it for digital and service
@@ -304,9 +305,19 @@ export async function createContractWithOrder(data = {}, options = {}) {
   //   if err != nil {
   //     return nil, err
   //   }
-  // }  
+  // }
 
-  return contract;
+  const ContractPB = contractRoot.lookupType('RicardianContract');
+  const contractPbErr = ContractPB.verify(contract);
+
+  if (contractPbErr) {
+    throw new Error(`Unable to validate the contract protobuf: ${contractPbErr}`);
+  }
+
+  console.log('ContractPB');
+  window.ContractPB = ContractPB;
+
+  return ContractPB.create(contract);
 }
 
 console.log('theGoods');
