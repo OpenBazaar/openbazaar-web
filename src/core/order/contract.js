@@ -6,7 +6,8 @@ import {
   CURRENT_LISTING_VERSION,
   MIN_SUPPORTED_LISTING_VERSION,
 } from 'core/constants';
-import { encodeCID } from 'core/util';
+import { encodeCID, encodeMultihash } from 'core/util';
+import { toB58String } from 'multihashes';
 import { normalizeCurCode, validateCur } from 'util/currency';
 import contractsJSON from 'pb/contracts.json';
 import { generatePbTimestamp, convertTimestamps } from 'pb/util';
@@ -322,14 +323,11 @@ async function createContractWithOrder(data = {}, options = {}) {
     throw new Error(`Unable to validate the contract protobuf: ${contractPbErr}`);
   }
 
-  console.log('ContractPB');
-  window.ContractPB = ContractPB;
-
   return ContractPB.create(contract);
 }
 
 async function parseContractForListing(hash, contractPB) {
-  for (let i = 0; i++; i < contractPB.vendorListings.length) {
+  for (let i = 0; i < contractPB.vendorListings.length; i++) {
     const listing = contractPB.vendorListings[i];
     const serListing =
       getProtoContractsRoot()
@@ -337,7 +335,7 @@ async function parseContractForListing(hash, contractPB) {
         .encode(listing)
         .finish();
 
-    const listingID = await encodeCID(serListing);
+    const listingID = (await encodeCID(serListing)).toString();
     if (hash === listingID) return listing;
   }
 
@@ -393,7 +391,10 @@ function getPriceInBaseUnits(paymentCoin, pricingCur, amount) {
   let exchangeRate;
   
   try {
-    exchangeRate = wal.getExchangeRate(pricingCur);
+    exchangeRate =
+      wal
+        .exchangeRates()
+        .getExchangeRate(pricingCur);
   } catch (e) {
     console.error(e);
   }
@@ -405,63 +406,146 @@ function getPriceInBaseUnits(paymentCoin, pricingCur, amount) {
   return (1 / exchangeRate) * amount;
 }
 
-// CalculateOrderTotal - calculate the total in base units
-function calculateOrderTotal(contractPB) {
-  console.log('sizzle');
-  window.sizzle = contractPB;
+function getSelectedSku(listingPB, itemOptions) {
+  const variantCombo = [];
 
+  itemOptions.forEach(opt => {
+    listingPB.item.options.forEach(listingOpt => {
+      if (listingOpt.name === opt.name) {
+        listingOpt.variants.forEach((variant, index) => {
+          if (variant.name === opt.value) {
+            variantCombo.push(index);
+          }
+        });
+      }
+    });
+  });
+
+  return (
+    listingPB
+      .item
+      .skus
+      .find(sku => sku.variantCombo.toString() === variantCombo.toString())
+  );
+}
+
+// CalculateOrderTotal - calculate the total in base units
+async function calculateOrderTotal(contractPB) {
   const physicalGoods = {};
+
+  console.log('contract encode toB');
+  window.contract = contractPB;
+  window.encode = encodeMultihash;
+  window.toB = toB58String;
   
-  contractPB.buyerOrder.items.forEach(item => {
-    const hash = item.listingHash;
-    const listing = parseContractForListing(hash, contractPB);
-    
-    if (!listing) {
+  for (let i = 0; i < contractPB.buyerOrder.items.length; i++) {
+    const itemPB = contractPB.buyerOrder.items[i];
+    const hash = itemPB.listingHash;
+    const listingPB = await parseContractForListing(hash, contractPB);
+    const itemQuantity = itemPB.quantity64;
+    let itemTotal;
+
+    console.log('listing item');
+    window.listing = listingPB;
+    window.item = itemPB;
+
+    if (!listingPB) {
       throw new Error(`Unable to obtain the listing for item: ${hash}`);
     }
 
     if (
-      listing.metadata.contractType === getContractTypes('PHYSICAL_GOOD')
+      listingPB.metadata.contractType === getContractTypes('PHYSICAL_GOOD')
     ) {
-      physicalGoods[item.listingHash] = listing;
+      physicalGoods[itemPB.listingHash] = listingPB;
     }
 
-    let priceInBaseUnits;
-
     if (
-      listing.metadata.format ===
+      listingPB.metadata.format ===
         getProtoContractsRoot().Listing.Metadata.Format['MARKET_PRICE']
     ) {
       throw new Error(`The pricing format of MARKET_PRICE is currently not supported.`);
     } else {
-      //.getPriceInSatoshi(contract.BuyerOrder.Payment.Coin, l.Metadata.PricingCurrency, l.Item.Price)
-      // priceInBaseUnits = getPriceInBaseUnits(
-      //   contract.buyerOrder.Payment.Coin
-      // );
+      itemTotal += getPriceInBaseUnits(
+        contractPB.buyerOrder.payment.coin,
+        listingPB.metadata.pricingCurrency,
+        listingPB.item.price
+      );
     }
-  });
+
+    if (itemPB.options.length) {
+      let skuPB;
+
+      try {
+        // selectedSku, err := GetSelectedSku(l, item.Options)
+        skuPB = getSelectedSku(listingPB, itemPB.options);
+      } catch (e) {
+        // pass
+      }
+
+      if (!skuPB) {
+        throw new Error('Unable to find the sku in the listing.');
+      }
+
+      if (typeof skuPB.surcharge === 'number') {
+        itemTotal += getPriceInBaseUnits(
+          contractPB.buyerOrder.payment.coin,
+          listingPB.metadata.pricingCurrency,
+          skuPB.surcharge
+        );
+      }
+    }
+
+    // let indexListingCouponHashes;
+
+    // if (itemPB.couponCodes.length) {
+    //   listing.coupons.reduce()
+    // }
+
+    // for (let i = 0; i < itemPB.couponCodes.length; i++) {
+    //   const coupon = itemPB.couponCodes[i];
+    //   const mhBytes = encodeMultihash(Buffer.from(coupon));
+
+    //   listing.
+    //   if (toB58String(mhBytes) === 
+    // }
+  };
 }
 
 console.log('theGoods');
 window.theGoods = createContractWithOrder;
 
 export async function purchase(data) {
-  const contractPb = await createContractWithOrder(data);
+  const contractPB = await createContractWithOrder(data);
+  const contractRoot = getProtoContractsRoot();
 
   // Direct payment
   // just doing direct for now
   const payment = {
-    // method: pb.Order_Payment_ADDRESS_REQUEST,
+    method:
+      contractRoot
+        .Order
+        .Payment
+        .Method['ADDRESS_REQUEST'],
     coin: data.paymentCoin,
   };
 
-  // contract.BuyerOrder.Payment = payment
+  const PaymentPB = contractRoot.lookupType('Payment');
+  const paymentPbErr = PaymentPB.verify(payment);
+
+  if (paymentPbErr) {
+    throw new Error(`Unable to validate the payment protobuf: ${paymentPbErr}`);
+  }
+
+  contractPB.buyerOrder.payment = PaymentPB.create(payment);
 
   let total;
 
   try {
-    total = calculateOrderTotal(contractPb);
+    total = calculateOrderTotal(contractPB);
   } catch (e) {
     throw new Error(`Unable to calculate the order total: ${e.stack}`);
   }
 }
+
+console.log('foo');
+window.foo = purchase;
