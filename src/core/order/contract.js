@@ -29,9 +29,6 @@ function getProtoContractsRoot() {
   return protoContractsRoot;
 }
 
-console.log('root');
-window.root = getProtoContractsRoot();
-
 function getRatingKeysForOrder(purchaseData = {}, ts, identity, chaincode) {
   const ratingsKeys = [];
 
@@ -348,7 +345,7 @@ function getWallet(curCode) {
     exchangeRates() {
       return {
         getExchangeRate() {
-          return Math.random();
+          return 10785;
         }
       }
     }
@@ -429,32 +426,127 @@ function getSelectedSku(listingPB, itemOptions) {
   );
 }
 
+// hashedListings - listings hashed by their item listing hash.
+function calculateShippingTotalForListings(contractPB, hashedListings) {
+  const itemShipping = [];
+  let shippingTotal;
+
+  for (let i = 0; i < contractPB.buyerOrder.items.length; i++) {
+    const itemPB = contractPB.buyerOrder.items[i];
+    const listingPB = hashedListings[itemPB.listingHash];
+
+    if (!listingPB) {
+      throw new Error(`Cannot determine shipping price for item ${itemPB.listingHash}. ` +
+        'Unable to find the corresponding listing.');
+    }
+
+    if (listingPB.metadata.contractType !== getContractTypes()['PHYSICAL_GOOD']) continue;
+
+    const shippingOptions = listingPB.shippingOptions.reduce((acc, shipOptPB) => {
+      acc[shipOptPB.name.toLowerCase()] = shipOptPB;
+      return acc;
+    }, {});
+
+    const itemOptionPB = shippingOptions[itemPB.shippingOption.name.toLowerCase()];
+    
+    if (!itemOptionPB) {
+      throw new Error(`The shipping option ${itemPB.shippingOption.name} is not found in ` +
+        `the listing.`);
+    }
+
+    const pbRoot = getProtoContractsRoot();
+
+    if (
+      itemOptionPB.type ===
+        pbRoot
+          .Listing
+          .ShippingOption
+          .ShippingType['LOCAL_PICKUP']
+    ) continue;
+
+    // Check that this option ships to us
+    const shipsToAll = contractPB.buyerOrder.shipping.country === pbRoot.CountryCode.All;
+    const shipsToMe =
+      itemOptionPB.regions.includes(contractPB.buyerOrder.shipping.country) || shipsToAll;
+    
+
+    if (!shipsToMe) {
+      throw new Error(`${listingPB.slug} does not ship to you.`);
+    }
+
+    const servicePB = itemOptionPB.services.find(
+      servicePB => itemPB.shippingOption.service.toLowerCase() === servicePB.name.toLowerCase()
+    );
+
+    if (!servicePB) {
+      throw new Error(`Service ${itemPB.shippingOption.service.toLowerCase()} not found in listing.`);
+    }
+
+    const shippingInBaseUnits =
+      getPriceInBaseUnits(
+        contractPB.buyerOrder.payment.coin,
+        listingPB.metadata.pricingCurrency,
+        servicePB.price
+      );
+
+    let secondaryShippingInBaseUnits = shippingInBaseUnits;
+
+    if (
+      typeof servicePB.additionalItemPrice === 'number' &&
+      servicePB.additionalItemPrice > 0
+    ) {
+      secondaryShippingInBaseUnits = getPriceInBaseUnits(
+        contractPB.buyerOrder.payment.coin,
+        listingPB.metadata.pricingCurrency,
+        servicePB.additionalItemPrice
+      );
+    }
+
+    // Calculate tax percentage
+    // not supported at this time
+    
+    itemShipping.push({
+      primary: shippingInBaseUnits,
+      secondary: secondaryShippingInBaseUnits,
+      quantity: itemPB.quantity,
+      // shippingTaxPercentage: shippingTaxPercentage,
+      version: listingPB.metadata.version,
+    });
+  }
+
+  if (!itemShipping.length) return 0;
+
+  if (itemShipping.length === 1) {
+    shippingTotal = itemShipping[0].primary;
+
+    if (itemShipping[0].quantity > 1) {
+      shippingTotal += itemShipping[0].secondary * (itemShipping[0].quantity - 1);
+    }
+  } else {
+    throw new Error('Shipping multiple items is not supported at this time.');
+  }
+
+  return shippingTotal;
+}
+
 // CalculateOrderTotal - calculate the total in base units
 async function calculateOrderTotal(contractPB) {
   const physicalGoods = {};
+  let total = 0;
 
-  console.log('contract encode toB');
-  window.contract = contractPB;
-  window.encode = encodeMultihash;
-  window.toB = toB58String;
-  
   for (let i = 0; i < contractPB.buyerOrder.items.length; i++) {
     const itemPB = contractPB.buyerOrder.items[i];
     const hash = itemPB.listingHash;
     const listingPB = await parseContractForListing(hash, contractPB);
     const itemQuantity = itemPB.quantity64;
-    let itemTotal;
-
-    console.log('listing item');
-    window.listing = listingPB;
-    window.item = itemPB;
+    let itemTotal = 0;
 
     if (!listingPB) {
       throw new Error(`Unable to obtain the listing for item: ${hash}`);
     }
 
     if (
-      listingPB.metadata.contractType === getContractTypes('PHYSICAL_GOOD')
+      listingPB.metadata.contractType === getContractTypes()['PHYSICAL_GOOD']
     ) {
       physicalGoods[itemPB.listingHash] = listingPB;
     }
@@ -477,7 +569,6 @@ async function calculateOrderTotal(contractPB) {
       let skuPB;
 
       try {
-        // selectedSku, err := GetSelectedSku(l, item.Options)
         skuPB = getSelectedSku(listingPB, itemPB.options);
       } catch (e) {
         // pass
@@ -536,7 +627,15 @@ async function calculateOrderTotal(contractPB) {
     if (listingPB.taxes.length) {
       throw new Error('Handling tax is not supported at this time.');
     }
+
+    itemTotal *= itemQuantity;
+    total += itemTotal;
   };
+
+  const shippingTotal = await calculateShippingTotalForListings(contractPB, physicalGoods);
+  total += shippingTotal;
+
+  return total;
 }
 
 console.log('theGoods');
@@ -569,10 +668,12 @@ export async function purchase(data) {
   let total;
 
   try {
-    total = calculateOrderTotal(contractPB);
+    total = await calculateOrderTotal(contractPB);
   } catch (e) {
     throw new Error(`Unable to calculate the order total: ${e.stack}`);
   }
+
+  console.log(`the total beavers are ${total}`);
 }
 
 console.log('foo');
