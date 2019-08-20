@@ -35,7 +35,8 @@ export async function identityKeyFromSeed(mnemonic, bits = 4096) {
     peerID: peerID.toBytes(),
     peerIDB58: peerID.toB58String(),
     publicKey: keypair.public.bytes,
-    privateKey: keypair.bytes
+    privateKey: keypair.bytes,
+    keypair,
   };
 }
 

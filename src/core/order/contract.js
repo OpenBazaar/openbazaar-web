@@ -29,6 +29,9 @@ function getProtoContractsRoot() {
   return protoContractsRoot;
 }
 
+console.log('root');
+window.root = getProtoContractsRoot();
+
 function getRatingKeysForOrder(purchaseData = {}, ts, identity, chaincode) {
   const ratingsKeys = [];
 
@@ -529,6 +532,41 @@ function calculateShippingTotalForListings(contractPB, hashedListings) {
   return shippingTotal;
 }
 
+function getOrderSignature(contractPB, options = {}) {
+  const identity = options.identity || getIdentity();
+
+  if (!identity) {
+    throw new Error('Unable to get the identity. Ensure you are logged in ' +
+      'or passing in the identity.');
+  }
+
+  const pbRoot = getProtoContractsRoot();
+  const serializedOrder =
+    pbRoot
+      .lookupType('BuyerOrder')
+      .encode(contractPB.buyerOrder)
+      .finish();
+
+  const signature = {
+    section: pbRoot.Signature.Section['ORDER'],
+    signatureBytes: identity.keypair.sign(serializedOrder),
+  }
+
+  const SignaturePB = pbRoot.lookupType('Signature');
+  const sigPbErr = SignaturePB.verify(signature);
+
+
+  // s := new(pb.Signature)
+  // s.Section = pb.Signature_ORDER
+  // idSig, err := n.IpfsNode.PrivateKey.Sign(serializedOrder)
+  // if err != nil {
+  //   return contract, err
+  // }
+  // s.SignatureBytes = idSig
+  // contract.Signatures = append(contract.Signatures, s)
+  // return contract, nil
+}
+
 // CalculateOrderTotal - calculate the total in base units
 async function calculateOrderTotal(contractPB) {
   const physicalGoods = {};
@@ -641,7 +679,17 @@ async function calculateOrderTotal(contractPB) {
 console.log('theGoods');
 window.theGoods = createContractWithOrder;
 
-export async function purchase(data) {
+export async function purchase(data, options = {}) {
+  const identity = options.identity || getIdentity();
+
+  if (!identity) {
+    throw new Error('Unable to get the identity. Ensure you are logged in ' +
+      'or passing in the identity.');
+  }
+
+  console.log('billy');
+  window.billy = identity;
+
   const contractPB = await createContractWithOrder(data);
   const contractRoot = getProtoContractsRoot();
 
@@ -673,7 +721,7 @@ export async function purchase(data) {
     throw new Error(`Unable to calculate the order total: ${e.stack}`);
   }
 
-  console.log(`the total beavers are ${total}`);
+  contractPB.buyerOrder.payment.amount = total;
 }
 
 console.log('foo');
