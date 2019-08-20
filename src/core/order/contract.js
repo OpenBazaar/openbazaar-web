@@ -472,6 +472,7 @@ async function calculateOrderTotal(contractPB) {
       );
     }
 
+    // handle variants
     if (itemPB.options.length) {
       let skuPB;
 
@@ -495,19 +496,46 @@ async function calculateOrderTotal(contractPB) {
       }
     }
 
-    // let indexListingCouponHashes;
+    // subtract any coupons
+    let couponsByHash;
 
-    // if (itemPB.couponCodes.length) {
-    //   listing.coupons.reduce()
-    // }
+    if (itemPB.couponCodes.length) {
+      listingPB.coupons.reduce((couponsByHash, coupon) => {
+        couponsByHash[coupon.hash] = coupon;
+        return couponsByHash;
+      }, {});
 
-    // for (let i = 0; i < itemPB.couponCodes.length; i++) {
-    //   const coupon = itemPB.couponCodes[i];
-    //   const mhBytes = encodeMultihash(Buffer.from(coupon));
+      for (let i = 0; i < itemPB.couponCodes.length; i++) {
+        const couponCode = itemPB.couponCodes[i];
+        const mhBytes = encodeMultihash(Buffer.from(couponCode));
+        const coupon = couponsByHash[toB58String(mhBytes)];
 
-    //   listing.
-    //   if (toB58String(mhBytes) === 
-    // }
+        if (!coupon) {
+          throw new Error(`${couponCode} is not a valid coupon code.`);
+        }
+
+        if (
+          typeof coupon.priceDiscount === 'number' &&
+          coupon.priceDiscount > 0
+        ) {
+          itemTotal -= getPriceInBaseUnits(
+            contractPB.buyerOrder.payment.coin,
+            listingPB.metadata.pricingCurrency,
+            coupon.priceDiscount
+          );
+        } else if (
+          typeof coupon.percentDiscount === 'number' &&
+          coupon.percentDiscount > 0
+        ) {
+          itemTotal -= itemTotal * (coupon.percentDiscount / 100);
+        }
+      }
+    }
+
+    // apply tax
+    if (listingPB.taxes.length) {
+      throw new Error('Handling tax is not supported at this time.');
+    }
   };
 }
 
