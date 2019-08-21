@@ -33,6 +33,7 @@
     "prettier": "^1.16.1",
     "prop-types": "15.5.9",
     "protobufjs": "^6.8.8",
+    "pull-stream": "^3.6.14",
     "query-string": "^6.2.0",
     "react": "^16.8.3",
     "react-copy-to-clipboard": "^5.0.1",

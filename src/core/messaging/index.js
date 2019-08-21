@@ -1,7 +1,8 @@
 import IPFS from 'core/ipfs/ipfs';
 import pull from 'pull-stream';
-import { get as getNode } from 'core/ipfs/index';
 import protobuf from 'protobufjs';
+import { get as getNode } from 'core/ipfs/index';
+import { getRandomInt } from 'util/number';
 import messageJSON from 'pb/message.json';
 import { typesData as messageTypesData } from './types';
 
@@ -22,10 +23,7 @@ function generateMessage(type, peerID, payload) {
   const pbErr = PB.verify(payload);
 
   if (pbErr) {
-    throw new Error(
-      'The payload does verify according to the protobuf schema for the ' +
-        'given type.'
-    );
+    throw new Error(`The payload does verify according to the protobuf schema for ${type}.`);
   }
 
   const pb = PB.create(payload);
@@ -96,7 +94,7 @@ async function sendDirectMessage(node, peerID, message) {
   });
 }
 
-export async function sendMessage(type, peerID, payload, options = {}) {
+function prepareMessageForSend(type, peerID, payload) {
   if (!isValidMessageType(type)) {
     throw new Error(`${type} is not a valid message type.`);
   }
@@ -110,13 +108,18 @@ export async function sendMessage(type, peerID, payload, options = {}) {
   }
 
   const messageType = messageTypesData[type];
+
+  return generateMessage(messageType, peerID, payload);
+}
+
+export async function sendMessage(type, peerID, payload, options = {}) {
   const node = options.node || (await getNode());
 
   if (!(node instanceof IPFS)) {
     throw new Error('An IPFS node instance is required.');
   }
 
-  const message = generateMessage(messageType, peerID, payload);
+  const message = prepareMessageForSend(type, peerID, payload);
 
   try {
     await sendDirectMessage(node, peerID, message);
@@ -124,6 +127,37 @@ export async function sendMessage(type, peerID, payload, options = {}) {
     console.error('Unable to send via a direct message.');
     throw e;
   }
+}
+
+export async function sendRequest(type, peerID, payload, options = {}) {
+  const opts = {
+    timeout: 30000,
+    ...options,
+  };
+
+  const node = opts.node || (await getNode());
+
+  if (!(node instanceof IPFS)) {
+    throw new Error('An IPFS node instance is required.');
+  }
+
+  return new Promise(async (resolve, reject) => {
+    const requestId = getRandomInt(1, 2147483647);
+    const message = prepareMessageForSend(type, peerID, {
+      ...payload,
+      requestId,
+    });  
+
+    // node.handle(() => {});
+
+    setTimeout(
+      () => reject(new Error('Request timed out.')),
+      opts.timeout
+    );
+
+    await sendDirectMessage(node, peerID, message);
+    resolve();
+  });
 }
 
 export async function openDirectMessage(encodedMessage, peerID, options = {}) {

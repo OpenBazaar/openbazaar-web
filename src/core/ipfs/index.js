@@ -95,7 +95,8 @@ const _create = async (options = {}) => {
             IPFS.OB_PROTOCOL
           }`
         );
-        node.libp2p.handle(IPFS.OB_PROTOCOL, (protocol, conn) => {
+
+        node.handle((protocol, conn) => {
           console.log('Pulling in incoming message');
 
           conn.getPeerInfo((err, peerInfo) => {
@@ -110,34 +111,36 @@ const _create = async (options = {}) => {
 
             pull(
               conn,
-              pull.map(msg => {
-                const sender = createFromBytes(peerInfo.id.id).toB58String();
+              pull.drain(
+                msg => {
+                  const sender = createFromBytes(peerInfo.id.id).toB58String();
 
-                if (msg.length <= 1) {
-                  return;
+                  if (msg.length <= 1) {
+                    return;
+                  }
+
+                  console.log('Processing incoming msg.');
+
+                  openDirectMessage(msg, sender, { node })
+                    .then(openedMessage => {
+                      _store.dispatch(
+                        directMessage({
+                          ...openedMessage,
+                          peerID: sender
+                        })
+                      );
+                    })
+                    .catch(e => {
+                      console.error('Unable to open direct message.');
+                      console.error(e.stack);
+                    });
+                },
+                (err) => {
+                  if (err) {
+                    console.error(`There was an error handling an incoming message: ${err}`);
+                  }
                 }
-
-                console.log('Processing incoming msg.');
-
-                openDirectMessage(msg, sender, { node })
-                  .then(openedMessage => {
-                    _store.dispatch(
-                      directMessage({
-                        ...openedMessage,
-                        peerID: sender
-                      })
-                    );
-                  })
-                  .catch(e => {
-                    console.error('Unable to open direct message.');
-                    console.error(e.stack);
-                  });
-
-                return msg;
-              }),
-              // at least a no-op collect seems to be needed for the stream to go through
-              // map() above
-              pull.collect(() => {})
+              ),
             );
           });
         });

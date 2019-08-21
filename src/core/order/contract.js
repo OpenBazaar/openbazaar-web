@@ -2,22 +2,24 @@ import protobuf from 'protobufjs';
 import { fromPublicKey } from 'bip32';
 import { ECPair } from 'bitcoinjs-lib';
 import { createFromPubKey } from 'peer-id';
+import { toB58String } from 'multihashes';
 import {
   CURRENT_LISTING_VERSION,
   MIN_SUPPORTED_LISTING_VERSION,
 } from 'core/constants';
 import { encodeCID, encodeMultihash } from 'core/util';
-import { toB58String } from 'multihashes';
-import { normalizeCurCode, validateCur } from 'util/currency';
-import contractsJSON from 'pb/contracts.json';
-import { generatePbTimestamp, convertTimestamps } from 'pb/util';
-import { getIdentity } from 'util/auth';
 import { cat } from 'core/ipfs/cat';
 import {
   verifySignature,
   verifyEscrowSignature,
 } from 'core/signatures';
+import { sendRequest } from 'core/messaging/index';
+import contractsJSON from 'pb/contracts.json';
+import { getProtoMessageRoot } from 'pb/roots/message';
+import { generatePbTimestamp, convertTimestamps } from 'pb/util';
 import { getOwnProfile } from 'models/profile';
+import { normalizeCurCode, validateCur } from 'util/currency';
+import { getIdentity } from 'util/auth';
 
 let protoContractsRoot;
 
@@ -31,6 +33,9 @@ function getProtoContractsRoot() {
 
 console.log('root');
 window.root = getProtoContractsRoot();
+
+console.log('mRoot');
+window.mRoot = getProtoMessageRoot();
 
 function getRatingKeysForOrder(purchaseData = {}, ts, identity, chaincode) {
   const ratingsKeys = [];
@@ -679,6 +684,19 @@ async function calculateOrderTotal(contractPB) {
 console.log('theGoods');
 window.theGoods = createContractWithOrder;
 
+function sendOrder(contractPB) {
+  return sendRequest(
+    getProtoMessageRoot()
+      .Message
+      .MessageType['CHAT'],
+    contractPB
+      .buyerOrder
+      .buyerID
+      .peerID,
+    contractPB
+  );
+}
+
 export async function purchase(data, options = {}) {
   const identity = options.identity || getIdentity();
 
@@ -722,6 +740,14 @@ export async function purchase(data, options = {}) {
   }
 
   contractPB.buyerOrder.payment.amount = total;
+
+  const merchantResponse = await sendOrder(contractPB);
+
+  console.log('contract');
+  window.contract = contractPB;
+
+  console.log('merResp');
+  window.merResp = merchantResponse;
 }
 
 console.log('foo');
