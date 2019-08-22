@@ -685,29 +685,28 @@ console.log('theGoods');
 window.theGoods = createContractWithOrder;
 
 function sendOrder(contractPB) {
+  let vendorPeerID;
+
+  try {
+    vendorPeerID = 
+      contractPB
+        .vendorListings[0]
+        .vendorID
+        .peerID;
+  } catch (e) {
+    throw new Error(`Unable to determine the vendor peerID: ${e}`);
+  }
+
   return sendRequest(
     getProtoMessageRoot()
       .Message
-      .MessageType['CHAT'],
-    contractPB
-      .buyerOrder
-      .buyerID
-      .peerID,
+      .MessageType['MESSAGE'],
+    vendorPeerID,
     contractPB
   );
 }
 
 export async function purchase(data, options = {}) {
-  const identity = options.identity || getIdentity();
-
-  if (!identity) {
-    throw new Error('Unable to get the identity. Ensure you are logged in ' +
-      'or passing in the identity.');
-  }
-
-  console.log('billy');
-  window.billy = identity;
-
   const contractPB = await createContractWithOrder(data);
   const contractRoot = getProtoContractsRoot();
 

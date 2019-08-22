@@ -4,7 +4,7 @@ import protobuf from 'protobufjs';
 import { get as getNode } from 'core/ipfs/index';
 import { getRandomInt } from 'util/number';
 import messageJSON from 'pb/message.json';
-import { typesData as messageTypesData } from './types';
+// import { typesData as messageTypesData } from './types';
 
 let protoMessageRoot;
 
@@ -16,26 +16,75 @@ function getProtoMessageRoot() {
   return protoMessageRoot;
 }
 
-// doc me up
-// will take raw message data and return a serialized Message PB
-function generateMessage(type, peerID, payload) {
-  const PB = getProtoMessageRoot().lookupType(type.name);
-  const pbErr = PB.verify(payload);
+let reverseIndexedMTypes;
 
-  if (pbErr) {
-    throw new Error(`The payload does verify according to the protobuf schema for ${type}.`);
+/*
+ * Will return an object where message types are index by value as opposed to name.
+ * Instead of how the PB stores it, e.g. { CHAT: 1 }, this would return { 1: 'Chat' }.
+ * Will fascilate an easy way to do a reverse lookup when you have the value and
+ * need the verbose name.
+ */
+function reverseIndexedMessageTypes() {
+  if (!reverseIndexedMTypes) {
+    reverseIndexedMTypes = {};
+    const mTypes = getProtoMessageRoot()
+      .Message
+      .MessageType;
+    Object
+      .keys(mTypes)
+      .forEach(type => (
+        reverseIndexedMTypes[mTypes[type]] =
+          type
+            .split('_')
+            .map(word => (
+              `${word.charAt(0).toUpperCase()}${word.slice(1).toLowerCase()}`
+            ))
+            .join('')
+      ));
   }
 
-  const pb = PB.create(payload);
-  const serializedPb = PB.encode(pb).finish();
+  return reverseIndexedMTypes;
+}
+
+/*
+ * Given an integer value, will return the message type verbose name. For example,
+ * a value of 1 would return 'Chat'.
+ */
+function getMessageTypeName(value) {
+  if (!Number.isInteger(value)) {
+    throw new Error('Please provide a value as an integer.');
+  }
+
+  return reverseIndexedMessageTypes()[value];
+}
+
+/*
+ * Given a verbose name (e.g. CHAT), will return the numeric message type as declared
+ * in the message protobuf file.
+ */
+export function getMessageType(name) {
+  return getProtoMessageRoot()
+    .Message
+    .MessageType[name];
+}
+
+// doc me up
+function generateMessage(type, peerID, payloadBytes, requestID) {
+  if (requestID !== undefined && !Number.isInteger(requestID)) {
+    throw new Error('If providing a requestID, it must be provided as an integer.');
+  }
+
+  console.log(`the pickle type is ${type}`);
 
   const messagePayload = {
-    messageType: type.value,
+    messageType: type,
     payload: {
-      type_url: `type.googleapis.com/${type.name}`,
-      value: serializedPb
+      type_url: `type.googleapis.com/${getMessageTypeName(type)}`,
+      value: payloadBytes
     }
   };
+
+  if (requestID) messagePayload.requestId = requestID;
 
   const MessagePb = getProtoMessageRoot().lookupType('Message');
   const messageErr = MessagePb.verify(messagePayload);
@@ -53,9 +102,9 @@ function generateMessage(type, peerID, payload) {
   return messageSerialized;
 }
 
-function isValidMessageType(type) {
-  return typeof messageTypesData[type] !== 'undefined';
-}
+// function isValidMessageType(type) {
+//   return typeof messageTypesData[type] !== 'undefined';
+// }
 
 // doc me up
 // message should already be a pb encoded message
@@ -94,32 +143,31 @@ async function sendDirectMessage(node, peerID, message) {
   });
 }
 
-function prepareMessageForSend(type, peerID, payload) {
-  if (!isValidMessageType(type)) {
-    throw new Error(`${type} is not a valid message type.`);
-  }
+// function prepareMessageForSend(type, peerID, serializedPb) {
+//   if (!isValidMessageType(type)) {
+//     throw new Error(`${type} is not a valid message type.`);
+//   }
 
-  if (typeof peerID !== 'string' || !peerID) {
-    throw new Error('A peerID must be provided as a non-empty string.');
-  }
+//   if (typeof peerID !== 'string' || !peerID) {
+//     throw new Error('A peerID must be provided as a non-empty string.');
+//   }
 
-  if (typeof payload !== 'object') {
-    throw new Error('A payload must be provided as an object.');
-  }
+//   if (typeof payload !== 'object') {
+//     throw new Error('A payload must be provided as an object.');
+//   }
 
-  const messageType = messageTypesData[type];
+//   return generateMessage(messageType, peerID, payload);
+// }
 
-  return generateMessage(messageType, peerID, payload);
-}
-
-export async function sendMessage(type, peerID, payload, options = {}) {
+export async function sendMessage(type, peerID, payloadBytes, options = {}) {
+  console.log(`sendin ${type}`);
   const node = options.node || (await getNode());
 
   if (!(node instanceof IPFS)) {
     throw new Error('An IPFS node instance is required.');
   }
 
-  const message = prepareMessageForSend(type, peerID, payload);
+  const message = generateMessage(type, peerID, payloadBytes);
 
   try {
     await sendDirectMessage(node, peerID, message);
@@ -129,7 +177,7 @@ export async function sendMessage(type, peerID, payload, options = {}) {
   }
 }
 
-export async function sendRequest(type, peerID, payload, options = {}) {
+export async function sendRequest(type, peerID, payloadBytes, options = {}) {
   const opts = {
     timeout: 30000,
     ...options,
@@ -143,10 +191,7 @@ export async function sendRequest(type, peerID, payload, options = {}) {
 
   return new Promise(async (resolve, reject) => {
     const requestId = getRandomInt(1, 2147483647);
-    const message = prepareMessageForSend(type, peerID, {
-      ...payload,
-      requestId,
-    });  
+    const message = generateMessage(type, peerID, payloadBytes, requestId);
 
     // node.handle(() => {});
 
@@ -186,15 +231,18 @@ export async function openDirectMessage(encodedMessage, peerID, options = {}) {
     decodedMessage = Message.decodeDelimited(encodedMessage);
   }
 
-  if (!isValidMessageType(decodedMessage.messageType)) {
-    throw new Error(
-      'Unable to process the direct message because it contains ' +
-        `an unrecognized message type: ${decodedMessage.messageType}.`
-    );
-  }
+  // if (!isValidMessageType(decodedMessage.messageType)) {
+  //   throw new Error(
+  //     'Unable to process the direct message because it contains ' +
+  //       `an unrecognized message type: ${decodedMessage.messageType}.`
+  //   );
+  // }
+
+  console.log(`1: ${decodedMessage.messageType}`);
+  console.log(`2: ${getMessageTypeName(decodedMessage.messageType)}`);
 
   const PB = getProtoMessageRoot().lookupType(
-    messageTypesData[decodedMessage.messageType].name
+    getMessageTypeName(decodedMessage.messageType)
   );
 
   return {

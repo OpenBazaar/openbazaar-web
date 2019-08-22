@@ -115,14 +115,20 @@ const _create = async (options = {}) => {
                 msg => {
                   const sender = createFromBytes(peerInfo.id.id).toB58String();
 
+                  console.log('the beaver says arugula');
+
                   if (msg.length <= 1) {
                     return;
                   }
 
                   console.log('Processing incoming msg.');
+                  console.log(msg.toString('base64'));
 
                   openDirectMessage(msg, sender, { node })
                     .then(openedMessage => {
+                      console.log('opened message jelly');
+                      window.jelly = openedMessage;
+
                       _store.dispatch(
                         directMessage({
                           ...openedMessage,

@@ -2,13 +2,16 @@ import { omit, orderBy } from 'lodash';
 import arrayMove from 'array-move';
 import multihashes from 'multihashes';
 import crypto from 'crypto';
-import { get as getDb } from 'util/database';
 import { eventChannel, END } from 'redux-saga';
 import { takeEvery, put, call, select, fork } from 'redux-saga/effects';
 import { animationFrameInterval } from 'util/index';
-import { sendMessage as sendChatMessage } from 'core/messaging/index';
-import messageTypes from 'core/messaging/types';
+import { get as getDb } from 'util/database';
+import {
+  sendMessage as sendChatMessage,
+  getMessageType,
+} from 'core/messaging/index';
 import { generatePbTimestamp } from 'pb/util';
+import { getProtoMessageRoot } from 'pb/roots/message';
 import {
   convosRequest,
   convosSuccess,
@@ -717,39 +720,63 @@ function* handleSendMessage(action) {
     // send fails and the user closes the app, it will be lost.
   }
 
+  const chatPayload = {
+    messageId: messageID,
+    subject: messageData.subject,
+    message: messageData.message,
+    timestamp: timestampPB,
+    flag: 0
+  };
+
   let messageSendFailed;
 
-  try {
-    yield call(sendChatMessage, messageTypes.CHAT, peerID, {
-      messageId: messageID,
-      subject: messageData.subject,
-      message: messageData.message,
-      timestamp: timestampPB,
-      flag: 0
-    });
-  } catch (e) {
-    const msg = message.length > 10 ? `${message.slice(0, 10)}…` : message;
-    console.error(`Unable to send the chat message "${msg}".`);
-    console.error(e);
+  // TODO: This process is repeated a whole lot and could probaby be abstracted
+  // so it ends up being a one-liner for consumers.
+  const ChatPB = getProtoMessageRoot().lookupType('Chat');
+  const chatErr = ChatPB.verify(chatPayload);
+
+  if (chatErr) {
     messageSendFailed = true;
-  } finally {
-    delete inTransitMessages[peerID][messageID];
+    console.error('Unable to send the chat message because the payload protobuf does not ' +
+      `verify: ${chatErr}`);
   }
+
+  const chatPB = ChatPB.create(chatPayload);
+  const chatBytes = ChatPB.encode(chatPB).finish();    
+  // END - TODO.
 
   let sentMessageInsertedDoc;
 
   if (!messageSendFailed) {
     try {
-      sentMessageInsertedDoc = yield call(
-        [db.collections.chatmessage, 'insert'],
-        messageData
+      yield call(
+        sendChatMessage,
+        getMessageType('CHAT'),
+        peerID,
+        chatBytes,
       );
     } catch (e) {
       const msg = message.length > 10 ? `${message.slice(0, 10)}…` : message;
-      console.error(
-        `Unable to save the sent message "${msg}" in the ` + 'chat messages DB.'
-      );
+      console.error(`Unable to send the chat message "${msg}".`);
       console.error(e);
+      messageSendFailed = true;
+    } finally {
+      delete inTransitMessages[peerID][messageID];
+    }
+
+    if (!messageSendFailed) {
+      try {
+        sentMessageInsertedDoc = yield call(
+          [db.collections.chatmessage, 'insert'],
+          messageData
+        );
+      } catch (e) {
+        const msg = message.length > 10 ? `${message.slice(0, 10)}…` : message;
+        console.error(
+          `Unable to save the sent message "${msg}" in the ` + 'chat messages DB.'
+        );
+        console.error(e);
+      }
     }
   }
 
@@ -863,7 +890,6 @@ function* handleConvoMarkRead(action) {
   yield call(
     animationFrameInterval,
     () => {
-      console.log('boom');
       const msg = {
         ...convoData.messages[updateMessages[encryptedUpdateMessagesDb.length]]
       };
@@ -898,7 +924,7 @@ function* handleConvoMarkRead(action) {
 }
 
 function* handleDirectMessage(action) {
-  if (action.payload && action.payload.type === messageTypes.CHAT) {
+  if (action.payload && action.payload.type === getMessageType('CHAT')) {
     const peerID = action.payload.peerID;
     const message = action.payload.payload;
 
