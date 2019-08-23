@@ -8,7 +8,7 @@ export async function encodeCID(bytes) {
   }
 
   const mh = await encodeMultihash(Buffer.from(bytes));
-  return new CID(1, 'raw', mh);
+  return new CID(1, 'raw', mh, 'base58btc');
 }
 
 // EncodeMultihash - sha256 encode
@@ -19,3 +19,6 @@ export async function encodeMultihash(bytes) {
 
   return multihashing(Buffer.from(bytes), 'sha2-256')
 }
+
+console.log('eencode');
+window.encode = encodeCID;

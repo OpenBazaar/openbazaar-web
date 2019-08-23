@@ -1150,6 +1150,32 @@
         }
       }
     },
+    "Pickle": {
+      "fields": {
+        "section": {
+          "type": "Section",
+          "id": 1
+        },
+        "silly": {
+          "type": "string",
+          "id": 2
+        }
+      },
+      "nested": {
+        "Section": {
+          "values": {
+            "LISTING": 0,
+            "ORDER": 1,
+            "ORDER_CONFIRMATION": 2,
+            "ORDER_FULFILLMENT": 3,
+            "ORDER_COMPLETION": 4,
+            "DISPUTE": 5,
+            "DISPUTE_RESOLUTION": 6,
+            "REFUND": 7
+          }
+        }
+      }
+    },    
     "SignedListing": {
       "fields": {
         "listing": {

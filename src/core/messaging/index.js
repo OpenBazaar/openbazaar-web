@@ -79,10 +79,13 @@ function generateMessage(type, peerID, payloadBytes, requestID) {
   const messagePayload = {
     messageType: type,
     payload: {
-      type_url: `type.googleapis.com/${getMessageTypeName(type)}`,
+      // type_url: `type.googleapis.com/${getMessageTypeName(type)}`,
+      type_url: `type.googleapis.com/RicardianContract`,
       value: payloadBytes
     }
   };
+
+  console.dir(messagePayload);
 
   if (requestID) messagePayload.requestId = requestID;
 
@@ -92,7 +95,7 @@ function generateMessage(type, peerID, payloadBytes, requestID) {
   if (messageErr) {
     throw new Error(
       'The message payload does not verify according to the Message ' +
-        'protobuf schema.'
+        `protobuf schema: ${messageErr}`
     );
   }
 
@@ -200,7 +203,12 @@ export async function sendRequest(type, peerID, payloadBytes, options = {}) {
       opts.timeout
     );
 
-    await sendDirectMessage(node, peerID, message);
+    try {
+      await sendDirectMessage(node, peerID, message);
+    } catch (e) {
+      reject(e);
+    }
+
     resolve();
   });
 }
@@ -238,14 +246,15 @@ export async function openDirectMessage(encodedMessage, peerID, options = {}) {
   //   );
   // }
 
-  console.log(`1: ${decodedMessage.messageType}`);
-  console.log(`2: ${getMessageTypeName(decodedMessage.messageType)}`);
-
   const PB = getProtoMessageRoot().lookupType(
     getMessageTypeName(decodedMessage.messageType)
   );
 
+  const decoded = { ...decodedMessage };
+  delete decoded.messageType;
+
   return {
+    ...decoded,
     type: decodedMessage.messageType,
     payload: PB.toObject(PB.decode(decodedMessage.payload.value))
   };

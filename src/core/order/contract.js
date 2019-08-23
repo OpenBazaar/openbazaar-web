@@ -143,6 +143,9 @@ async function getSignedListing(listingHash) {
   // validateListing(); <--- TODO: need to implement  
 
   const SignedListingPB = getProtoContractsRoot().lookupType('SignedListing');
+
+  console.dir(JSON.parse(JSON.stringify(listing)));
+
   const slPB = SignedListingPB.fromObject(convertTimestamps(listing));
   verifySignaturesOnListing(slPB);
 
@@ -266,11 +269,16 @@ async function createContractWithOrder(data = {}, options = {}) {
         `by listing ${data.items[i].listingHash}.`);
     }
 
-    const serListing =
+    const ListingPB = 
       contractRoot
-        .lookupType('Listing')
+        .lookupType('Listing');
+
+    const serListing =
+      ListingPB
         .encode(listing)
         .finish();
+
+    console.log(Buffer.from(serListing).toString('base64'));
 
     const listingID = await encodeCID(serListing);
     item.listingHash = listingID.toString();
@@ -700,9 +708,12 @@ function sendOrder(contractPB) {
   return sendRequest(
     getProtoMessageRoot()
       .Message
-      .MessageType['MESSAGE'],
+      .MessageType['ORDER'],
     vendorPeerID,
-    contractPB
+    getProtoContractsRoot()
+      .lookupType('RicardianContract')
+      .encode(contractPB)
+      .finish()
   );
 }
 
@@ -740,10 +751,10 @@ export async function purchase(data, options = {}) {
 
   contractPB.buyerOrder.payment.amount = total;
 
-  const merchantResponse = await sendOrder(contractPB);
-
   console.log('contract');
   window.contract = contractPB;
+
+  const merchantResponse = await sendOrder(contractPB);
 
   console.log('merResp');
   window.merResp = merchantResponse;
@@ -751,3 +762,19 @@ export async function purchase(data, options = {}) {
 
 console.log('foo');
 window.foo = purchase;
+
+// const go = 'ChR0ZXN0LXRlc3QtdGVzdC1taWxseRLEAQouUW1RMlRoQkw2emNZeEJzQ0gyZlVWM0VVaVBNM3RZbWRuUDNxN2prZTIxdUJNcBpJCiQIARIg1JRiC99XTy49u47TrmPhebH2IoWanvr9rfG2+cj8O4YSIQLJRSKlbpvhAB4nyf2yr0gTbVTXwn8uL41usco/cwtyliJHMEUCIQDqnEyTrFKKNY0FRlbn9wC4+69ozF8C3meKcLQG36nseQIgfJs1dJdFTSM2lGg7hQ68O1PVjAZHWO2XRaogo3OMeUgaKwgEIgYI4LSc/wcqA0xUQyoDQlRDKgNCQ0gqA1pFQzIDVVNEQLgIUIDC1y8ioAIKFFRFU1QgVEVTVCBURVNUIG1pbGx5IGQ6/gEKDG11cmFrYW1pLmpwZxIuUW1WeVZIOFJhbTZNZTNpaHlLZ2p6SnNNMlhaeG5QajZQS1NmbmVSRmY4WmFhRBouUW1laFFoMlNDeVZuWXpZNTduVFAzOWRrbUU3Z0t5ekpHeUhUTko0dXpDM2QyRCIuUW1YcTFSTEt0d2E3VmNSemFhN0dTWEtoVWdIYnBicUhNZWhVS2RDeVVTV1hvNyouUW1VeHlBdHYzdzgxWVFnaEFtckVHTThpbjRYU01QNkROZEVnY1RqNm12UXRjMzIuUW1TODhUcVgySzlwU1VvdnFjczNXbkdhUDFRQjdoTXNSUHdMZFVXNmR5UzRoTFIDTkVXYgAqKQoMVVNBIHNoaXBzdGVyEAEaAuoBKhMKCFN0YW5kYXJkEBkaAzUtNyAK';
+// const js = 'ChR0ZXN0LXRlc3QtdGVzdC1taWxseRLGAQouUW1RMlRoQkw2emNZeEJzQ0gyZlVWM0VVaVBNM3RZbWRuUDNxN2prZTIxdUJNcBIAGkkKJAgBEiDUlGIL31dPLj27jtOuY+F5sfYihZqe+v2t8bb5yPw7hhIhAslFIqVum+EAHifJ/bKvSBNtVNfCfy4vjW6xyj9zC3KWIkcwRQIhAOqcTJOsUoo1jQVGVuf3ALj7r2jMXwLeZ4pwtAbfqex5AiB8mzV0l0VNIzaUaDuFDrw7U9WMBkdY7ZdFqiCjc4x5SBo6CAQQABgAIggI4LSc/wcQACoDTFRDKgNCVEMqA0JDSCoDWkVDMgNVU0Q6AEC4CEoAUIDC1y9dAAAAACKxAgoUVEVTVCBURVNUIFRFU1QgbWlsbHkSABoAIGQoADr+AQoMbXVyYWthbWkuanBnEi5RbVZ5Vkg4UmFtNk1lM2loeUtnanpKc00yWFp4blBqNlBLU2ZuZVJGZjhaYWFEGi5RbWVoUWgyU0N5Vm5Zelk1N25UUDM5ZGttRTdnS3l6Skd5SFROSjR1ekMzZDJEIi5RbVhxMVJMS3R3YTdWY1J6YWE3R1NYS2hVZ0hicGJxSE1laFVLZEN5VVNXWG83Ki5RbVV4eUF0djN3ODFZUWdoQW1yRUdNOGluNFhTTVA2RE5kRWdjVGo2bXZRdGMzMi5RbVM4OFRxWDJLOXBTVW92cWNzM1duR2FQMVFCN2hNc1JQd0xkVVc2ZHlTNGhMTQAAAABSA05FV2IGEgAYACAAKikKDFVTQSBzaGlwc3RlchABGgLqASoTCghTdGFuZGFyZBAZGgM1LTcgCkoAUgA=';
+
+// const ListingPB = getProtoContractsRoot().lookupType('Listing');
+// const listingGo = ListingPB.decode(Buffer.from(go, 'base64'));
+// const listingJs = ListingPB.decode(Buffer.from(js, 'base64'));
+
+// console.log('go js');
+// window.go = listingGo;
+// window.js = listingJs;
+
+const PicklePB = getProtoContractsRoot().lookupType('Pickle');
+console.log('Pickle');
+window.Pickle = PicklePB;
+

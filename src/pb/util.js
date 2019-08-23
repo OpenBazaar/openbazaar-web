@@ -41,6 +41,8 @@ export function convertTimestamps(obj) {
         RFC3339_REGEX.test(field)
       ) {
         newObj[key] = generatePbTimestamp(new Date(field));
+        if (newObj[key].seconds === 0) delete newObj[key].seconds;
+        if (newObj[key].nanos === 0) delete newObj[key].nanos;
       }
     });
 

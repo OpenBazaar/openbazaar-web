@@ -1,4 +1,6 @@
-import { getListing } from 'models/listing';
+// import { getListing } from 'models/listing';
+import { get } from 'axios';
+import { GATEWAY_BASE_URL } from 'core/constants';
 
 export async function cat(path, options = {}) {
   // So eventually this should come from our node. Getting by hash is relatively quick
@@ -7,5 +9,6 @@ export async function cat(path, options = {}) {
   // the dht is not working (not sure if its necessary), I'm having difficulty getting
   // on our forked network, etc...
 
-  return getListing(path);
+  // return getListing(path);
+  return get(`${GATEWAY_BASE_URL}ipfs/${path}`);
 }
