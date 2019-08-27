@@ -11,3 +11,7 @@ export function ellipsifyAfter(str, pos = 9999) {
 
   return str.length > pos ? `${str.slice(0, pos)}…` : str;
 }
+
+export function capitalize(str) {
+  return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
+}

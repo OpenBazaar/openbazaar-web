@@ -16,7 +16,11 @@ import {
 import { sendRequest } from 'core/messaging/index';
 import contractsJSON from 'pb/contracts.json';
 import { getProtoMessageRoot } from 'pb/roots/message';
-import { generatePbTimestamp, convertTimestamps } from 'pb/util';
+import {
+  generatePbTimestamp,
+  convertTimestamps,
+  goEncode,
+} from 'pb/util';
 import { getOwnProfile } from 'models/profile';
 import { normalizeCurCode, validateCur } from 'util/currency';
 import { getIdentity } from 'util/auth';
@@ -143,8 +147,6 @@ async function getSignedListing(listingHash) {
   // validateListing(); <--- TODO: need to implement  
 
   const SignedListingPB = getProtoContractsRoot().lookupType('SignedListing');
-
-  console.dir(JSON.parse(JSON.stringify(listing)));
 
   const slPB = SignedListingPB.fromObject(convertTimestamps(listing));
   verifySignaturesOnListing(slPB);
@@ -273,10 +275,7 @@ async function createContractWithOrder(data = {}, options = {}) {
       contractRoot
         .lookupType('Listing');
 
-    const serListing =
-      ListingPB
-        .encode(listing)
-        .finish();
+    const serListing = goEncode(listing, ListingPB);
 
     console.log(Buffer.from(serListing).toString('base64'));
 
@@ -342,11 +341,11 @@ async function createContractWithOrder(data = {}, options = {}) {
 async function parseContractForListing(hash, contractPB) {
   for (let i = 0; i < contractPB.vendorListings.length; i++) {
     const listing = contractPB.vendorListings[i];
-    const serListing =
+    const serListing = goEncode(
+      listing,
       getProtoContractsRoot()
         .lookupType('Listing')
-        .encode(listing)
-        .finish();
+    );
 
     const listingID = (await encodeCID(serListing)).toString();
     if (hash === listingID) return listing;
@@ -459,11 +458,11 @@ function calculateShippingTotalForListings(contractPB, hashedListings) {
     if (listingPB.metadata.contractType !== getContractTypes()['PHYSICAL_GOOD']) continue;
 
     const shippingOptions = listingPB.shippingOptions.reduce((acc, shipOptPB) => {
-      acc[shipOptPB.name.toLowerCase()] = shipOptPB;
+      acc[shipOptPB.name] = shipOptPB;
       return acc;
     }, {});
 
-    const itemOptionPB = shippingOptions[itemPB.shippingOption.name.toLowerCase()];
+    const itemOptionPB = shippingOptions[itemPB.shippingOption.name];
     
     if (!itemOptionPB) {
       throw new Error(`The shipping option ${itemPB.shippingOption.name} is not found in ` +
