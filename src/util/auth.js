@@ -47,6 +47,7 @@ export function login(mnemonic) {
           peerID,
           publicKey,
           privateKey,
+          keypair: vals[2].keypair,
           dbName,
           mnemonic,
           get masterKey() {
@@ -68,7 +69,6 @@ export function login(mnemonic) {
                 vals[2].peerID.slice(0, 32)
               );
               const encodedSig = script.signature.encode(sig, 1);
-              // this._escrowSig = encodedSig;
               this._escrowSig = encodedSig.slice(0, encodedSig.length - 1);
             }
             return this._escrowSig;

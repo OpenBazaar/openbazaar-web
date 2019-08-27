@@ -56,33 +56,81 @@ export function convertTimestamps(obj) {
 }
 
 function convertFields(obj, PB) {
+  const numericFields = [
+    'double',
+    'float',
+    'int32',
+    'int64',
+    'uint32',
+    'uint64',
+    'sint32',
+    'sint64',
+    'fixed32',
+    'fixed64',
+    'sfixed32',
+    'sfixed64',
+  ];
+
   const converted = Object
     .keys(obj)
     .reduce((converted, field) => {
-      const fieldType = PB.fields[field];
+      const value = obj[field];
 
-      if (fieldType) {
-        const FieldPB = PB[fieldType.type];
+      console.log('\n');
+      console.log(`the val for ${field} is ${value}`);
 
-        if (fieldType.resolvedType instanceof protobuf.Enum) {
-          // If the field is an Enum and it's set to the first item (default item)
-          // return the nothing so the field is not included in the resulting object.
-          if (FieldPB && (obj[field] === 0)) {
+      const Field = PB.fields[field];
+
+      if (Field) {
+        const resolvedType = Field.resolvedType;
+        console.log(`the field type is ${Field.type}`);
+
+        if (resolvedType) {
+          if (resolvedType instanceof protobuf.Enum) {
+            // If the field is an Enum and it's set to the first item (default item)
+            // return the nothing so the field is not included in the resulting object.
+            if (value === 0) {
+              return converted;
+            }
+          } else if (Field.repeated) {
+            converted[field] = value
+              .map(fieldObj => (
+                resolvedType ?
+                  convertFields(fieldObj, resolvedType) : fieldObj
+              ));
+            return converted;
+          } else {
+            converted[field] = convertFields(value, resolvedType);
             return converted;
           }
-        } else if (fieldType.repeated) {
-          converted[field] = obj[field]
-            .map(fieldObj => (
-              FieldPB ?
-                convertFields(fieldObj, FieldPB) : fieldObj
-            ));
-        } else if (FieldPB) {
-          converted[field] = convertFields(obj[field], FieldPB);
-          return converted;
+        } else {
+          if (numericFields.includes(Field.type)) {
+            if (value !== 0) {
+              converted[field] = value;
+            } else {
+              console.log('gotz a default numbero');
+            }
+            return converted;
+          } else if (Field.type === 'bool') {
+            if (value !== false) {
+              converted[field] = value;
+            } else {
+              console.log('gotz a default bool');
+            }
+            return converted;
+          } else if (Field.type === 'string') {
+            if (value !== '') {
+              converted[field] = value;
+            } else {
+              console.log('gotz a default stirrup');
+            }
+            return converted;
+          }          
         }
       }
 
-      converted[field] = obj[field];
+      console.log('adding the field beaver');
+      converted[field] = value;
       return converted;
     }, {});
 
@@ -90,23 +138,32 @@ function convertFields(obj, PB) {
 }
 
 /*
- * Will encode a protobuf in a way that matches how GO does it.
+ * Will encode a protobuf without defaults, which is how GO (and perhaps other pb
+ * implementations) does it.
  *
  * @param {object} message - A plain javascript object or protobuf instance.
  * @param {object} PB - The protobuf class that corresponds to the provided message.
  *
  * @returns {Uint8Array} - The encoded message.
  */
-export function goEncode(message, PB) {
-  let messageObj = message;
+export function encodeWithoutDefaults(message, PB) {
+  const messagePB =
+    message instanceof protobuf.Message ?
+      message :
+      PB.create(message);
 
-  if (message instanceof protobuf.Message) {
-    messageObj = PB.toObject(message, {
-      defaults: false,
-      arrays: false,
-      objects: false,
-    });
+  const pbErr = PB.verify(message);
+
+  if (pbErr) {
+    throw new Error(`Unable to verify the provided message protobuf: ${pbErr}`);
   }
+
+  const messageObj = PB.toObject(messagePB, {
+    defaults: false,
+    arrays: false,
+    objects: false,
+    oneofs: true,
+  });
 
   const converted = convertFields(messageObj, PB);
 

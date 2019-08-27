@@ -19,7 +19,7 @@ import { getProtoMessageRoot } from 'pb/roots/message';
 import {
   generatePbTimestamp,
   convertTimestamps,
-  goEncode,
+  encodeWithoutDefaults,
 } from 'pb/util';
 import { getOwnProfile } from 'models/profile';
 import { normalizeCurCode, validateCur } from 'util/currency';
@@ -252,7 +252,7 @@ async function createContractWithOrder(data = {}, options = {}) {
   signedListings.forEach(sl => {
     contract.vendorListings.push(sl.listing);
     contract.signatures.push(sl.signature);
-  });  
+  });
 
   for (let i = 0; i < signedListings.length; i++) {
     const dataItem = data.items[i];
@@ -275,9 +275,8 @@ async function createContractWithOrder(data = {}, options = {}) {
       contractRoot
         .lookupType('Listing');
 
-    const serListing = goEncode(listing, ListingPB);
-
-    console.log(Buffer.from(serListing).toString('base64'));
+    // const serListing = encodeWithoutDefaults(listing, ListingPB);
+    const serListing = ListingPB.encode(listing).finish();
 
     const listingID = await encodeCID(serListing);
     item.listingHash = listingID.toString();
@@ -341,11 +340,16 @@ async function createContractWithOrder(data = {}, options = {}) {
 async function parseContractForListing(hash, contractPB) {
   for (let i = 0; i < contractPB.vendorListings.length; i++) {
     const listing = contractPB.vendorListings[i];
-    const serListing = goEncode(
-      listing,
-      getProtoContractsRoot()
-        .lookupType('Listing')
-    );
+    // const serListing = encodeWithoutDefaults(
+    //   listing,
+    //   getProtoContractsRoot()
+    //     .lookupType('Listing')
+    // );
+
+    const serListing = getProtoContractsRoot()
+      .lookupType('Listing')
+      .encode(listing)
+      .finish();
 
     const listingID = (await encodeCID(serListing)).toString();
     if (hash === listingID) return listing;
@@ -544,7 +548,7 @@ function calculateShippingTotalForListings(contractPB, hashedListings) {
   return shippingTotal;
 }
 
-function getOrderSignature(contractPB, options = {}) {
+async function getOrderSignature(contractPB, options = {}) {
   const identity = options.identity || getIdentity();
 
   if (!identity) {
@@ -553,30 +557,26 @@ function getOrderSignature(contractPB, options = {}) {
   }
 
   const pbRoot = getProtoContractsRoot();
-  const serializedOrder =
-    pbRoot
-      .lookupType('BuyerOrder')
-      .encode(contractPB.buyerOrder)
-      .finish();
+  const serializedOrder = encodeWithoutDefaults(
+    contractPB.buyerOrder,
+    pbRoot.lookupType('Order')
+  );
+
+  console.log(Buffer.from(serializedOrder).toString('base64'));
 
   const signature = {
-    section: pbRoot.Signature.Section['ORDER'],
-    signatureBytes: identity.keypair.sign(serializedOrder),
+    section: pbRoot.Signature.Section.ORDER,
+    signatureBytes: await identity.keypair.sign(serializedOrder),
   }
 
   const SignaturePB = pbRoot.lookupType('Signature');
   const sigPbErr = SignaturePB.verify(signature);
 
+  if (sigPbErr) {
+    throw new Error(`Unable to validate the order signature protobuf: ${sigPbErr}`);
+  }
 
-  // s := new(pb.Signature)
-  // s.Section = pb.Signature_ORDER
-  // idSig, err := n.IpfsNode.PrivateKey.Sign(serializedOrder)
-  // if err != nil {
-  //   return contract, err
-  // }
-  // s.SignatureBytes = idSig
-  // contract.Signatures = append(contract.Signatures, s)
-  // return contract, nil
+  return SignaturePB.create(signature);
 }
 
 // CalculateOrderTotal - calculate the total in base units
@@ -748,7 +748,10 @@ export async function purchase(data, options = {}) {
     throw new Error(`Unable to calculate the order total: ${e.stack}`);
   }
 
+  console.log(`the order total is ${total}`);
+
   contractPB.buyerOrder.payment.amount = total;
+  contractPB.signatures.push(await getOrderSignature(contractPB));
 
   console.log('contract');
   window.contract = contractPB;
