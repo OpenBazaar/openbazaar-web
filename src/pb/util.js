@@ -2,9 +2,6 @@ import protobuf from 'protobufjs';
 import { isObjectLike } from 'lodash';
 import { RFC3339_REGEX } from 'core/constants';
 
-console.log('proto');
-window.proto = protobuf;
-
 export function generatePbTimestamp(timestamp = new Date()) {
   if (!(timestamp instanceof Date)) {
     throw new Error(
@@ -76,14 +73,10 @@ function convertFields(obj, PB) {
     .reduce((converted, field) => {
       const value = obj[field];
 
-      console.log('\n');
-      console.log(`the val for ${field} is ${value}`);
-
       const Field = PB.fields[field];
 
       if (Field) {
         const resolvedType = Field.resolvedType;
-        console.log(`the field type is ${Field.type}`);
 
         if (resolvedType) {
           if (resolvedType instanceof protobuf.Enum) {
@@ -107,29 +100,22 @@ function convertFields(obj, PB) {
           if (numericFields.includes(Field.type)) {
             if (value !== 0) {
               converted[field] = value;
-            } else {
-              console.log('gotz a default numbero');
             }
             return converted;
           } else if (Field.type === 'bool') {
             if (value !== false) {
               converted[field] = value;
-            } else {
-              console.log('gotz a default bool');
             }
             return converted;
           } else if (Field.type === 'string') {
             if (value !== '') {
               converted[field] = value;
-            } else {
-              console.log('gotz a default stirrup');
             }
             return converted;
           }          
         }
       }
 
-      console.log('adding the field beaver');
       converted[field] = value;
       return converted;
     }, {});

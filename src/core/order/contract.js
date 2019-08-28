@@ -6,6 +6,7 @@ import { toB58String } from 'multihashes';
 import {
   CURRENT_LISTING_VERSION,
   MIN_SUPPORTED_LISTING_VERSION,
+  TICKER_URL,
 } from 'core/constants';
 import { encodeCID, encodeMultihash } from 'core/util';
 import { cat } from 'core/ipfs/cat';
@@ -22,7 +23,11 @@ import {
   encodeWithoutDefaults,
 } from 'pb/util';
 import { getOwnProfile } from 'models/profile';
-import { normalizeCurCode, validateCur } from 'util/currency';
+import {
+  normalizeCurCode,
+  validateCur,
+  toBaseUnits,
+} from 'util/currency';
 import { getIdentity } from 'util/auth';
 
 let protoContractsRoot;
@@ -275,8 +280,7 @@ async function createContractWithOrder(data = {}, options = {}) {
       contractRoot
         .lookupType('Listing');
 
-    // const serListing = encodeWithoutDefaults(listing, ListingPB);
-    const serListing = ListingPB.encode(listing).finish();
+    const serListing = encodeWithoutDefaults(listing, ListingPB);
 
     const listingID = await encodeCID(serListing);
     item.listingHash = listingID.toString();
@@ -340,16 +344,11 @@ async function createContractWithOrder(data = {}, options = {}) {
 async function parseContractForListing(hash, contractPB) {
   for (let i = 0; i < contractPB.vendorListings.length; i++) {
     const listing = contractPB.vendorListings[i];
-    // const serListing = encodeWithoutDefaults(
-    //   listing,
-    //   getProtoContractsRoot()
-    //     .lookupType('Listing')
-    // );
-
-    const serListing = getProtoContractsRoot()
-      .lookupType('Listing')
-      .encode(listing)
-      .finish();
+    const serListing = encodeWithoutDefaults(
+      listing,
+      getProtoContractsRoot()
+        .lookupType('Listing')
+    );
 
     const listingID = (await encodeCID(serListing)).toString();
     if (hash === listingID) return listing;
@@ -363,8 +362,8 @@ function getWallet(curCode) {
   return {
     exchangeRates() {
       return {
-        getExchangeRate() {
-          return 10785;
+        getExchangeRate(cur) {
+          return 9711.01;
         }
       }
     }
@@ -419,7 +418,34 @@ function getPriceInBaseUnits(paymentCoin, pricingCur, amount) {
     throw new Error(`Unable to obtain a valid exchange rate for ${paymentCoin}.`);
   }
 
-  return (1 / exchangeRate) * amount;
+  // console.log('\n');
+  // console.log(amount);
+  // console.log(toBaseUnits(1, pricingCur));
+  // console.log(exchangeRate);
+  
+  // const poo = (
+  //   Math.round((amount / toBaseUnits(1, pricingCur)) * (1 / exchangeRate))
+  // );
+
+  // console.log(`poo: ${poo}`);
+
+  // const moo = toBaseUnits(
+  //   Math.round((amount / toBaseUnits(1, pricingCur)) * (1 / exchangeRate)),
+  //   paymentCoin
+  // );
+
+  // console.log(`result: ${moo}`);
+
+  // console.log('\n');  
+
+  return (
+    Math.round(
+      toBaseUnits(
+        (amount / toBaseUnits(1, pricingCur)) * (1 / exchangeRate),
+        paymentCoin
+      )      
+    )
+  );
 }
 
 function getSelectedSku(listingPB, itemOptions) {
@@ -446,7 +472,7 @@ function getSelectedSku(listingPB, itemOptions) {
 }
 
 // hashedListings - listings hashed by their item listing hash.
-function calculateShippingTotalForListings(contractPB, hashedListings) {
+async function calculateShippingTotalForListings(contractPB, hashedListings) {
   const itemShipping = [];
   let shippingTotal;
 
@@ -748,9 +774,8 @@ export async function purchase(data, options = {}) {
     throw new Error(`Unable to calculate the order total: ${e.stack}`);
   }
 
-  console.log(`the order total is ${total}`);
-
   contractPB.buyerOrder.payment.amount = total;
+  console.log(`the amount is ${contractPB.buyerOrder.payment.amount}`);
   contractPB.signatures.push(await getOrderSignature(contractPB));
 
   console.log('contract');

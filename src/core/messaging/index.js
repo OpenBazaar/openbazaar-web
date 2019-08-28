@@ -6,6 +6,9 @@ import { getRandomInt } from 'util/number';
 import messageJSON from 'pb/message.json';
 // import { typesData as messageTypesData } from './types';
 
+console.log('proto');
+window.proto = protobuf;
+
 let protoMessageRoot;
 
 function getProtoMessageRoot() {
@@ -146,24 +149,7 @@ async function sendDirectMessage(node, peerID, message) {
   });
 }
 
-// function prepareMessageForSend(type, peerID, serializedPb) {
-//   if (!isValidMessageType(type)) {
-//     throw new Error(`${type} is not a valid message type.`);
-//   }
-
-//   if (typeof peerID !== 'string' || !peerID) {
-//     throw new Error('A peerID must be provided as a non-empty string.');
-//   }
-
-//   if (typeof payload !== 'object') {
-//     throw new Error('A payload must be provided as an object.');
-//   }
-
-//   return generateMessage(messageType, peerID, payload);
-// }
-
 export async function sendMessage(type, peerID, payloadBytes, options = {}) {
-  console.log(`sendin ${type}`);
   const node = options.node || (await getNode());
 
   if (!(node instanceof IPFS)) {
@@ -239,12 +225,17 @@ export async function openDirectMessage(encodedMessage, peerID, options = {}) {
     decodedMessage = Message.decodeDelimited(encodedMessage);
   }
 
+  console.dir(decodedMessage);
+
   // if (!isValidMessageType(decodedMessage.messageType)) {
   //   throw new Error(
   //     'Unable to process the direct message because it contains ' +
   //       `an unrecognized message type: ${decodedMessage.messageType}.`
   //   );
   // }
+  const silly = Message.decode(decodedMessage.payload.value);
+  console.log('silly');
+  window.silly = silly;
 
   const PB = getProtoMessageRoot().lookupType(
     getMessageTypeName(decodedMessage.messageType)
