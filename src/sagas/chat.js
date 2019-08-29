@@ -748,12 +748,16 @@ function* handleSendMessage(action) {
   let sentMessageInsertedDoc;
 
   if (!messageSendFailed) {
+    // todo: the 'CHAT', 'Chat' dynamic is confusing there. Probably better to
+    // encapsulate that into an objct that can be referenced via one string,
+    // e.g. 'CHAT'.
     try {
       yield call(
         sendChatMessage,
-        getMessageType('CHAT'),
-        peerID,
+        'CHAT',
+        'Chat',
         chatBytes,
+        peerID,
       );
     } catch (e) {
       const msg = message.length > 10 ? `${message.slice(0, 10)}…` : message;

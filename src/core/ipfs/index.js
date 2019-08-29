@@ -123,8 +123,10 @@ const _create = async (options = {}) => {
 
                   openDirectMessage(msg, sender, { node })
                     .then(openedMessage => {
-                      console.log('opened message jelly');
-                      window.jelly = openedMessage;
+                      console.log('opened message (window.openedMessage)');
+                      window.openedMessage = openedMessage;
+
+                      if (openedMessage.isResponse) return;
 
                       _store.dispatch(
                         directMessage({

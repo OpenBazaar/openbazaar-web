@@ -8,9 +8,6 @@ import messageJSON from 'pb/message.json';
 import getPB from 'pb/util/getPB';
 import { getRandomInt } from 'util/number';
 
-console.log('proto');
-window.proto = protobuf;
-
 let protoMessageRoot;
 
 function getProtoMessageRoot() {
@@ -21,76 +18,45 @@ function getProtoMessageRoot() {
   return protoMessageRoot;
 }
 
-let reverseIndexedMTypes;
-
-/*
- * Will return an object where message types are index by value as opposed to name.
- * Instead of how the PB stores it, e.g. { CHAT: 1 }, this would return { 1: 'Chat' }.
- * Will fascilate an easy way to do a reverse lookup when you have the value and
- * need the verbose name.
- */
-function reverseIndexedMessageTypes() {
-  if (!reverseIndexedMTypes) {
-    reverseIndexedMTypes = {};
-    const mTypes = getProtoMessageRoot()
-      .Message
-      .MessageType;
-    Object
-      .keys(mTypes)
-      .forEach(type => (
-        reverseIndexedMTypes[mTypes[type]] =
-          type
-            .split('_')
-            .map(word => (
-              `${word.charAt(0).toUpperCase()}${word.slice(1).toLowerCase()}`
-            ))
-            .join('')
-      ));
-  }
-
-  return reverseIndexedMTypes;
-}
-
-/*
- * Given an integer value, will return the message type verbose name. For example,
- * a value of 1 would return 'Chat'.
- */
-function getMessageTypeName(value) {
-  if (!Number.isInteger(value)) {
-    throw new Error('Please provide a value as an integer.');
-  }
-
-  return reverseIndexedMessageTypes()[value];
-}
-
 /*
  * Given a verbose name (e.g. CHAT), will return the numeric message type as declared
  * in the message protobuf file.
  */
 export function getMessageType(name) {
-  return getProtoMessageRoot()
-    .Message
+  return getPB('Message')
     .MessageType[name];
 }
 
-// doc me up
-function generateMessage(type, peerID, payloadBytes, requestID) {
+/*
+ * Will create a PB encoded message ready to send over the write.
+ *
+ * @param {string} messageType - The string message type corresponding to
+ *   the keys in the MessageType enum from the message proto declaration,
+ *   e.g. CHAT, BLOCK, etc...
+ * @param {string} payloadType - The name of the protobuf class the payload
+ *   represents. This may be the same as messageType, but at times is distinct.
+ * @param {string} payloadBytes - The protobuf encoded payload value.
+ * @param {string} [requestID] - If you are sending a request, please provide
+ *   an integer request ID.
+ * @returns {Uint8Array} The encoded message protobuf.
+ */
+function generateMessage(
+  messageType,
+  payloadType,
+  payloadBytes,
+  requestID
+) {
   if (requestID !== undefined && !Number.isInteger(requestID)) {
     throw new Error('If providing a requestID, it must be provided as an integer.');
   }
 
-  console.log(`the pickle type is ${type}`);
-
   const messagePayload = {
-    messageType: type,
+    messageType: getMessageType(messageType),
     payload: {
-      // type_url: `type.googleapis.com/${getMessageTypeName(type)}`,
-      type_url: `type.googleapis.com/RicardianContract`,
+      type_url: `type.googleapis.com/${payloadType}`,
       value: payloadBytes
     }
   };
-
-  console.dir(messagePayload);
 
   if (requestID) messagePayload.requestId = requestID;
 
@@ -109,10 +75,6 @@ function generateMessage(type, peerID, payloadBytes, requestID) {
 
   return messageSerialized;
 }
-
-// function isValidMessageType(type) {
-//   return typeof messageTypesData[type] !== 'undefined';
-// }
 
 // doc me up
 // message should already be a pb encoded message
@@ -151,14 +113,38 @@ async function sendDirectMessage(node, peerID, message) {
   });
 }
 
-export async function sendMessage(type, peerID, payloadBytes, options = {}) {
+/*
+ * Will send off a network message. At this time, it will only be a direct
+ * message and fail if the receiver is unreachable.
+ *
+ * @param {string} messageType - The string message type corresponding to
+ *   the keys in the MessageType enum from the message proto declaration,
+ *   e.g. CHAT, BLOCK, etc...
+ * @param {string} payloadType - The name of the protobuf class the payload
+ *   represents. This may be the same as messageType, but at times is distinct.
+ * @param {string} payloadBytes - The protobuf encoded payload value.
+ * @param {string} peerID - The base58 encoded peerID of the message recipient.
+ * @returns {Object} A promise which will resolve if the message is successfully
+ *   sent.
+ */
+export async function sendMessage(
+  messageType,
+  payloadType,
+  payloadBytes,
+  peerID,
+  options = {}
+) {
   const node = options.node || (await getNode());
 
   if (!(node instanceof IPFS)) {
     throw new Error('An IPFS node instance is required.');
   }
 
-  const message = generateMessage(type, peerID, payloadBytes);
+  const message = generateMessage(
+    messageType,
+    payloadType,
+    payloadBytes
+  );
 
   try {
     await sendDirectMessage(node, peerID, message);
@@ -168,7 +154,28 @@ export async function sendMessage(type, peerID, payloadBytes, options = {}) {
   }
 }
 
-export async function sendRequest(type, peerID, payloadBytes, options = {}) {
+/*
+ * Will send off a network message. At this time, it will only be a direct
+ * message and fail if the receiver is unreachable.
+ *
+ * @param {string} messageType - The string message type corresponding to
+ *   the keys in the MessageType enum from the message proto declaration,
+ *   e.g. CHAT, BLOCK, etc...
+ * @param {string} payloadType - The name of the protobuf class the payload
+ *   represents. This may be the same as messageType, but at times is distinct.
+ * @param {string} payloadBytes - The protobuf encoded payload value.
+ * @param {string} peerID - The base58 encoded peerID of the message recipient.
+ * @returns {Object} A promise which will resolve if the message is successfully
+ *   sent and a response is received before the timeout expires. Otherwise the
+ *   promise will fail.
+ */
+export async function sendRequest(
+  messageType,
+  payloadType,
+  payloadBytes,
+  peerID,
+  options = {}
+) {
   const opts = {
     timeout: 30000,
     ...options,
@@ -182,7 +189,12 @@ export async function sendRequest(type, peerID, payloadBytes, options = {}) {
 
   return new Promise(async (resolve, reject) => {
     const requestId = getRandomInt(1, 2147483647);
-    const message = generateMessage(type, peerID, payloadBytes, requestId);
+    const message = generateMessage(
+      messageType,
+      payloadType,
+      payloadBytes,
+      requestId
+    );
 
     // node.handle(() => {});
 

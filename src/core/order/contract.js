@@ -21,6 +21,7 @@ import {
   convertTimestamps,
   encodeWithoutDefaults,
 } from 'pb/util/index';
+import getPB from 'pb/util/getPB';
 import { getOwnProfile } from 'models/profile';
 import {
   normalizeCurCode,
@@ -31,6 +32,10 @@ import { getIdentity } from 'util/auth';
 
 let protoContractsRoot;
 
+// TODO: remove this in liu of getPB.
+// TODO: remove this in liu of getPB.
+// TODO: remove this in liu of getPB.
+// TODO: remove this in liu of getPB.
 function getProtoContractsRoot() {
   if (!protoContractsRoot) {
     protoContractsRoot = protobuf.Root.fromJSON(contractsJSON);
@@ -110,8 +115,7 @@ async function validateVendorID(listing) {
 
 async function verifySignaturesOnListing(slPB) {
   await verifySignature(
-    getProtoContractsRoot()
-      .lookupType('Listing')
+    getPB('Listing')
       .encode(slPB.listing)
       .finish(),
     slPB
@@ -730,14 +734,12 @@ function sendOrder(contractPB) {
   }
 
   return sendRequest(
-    getProtoMessageRoot()
-      .Message
-      .MessageType['ORDER'],
-    vendorPeerID,
-    getProtoContractsRoot()
-      .lookupType('RicardianContract')
+    'ORDER',
+    'RicardianContract',
+    getPB('RicardianContract')
       .encode(contractPB)
-      .finish()
+      .finish(),
+    vendorPeerID,
   );
 }
 

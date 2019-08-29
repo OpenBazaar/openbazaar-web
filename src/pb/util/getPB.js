@@ -40,6 +40,9 @@ const protoJSONMap = {
   SignedData: messageJSON,
 };
 
+// todo: memoize me;
+// todo: memoize me;
+// todo: memoize me;
 export default function(type) {
   let PB;
 
