@@ -187,7 +187,16 @@ export async function sendRequest(
     throw new Error('An IPFS node instance is required.');
   }
 
-  return new Promise(async (resolve, reject) => {
+  const RESPONSE_EVENT = 'response';
+  let responseHandler;
+
+  const cleanup = () => {
+    if (responseHandler) {
+      node.removeListener(RESPONSE_EVENT, responseHandler);
+    }
+  };
+  
+  const promise = new Promise(async (resolve, reject) => {
     const requestId = getRandomInt(1, 2147483647);
     const message = generateMessage(
       messageType,
@@ -196,7 +205,11 @@ export async function sendRequest(
       requestId
     );
 
-    // node.handle(() => {});
+    responseHandler = e => {
+      if (requestId === e.requestId) resolve(e.data);
+    }    
+
+    node.on(RESPONSE_EVENT, responseHandler);
 
     setTimeout(
       () => reject(new Error('Request timed out.')),
@@ -211,6 +224,12 @@ export async function sendRequest(
 
     resolve();
   });
+
+  promise
+    .then(cleanup)
+    .catch(cleanup);
+
+  return promise;
 }
 
 export async function openDirectMessage(encodedMessage, peerID, options = {}) {

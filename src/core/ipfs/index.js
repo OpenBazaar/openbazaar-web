@@ -96,7 +96,7 @@ const _create = async (options = {}) => {
           }`
         );
 
-        node.handle((protocol, conn) => {
+        node.libp2p.handle(IPFS.OB_PROTOCOL, (protocol, conn) => {
           console.log('Pulling in incoming message');
 
           conn.getPeerInfo((err, peerInfo) => {
@@ -126,7 +126,10 @@ const _create = async (options = {}) => {
                       console.log('opened message (window.openedMessage)');
                       window.openedMessage = openedMessage;
 
-                      if (openedMessage.isResponse) return;
+                      if (openedMessage.isResponse) {
+                        node.emit('response', { data: openedMessage });
+                        return;
+                      }
 
                       _store.dispatch(
                         directMessage({
