@@ -6,7 +6,6 @@ import { toB58String } from 'multihashes';
 import {
   CURRENT_LISTING_VERSION,
   MIN_SUPPORTED_LISTING_VERSION,
-  TICKER_URL,
 } from 'core/constants';
 import { encodeCID, encodeMultihash } from 'core/util';
 import { cat } from 'core/ipfs/cat';
@@ -21,7 +20,7 @@ import {
   generatePbTimestamp,
   convertTimestamps,
   encodeWithoutDefaults,
-} from 'pb/util';
+} from 'pb/util/index';
 import { getOwnProfile } from 'models/profile';
 import {
   normalizeCurCode,

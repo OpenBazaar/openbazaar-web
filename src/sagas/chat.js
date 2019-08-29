@@ -10,7 +10,7 @@ import {
   sendMessage as sendChatMessage,
   getMessageType,
 } from 'core/messaging/index';
-import { generatePbTimestamp } from 'pb/util';
+import { generatePbTimestamp } from 'pb/util/index';
 import { getProtoMessageRoot } from 'pb/roots/message';
 import {
   convosRequest,

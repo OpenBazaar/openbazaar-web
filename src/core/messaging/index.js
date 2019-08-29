@@ -1,10 +1,12 @@
-import IPFS from 'core/ipfs/ipfs';
 import pull from 'pull-stream';
 import protobuf from 'protobufjs';
+import IPFS from 'core/ipfs/ipfs';
 import { get as getNode } from 'core/ipfs/index';
-import { getRandomInt } from 'util/number';
+
 import messageJSON from 'pb/message.json';
-// import { typesData as messageTypesData } from './types';
+
+import getPB from 'pb/util/getPB';
+import { getRandomInt } from 'util/number';
 
 console.log('proto');
 window.proto = protobuf;
@@ -227,19 +229,23 @@ export async function openDirectMessage(encodedMessage, peerID, options = {}) {
 
   console.dir(decodedMessage);
 
-  // if (!isValidMessageType(decodedMessage.messageType)) {
-  //   throw new Error(
-  //     'Unable to process the direct message because it contains ' +
-  //       `an unrecognized message type: ${decodedMessage.messageType}.`
-  //   );
-  // }
-  const silly = Message.decode(decodedMessage.payload.value);
-  console.log('silly');
-  window.silly = silly;
+  let PB;
+  let payloadType;
 
-  const PB = getProtoMessageRoot().lookupType(
-    getMessageTypeName(decodedMessage.messageType)
-  );
+  try {
+    const splitType = decodedMessage
+        .payload
+        .type_url
+        .split('/');
+    payloadType = splitType[splitType.length - 1];
+    PB = getPB(payloadType);
+  } catch (e) {
+    // pass
+  }
+
+  if (!PB) {
+    throw new Error(`Unable to obtain the protobuf class for type ${payloadType}`);
+  }
 
   const decoded = { ...decodedMessage };
   delete decoded.messageType;

@@ -97,6 +97,9 @@ function convertFields(obj, PB) {
             return converted;
           }
         } else {
+          // TODO: this will need to be updated to account for the fact that
+          // longs will be represented as strings with the default being "0"
+          // (I think)
           if (numericFields.includes(Field.type)) {
             if (value !== 0) {
               converted[field] = value;
