@@ -237,7 +237,7 @@ class Chat extends Component {
               peerID: convoData.peerID
             })
           }
-          onMessageRetrySend={message => this.handleMessageRetrySend(message)}
+          onMessageRetrySend={messageID => this.handleMessageRetrySend(messageID)}
           onMessageCancel={messageID => this.handleMessageCancel(messageID)}
           lastMessageOutgoing={
             !!(
