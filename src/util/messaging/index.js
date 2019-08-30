@@ -20,7 +20,7 @@ function generateMessage(type, peerID, payload) {
   const pbErr = PB.verify(payload);
 
   if (pbErr) {
-    throw new Error('The payload does verify according to the protobuf schema for the ' +
+    throw new Error('The payload does not verify according to the protobuf schema for the ' +
       'given type.');
   }
 
