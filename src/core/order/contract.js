@@ -1,4 +1,3 @@
-import protobuf from 'protobufjs';
 import { fromPublicKey } from 'bip32';
 import { ECPair } from 'bitcoinjs-lib';
 import { createFromPubKey } from 'peer-id';
@@ -14,14 +13,12 @@ import {
   verifyEscrowSignature,
 } from 'core/signatures';
 import { sendRequest } from 'core/messaging/index';
-import contractsJSON from 'pb/contracts.json';
-import { getProtoMessageRoot } from 'pb/roots/message';
 import {
   generatePbTimestamp,
   convertTimestamps,
   encodeWithoutDefaults,
 } from 'pb/util/index';
-import getPB from 'pb/util/getPB';
+import getPB, { getContractsRoot } from 'pb/util/getPB';
 import { getOwnProfile } from 'models/profile';
 import {
   normalizeCurCode,
@@ -29,26 +26,6 @@ import {
   toBaseUnits,
 } from 'util/currency';
 import { getIdentity } from 'util/auth';
-
-let protoContractsRoot;
-
-// TODO: remove this in liu of getPB.
-// TODO: remove this in liu of getPB.
-// TODO: remove this in liu of getPB.
-// TODO: remove this in liu of getPB.
-function getProtoContractsRoot() {
-  if (!protoContractsRoot) {
-    protoContractsRoot = protobuf.Root.fromJSON(contractsJSON);
-  }
-  
-  return protoContractsRoot;
-}
-
-console.log('root');
-window.root = getProtoContractsRoot();
-
-console.log('mRoot');
-window.mRoot = getProtoMessageRoot();
 
 function getRatingKeysForOrder(purchaseData = {}, ts, identity, chaincode) {
   const ratingsKeys = [];
@@ -66,7 +43,7 @@ function getRatingKeysForOrder(purchaseData = {}, ts, identity, chaincode) {
   return ratingsKeys;
 }
 
-console.log('hey ho lets go on the show with a Buffer flo');
+console.log('Buffer');
 window.Buffer = Buffer;
 
 function validateListingVersionNumber(listing) {
@@ -154,12 +131,12 @@ async function getSignedListing(listingHash) {
   await validateVendorID(listing.listing);
   // validateListing(); <--- TODO: need to implement  
 
-  const SignedListingPB = getProtoContractsRoot().lookupType('SignedListing');
+  const SignedListingPB = getPB('SignedListing');
 
   const slPB = SignedListingPB.fromObject(convertTimestamps(listing));
   verifySignaturesOnListing(slPB);
 
-  const SignaturePB = getProtoContractsRoot().lookupType('Signature');
+  const SignaturePB = getPB('Signature');
   const signature = {
     section: SignaturePB.Section.LISTING,
     signatureBytes: slPB.signature,
@@ -176,8 +153,7 @@ function isCurrencyAccepted(curCode, acceptedCurs) {
 }
 
 function getContractTypes() {
-  return getProtoContractsRoot()
-    .Listing
+  return getPB('Listing')
     .Metadata
     .ContractType;
 }
@@ -204,7 +180,7 @@ async function createContractWithOrder(data = {}, options = {}) {
 
   const timestamp = generatePbTimestamp();
   const chaincode = Buffer.from(crypto.getRandomValues(new Uint8Array(32)));
-  const contractRoot = getProtoContractsRoot();
+  const contractRoot = getContractsRoot();
 
   const contract = {
     buyerOrder: {
@@ -279,9 +255,7 @@ async function createContractWithOrder(data = {}, options = {}) {
         `by listing ${data.items[i].listingHash}.`);
     }
 
-    const ListingPB = 
-      contractRoot
-        .lookupType('Listing');
+    const ListingPB = getPB('Listing');
 
     const serListing = encodeWithoutDefaults(listing, ListingPB);
 
@@ -334,7 +308,7 @@ async function createContractWithOrder(data = {}, options = {}) {
   //   }
   // }
 
-  const ContractPB = contractRoot.lookupType('RicardianContract');
+  const ContractPB = getPB('RicardianContract');
   const contractPbErr = ContractPB.verify(contract);
 
   if (contractPbErr) {
@@ -349,8 +323,7 @@ async function parseContractForListing(hash, contractPB) {
     const listing = contractPB.vendorListings[i];
     const serListing = encodeWithoutDefaults(
       listing,
-      getProtoContractsRoot()
-        .lookupType('Listing')
+      getPB('Listing')
     );
 
     const listingID = (await encodeCID(serListing)).toString();
@@ -421,26 +394,6 @@ function getPriceInBaseUnits(paymentCoin, pricingCur, amount) {
     throw new Error(`Unable to obtain a valid exchange rate for ${paymentCoin}.`);
   }
 
-  // console.log('\n');
-  // console.log(amount);
-  // console.log(toBaseUnits(1, pricingCur));
-  // console.log(exchangeRate);
-  
-  // const poo = (
-  //   Math.round((amount / toBaseUnits(1, pricingCur)) * (1 / exchangeRate))
-  // );
-
-  // console.log(`poo: ${poo}`);
-
-  // const moo = toBaseUnits(
-  //   Math.round((amount / toBaseUnits(1, pricingCur)) * (1 / exchangeRate)),
-  //   paymentCoin
-  // );
-
-  // console.log(`result: ${moo}`);
-
-  // console.log('\n');  
-
   return (
     Math.round(
       toBaseUnits(
@@ -502,7 +455,7 @@ async function calculateShippingTotalForListings(contractPB, hashedListings) {
         `the listing.`);
     }
 
-    const pbRoot = getProtoContractsRoot();
+    const pbRoot = getContractsRoot();
 
     if (
       itemOptionPB.type ===
@@ -585,13 +538,11 @@ async function getOrderSignature(contractPB, options = {}) {
       'or passing in the identity.');
   }
 
-  const pbRoot = getProtoContractsRoot();
+  const pbRoot = getContractsRoot();
   const serializedOrder = encodeWithoutDefaults(
     contractPB.buyerOrder,
     pbRoot.lookupType('Order')
   );
-
-  console.log(Buffer.from(serializedOrder).toString('base64'));
 
   const signature = {
     section: pbRoot.Signature.Section.ORDER,
@@ -632,7 +583,7 @@ async function calculateOrderTotal(contractPB) {
 
     if (
       listingPB.metadata.format ===
-        getProtoContractsRoot().Listing.Metadata.Format['MARKET_PRICE']
+        getPB('Listing').Metadata.Format['MARKET_PRICE']
     ) {
       throw new Error(`The pricing format of MARKET_PRICE is currently not supported.`);
     } else {
@@ -717,10 +668,7 @@ async function calculateOrderTotal(contractPB) {
   return total;
 }
 
-console.log('theGoods');
-window.theGoods = createContractWithOrder;
-
-function sendOrder(contractPB) {
+async function sendOrder(contractPB) {
   let vendorPeerID;
 
   try {
@@ -745,7 +693,7 @@ function sendOrder(contractPB) {
 
 export async function purchase(data, options = {}) {
   const contractPB = await createContractWithOrder(data);
-  const contractRoot = getProtoContractsRoot();
+  const contractRoot = getContractsRoot();
 
   // Direct payment
   // just doing direct for now
@@ -776,33 +724,10 @@ export async function purchase(data, options = {}) {
   }
 
   contractPB.buyerOrder.payment.amount = total;
-  console.log(`the amount is ${contractPB.buyerOrder.payment.amount}`);
   contractPB.signatures.push(await getOrderSignature(contractPB));
 
-  console.log('contract');
-  window.contract = contractPB;
-
-  const merchantResponse = await sendOrder(contractPB);
-
-  console.log('merResp');
-  window.merResp = merchantResponse;
+  return sendOrder(contractPB);
 }
 
-console.log('foo');
-window.foo = purchase;
-
-// const go = 'ChR0ZXN0LXRlc3QtdGVzdC1taWxseRLEAQouUW1RMlRoQkw2emNZeEJzQ0gyZlVWM0VVaVBNM3RZbWRuUDNxN2prZTIxdUJNcBpJCiQIARIg1JRiC99XTy49u47TrmPhebH2IoWanvr9rfG2+cj8O4YSIQLJRSKlbpvhAB4nyf2yr0gTbVTXwn8uL41usco/cwtyliJHMEUCIQDqnEyTrFKKNY0FRlbn9wC4+69ozF8C3meKcLQG36nseQIgfJs1dJdFTSM2lGg7hQ68O1PVjAZHWO2XRaogo3OMeUgaKwgEIgYI4LSc/wcqA0xUQyoDQlRDKgNCQ0gqA1pFQzIDVVNEQLgIUIDC1y8ioAIKFFRFU1QgVEVTVCBURVNUIG1pbGx5IGQ6/gEKDG11cmFrYW1pLmpwZxIuUW1WeVZIOFJhbTZNZTNpaHlLZ2p6SnNNMlhaeG5QajZQS1NmbmVSRmY4WmFhRBouUW1laFFoMlNDeVZuWXpZNTduVFAzOWRrbUU3Z0t5ekpHeUhUTko0dXpDM2QyRCIuUW1YcTFSTEt0d2E3VmNSemFhN0dTWEtoVWdIYnBicUhNZWhVS2RDeVVTV1hvNyouUW1VeHlBdHYzdzgxWVFnaEFtckVHTThpbjRYU01QNkROZEVnY1RqNm12UXRjMzIuUW1TODhUcVgySzlwU1VvdnFjczNXbkdhUDFRQjdoTXNSUHdMZFVXNmR5UzRoTFIDTkVXYgAqKQoMVVNBIHNoaXBzdGVyEAEaAuoBKhMKCFN0YW5kYXJkEBkaAzUtNyAK';
-// const js = 'ChR0ZXN0LXRlc3QtdGVzdC1taWxseRLGAQouUW1RMlRoQkw2emNZeEJzQ0gyZlVWM0VVaVBNM3RZbWRuUDNxN2prZTIxdUJNcBIAGkkKJAgBEiDUlGIL31dPLj27jtOuY+F5sfYihZqe+v2t8bb5yPw7hhIhAslFIqVum+EAHifJ/bKvSBNtVNfCfy4vjW6xyj9zC3KWIkcwRQIhAOqcTJOsUoo1jQVGVuf3ALj7r2jMXwLeZ4pwtAbfqex5AiB8mzV0l0VNIzaUaDuFDrw7U9WMBkdY7ZdFqiCjc4x5SBo6CAQQABgAIggI4LSc/wcQACoDTFRDKgNCVEMqA0JDSCoDWkVDMgNVU0Q6AEC4CEoAUIDC1y9dAAAAACKxAgoUVEVTVCBURVNUIFRFU1QgbWlsbHkSABoAIGQoADr+AQoMbXVyYWthbWkuanBnEi5RbVZ5Vkg4UmFtNk1lM2loeUtnanpKc00yWFp4blBqNlBLU2ZuZVJGZjhaYWFEGi5RbWVoUWgyU0N5Vm5Zelk1N25UUDM5ZGttRTdnS3l6Skd5SFROSjR1ekMzZDJEIi5RbVhxMVJMS3R3YTdWY1J6YWE3R1NYS2hVZ0hicGJxSE1laFVLZEN5VVNXWG83Ki5RbVV4eUF0djN3ODFZUWdoQW1yRUdNOGluNFhTTVA2RE5kRWdjVGo2bXZRdGMzMi5RbVM4OFRxWDJLOXBTVW92cWNzM1duR2FQMVFCN2hNc1JQd0xkVVc2ZHlTNGhMTQAAAABSA05FV2IGEgAYACAAKikKDFVTQSBzaGlwc3RlchABGgLqASoTCghTdGFuZGFyZBAZGgM1LTcgCkoAUgA=';
-
-// const ListingPB = getProtoContractsRoot().lookupType('Listing');
-// const listingGo = ListingPB.decode(Buffer.from(go, 'base64'));
-// const listingJs = ListingPB.decode(Buffer.from(js, 'base64'));
-
-// console.log('go js');
-// window.go = listingGo;
-// window.js = listingJs;
-
-const PicklePB = getProtoContractsRoot().lookupType('Pickle');
-console.log('Pickle');
-window.Pickle = PicklePB;
-
+console.log('purchase');
+window.purchase = purchase;

@@ -12,32 +12,31 @@ import contractsJSON from 'pb/contracts.json';
  * then use the lookup function (default export of this module) to return to us
  * the RicardianContract PB which we could use to decode the message.
  */
-const protoJSONMap = {
-  BitcoinSignature: contractsJSON,
-  CountryCode: contractsJSON,
-  Dispute: contractsJSON,
-  DisputeAcceptance: contractsJSON,
-  Id: contractsJSON,
-  Listing: contractsJSON,
-  Order: contractsJSON,
-  OrderCompletion: contractsJSON,
-  OrderFulfillment: contractsJSON,
-  OrderReject: contractsJSON,
-  Outpoint: contractsJSON,
-  Rating: contractsJSON,
-  RatingSignature: contractsJSON,
-  Refund: contractsJSON,
-  RicardianContract: contractsJSON,
-  Signature: contractsJSON,
-  SignedListing: contractsJSON,
-  VendorFinalizedPayment: contractsJSON,
-  Block: messageJSON,
-  Chat: messageJSON,
-  CidList: messageJSON,
-  Envelope: messageJSON,
-  Error: messageJSON,
-  Message: messageJSON,
-  SignedData: messageJSON,
+const protoTypeRootGetterMap = {
+  BitcoinSignature: getContractsRoot,
+  Dispute: getContractsRoot,
+  DisputeAcceptance: getContractsRoot,
+  Id: getContractsRoot,
+  Listing: getContractsRoot,
+  Order: getContractsRoot,
+  OrderCompletion: getContractsRoot,
+  OrderFulfillment: getContractsRoot,
+  OrderReject: getContractsRoot,
+  Outpoint: getContractsRoot,
+  Rating: getContractsRoot,
+  RatingSignature: getContractsRoot,
+  Refund: getContractsRoot,
+  RicardianContract: getContractsRoot,
+  Signature: getContractsRoot,
+  SignedListing: getContractsRoot,
+  VendorFinalizedPayment: getContractsRoot,
+  Block: getMessageRoot,
+  Chat: getMessageRoot,
+  CidList: getMessageRoot,
+  Envelope: getMessageRoot,
+  Error: getMessageRoot,
+  Message: getMessageRoot,
+  SignedData: getMessageRoot,
 };
 
 // todo: memoize me;
@@ -47,13 +46,34 @@ export default function(type) {
   let PB;
 
   try {
-    PB = protobuf
-      .Root
-      .fromJSON(protoJSONMap[type])
-      .lookupType(type);
+    PB = protoTypeRootGetterMap[type]().lookupType(type);
   } catch (e) {
     // pass
   }
 
   return PB || null;
 };
+
+let contractsRoot;
+
+export function getContractsRoot() {
+  if (!contractsRoot) {
+    contractsRoot = protobuf
+      .Root
+      .fromJSON(contractsJSON);
+  }
+
+  return contractsRoot;
+}
+
+let messageRoot;
+
+export function getMessageRoot() {
+  if (!messageRoot) {
+    messageRoot = protobuf
+      .Root
+      .fromJSON(messageJSON);
+  }
+
+  return messageRoot;
+}

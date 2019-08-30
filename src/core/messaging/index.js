@@ -2,21 +2,8 @@ import pull from 'pull-stream';
 import protobuf from 'protobufjs';
 import IPFS from 'core/ipfs/ipfs';
 import { get as getNode } from 'core/ipfs/index';
-
-import messageJSON from 'pb/message.json';
-
-import getPB from 'pb/util/getPB';
+import getPB, { getMessageRoot } from 'pb/util/getPB';
 import { getRandomInt } from 'util/number';
-
-let protoMessageRoot;
-
-function getProtoMessageRoot() {
-  if (!protoMessageRoot) {
-    protoMessageRoot = protobuf.Root.fromJSON(messageJSON);
-  }
-  
-  return protoMessageRoot;
-}
 
 /*
  * Given a verbose name (e.g. CHAT), will return the numeric message type as declared
@@ -60,7 +47,7 @@ function generateMessage(
 
   if (requestID) messagePayload.requestId = requestID;
 
-  const MessagePb = getProtoMessageRoot().lookupType('Message');
+  const MessagePb = getMessageRoot().lookupType('Message');
   const messageErr = MessagePb.verify(messagePayload);
 
   if (messageErr) {
@@ -206,7 +193,7 @@ export async function sendRequest(
     );
 
     responseHandler = e => {
-      if (requestId === e.requestId) resolve(e.data);
+      if (e.data && requestId === e.data.requestId) resolve(e.data);
     }    
 
     node.on(RESPONSE_EVENT, responseHandler);
@@ -221,8 +208,6 @@ export async function sendRequest(
     } catch (e) {
       reject(e);
     }
-
-    resolve();
   });
 
   promise
@@ -247,7 +232,7 @@ export async function openDirectMessage(encodedMessage, peerID, options = {}) {
     throw new Error('An IPFS node instance is required.');
   }
 
-  const Message = getProtoMessageRoot().lookupType('Message');
+  const Message = getMessageRoot().lookupType('Message');
   let decodedMessage;
 
   try {

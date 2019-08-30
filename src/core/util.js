@@ -19,6 +19,3 @@ export async function encodeMultihash(bytes) {
 
   return multihashing(Buffer.from(bytes), 'sha2-256')
 }
-
-console.log('eencode');
-window.encode = encodeCID;

@@ -11,7 +11,7 @@ import {
   getMessageType,
 } from 'core/messaging/index';
 import { generatePbTimestamp } from 'pb/util/index';
-import { getProtoMessageRoot } from 'pb/roots/message';
+import { getMessageRoot } from 'pb/util/getPB';
 import {
   convosRequest,
   convosSuccess,
@@ -732,7 +732,7 @@ function* handleSendMessage(action) {
 
   // TODO: This process is repeated a whole lot and could probaby be abstracted
   // so it ends up being a one-liner for consumers.
-  const ChatPB = getProtoMessageRoot().lookupType('Chat');
+  const ChatPB = getMessageRoot().lookupType('Chat');
   const chatErr = ChatPB.verify(chatPayload);
 
   if (chatErr) {
