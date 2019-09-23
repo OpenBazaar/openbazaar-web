@@ -69,7 +69,7 @@
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/styles/ --watch --recursive",
     "start-js": "cross-env NODE_PATH=src react-scripts start",
     "start": "npm-run-all -p watch-css start-js",
-    "build-js": "cross-env NODE_PATH=src react-scripts build",
+    "build-js": "cross-env NODE_PATH=src react-scripts --max_old_space_size=4096 build",
     "copyBuiltIndex": "cp build/index.html build/200.html",
     "build": "npm-run-all build-css build-js",
     "surge": "surge build --domain https://ob-web.surge.sh",
