@@ -141,6 +141,8 @@ export async function sendMessage(
   }
 }
 
+export class SendRequestError extends Error {}
+
 /*
  * Will send off a network message. At this time, it will only be a direct
  * message and fail if the receiver is unreachable.
@@ -176,11 +178,14 @@ export async function sendRequest(
 
   const RESPONSE_EVENT = 'response';
   let responseHandler;
+  let timeout;
 
   const cleanup = () => {
     if (responseHandler) {
       node.removeListener(RESPONSE_EVENT, responseHandler);
     }
+
+    clearTimeout(timeout);
   };
   
   const promise = new Promise(async (resolve, reject) => {
@@ -198,7 +203,7 @@ export async function sendRequest(
 
     node.on(RESPONSE_EVENT, responseHandler);
 
-    setTimeout(
+    timeout = setTimeout(
       () => reject(new Error('Request timed out.')),
       opts.timeout
     );
@@ -206,7 +211,9 @@ export async function sendRequest(
     try {
       await sendDirectMessage(node, peerID, message);
     } catch (e) {
-      reject(e);
+      const err = new SendRequestError(e.message);
+      err.stack = e.stack;
+      reject(err);
     }
   });
 

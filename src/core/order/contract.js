@@ -12,7 +12,7 @@ import {
   verifySignature,
   verifyEscrowSignature,
 } from 'core/signatures';
-import { sendRequest } from 'core/messaging/index';
+import { sendRequest, SendRequestError } from 'core/messaging/index';
 import {
   generatePbTimestamp,
   convertTimestamps,
@@ -256,11 +256,13 @@ async function createContractWithOrder(data = {}, options = {}) {
     }
 
     const ListingPB = getPB('Listing');
-
     const serListing = encodeWithoutDefaults(listing, ListingPB);
 
     const listingID = await encodeCID(serListing);
     item.listingHash = listingID.toString();
+
+    console.log('the data item is marly');
+    window.marly = dataItem;
 
     item.quantity64 = dataItem.quantity;
 
@@ -334,12 +336,13 @@ async function parseContractForListing(hash, contractPB) {
 }
 
 // just mocking it for now
+// TODO: Should exchange rates and wallets be coupled like this?
 function getWallet(curCode) {
   return {
     exchangeRates() {
       return {
         getExchangeRate(cur) {
-          return 9711.01;
+          return 55.58;
         }
       }
     }
@@ -567,7 +570,8 @@ async function calculateOrderTotal(contractPB) {
   for (let i = 0; i < contractPB.buyerOrder.items.length; i++) {
     const itemPB = contractPB.buyerOrder.items[i];
     const hash = itemPB.listingHash;
-    const listingPB = await parseContractForListing(hash, contractPB);
+    const listingPB = await parseContractForListing(hash, contractPB);    
+
     const itemQuantity = itemPB.quantity64;
     let itemTotal = 0;
 
@@ -662,8 +666,10 @@ async function calculateOrderTotal(contractPB) {
     total += itemTotal;
   };
 
-  const shippingTotal = await calculateShippingTotalForListings(contractPB, physicalGoods);
-  total += shippingTotal;
+  if (Object.keys(physicalGoods).length) {
+    const shippingTotal = await calculateShippingTotalForListings(contractPB, physicalGoods);
+    total += shippingTotal;
+  }
 
   return total;
 }
@@ -689,6 +695,9 @@ async function sendOrder(contractPB) {
       .finish(),
     vendorPeerID,
   );
+}
+
+function processOnlineDirectOrder() {
 }
 
 export async function purchase(data, options = {}) {
@@ -720,13 +729,36 @@ export async function purchase(data, options = {}) {
   try {
     total = await calculateOrderTotal(contractPB);
   } catch (e) {
-    throw new Error(`Unable to calculate the order total: ${e.stack}`);
+    throw new Error(`Unable to calculate the order total: ${e.message}`);
   }
 
   contractPB.buyerOrder.payment.amount = total;
   contractPB.signatures.push(await getOrderSignature(contractPB));
 
-  return sendOrder(contractPB);
+  let vendorResponse;
+
+  try {
+    vendorResponse = await sendOrder(contractPB);
+  } catch (e) {
+    if (e instanceof SendRequestError) {
+      // direct message failed - node very likely unreachable
+      // todo: implement offline message flow here
+      console.error('Unable to complete the purchase. The message request to the ' +
+        'vendor failed. They are likely offline. Offline message handling coming soon.');
+    }
+
+    throw e;
+  }
+
+  console.log('the sizzle is charlie');
+  window.charlie = vendorResponse;
+
+  // type purchaseReturn struct {
+  //  PaymentAddress string              `json:"paymentAddress"`
+  //  Amount         *repo.CurrencyValue `json:"amount"`
+  //  VendorOnline   bool                `json:"vendorOnline"`
+  //  OrderID        string              `json:"orderId"`
+  // }
 }
 
 console.log('purchase');
