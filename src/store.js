@@ -3,7 +3,9 @@ import { createBrowserHistory } from 'history';
 import { routerMiddleware } from 'connected-react-router';
 import createRootReducer from 'reducers';
 import createSagaMiddleware from 'redux-saga';
+import chat from 'middleware/chat';
 import rootSaga from 'sagas';
+import { init as initIpfs } from 'util/ipfs/index';
 
 export const history = createBrowserHistory();
 const sagaMiddleware = createSagaMiddleware();
@@ -11,7 +13,8 @@ const sagaMiddleware = createSagaMiddleware();
 const middleware = [
   ...getDefaultMiddleware(),
   routerMiddleware(history),
-  sagaMiddleware
+  sagaMiddleware,
+  chat
 ];
 
 const store = configureStore({
@@ -21,5 +24,6 @@ const store = configureStore({
 });
 
 sagaMiddleware.run(rootSaga);
+initIpfs(store);
 
 export default store;

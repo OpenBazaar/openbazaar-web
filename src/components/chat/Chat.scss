@@ -1,0 +1,121 @@
+@import 'styles/mixins.scss';
+@import 'styles/variables.scss';
+@import 'sass-mq/mq';
+
+.Chat {
+  position: absolute;
+  width: 100%;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding-top: 35px;
+
+  .Chat-chatHeads {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-width: 0;
+    transition: height 500ms;
+
+    // devices where mouse is primary pointing device
+    @media (hover: hover) and (pointer: fine) {
+      // only show the chat scroll on hover
+      overflow: hidden;
+
+      &:hover {
+        overflow-y: auto;
+      }
+    }
+
+    .ChatHead {
+      cursor: pointer;
+
+      .ChatHead-textContent {
+        height: 35px;
+        display: none;
+
+        .ChatHead-name {
+          max-width: 50px;
+        }
+      }
+
+      .ChatHead-avatarWrap {
+        position: relative;
+
+        .ChatHead-unreadCount {
+          position: absolute;
+          top: -6px;
+          left: -6px;
+          border-style: solid;
+          border-width: 1px;
+          border-radius: 50%;
+          width: 28px;
+          height: 28px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+    }
+  }
+
+  .Chat-btnClose {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-bottom-width: 0;
+    cursor: pointer;
+  }
+
+  .Chat-chatConvoWrap {
+    position: absolute;
+    bottom: -9999px;
+    left: 0;
+    right: 0;
+    transform: translateY(100%);
+    // transition: transform 500ms;
+    height: $chatHeight;
+
+    @include mq($until: mobileLandscape) {
+      height: 100%;
+    }
+  }
+
+  .Chat-chatOpen & {
+    .Chat-chatConvoWrap {
+      // Using bottom here rather than hiding/showing with
+      // display because the latter would not allow us to set
+      // the message wrap scroll position when the element is
+      // hidden.
+      bottom: 0;
+    }
+
+    .Chat-chatHeads {
+      border-width: 1px;
+
+      .ChatHead.active {
+        cursor: default;
+      }
+
+      .ChatHead-textContent {
+        display: flex;
+      }
+    }
+
+    &.Chat-convoOpen {
+      .Chat-chatHeads {
+        // todo: this needs to animate at the same rate of the chat convo sliding up
+        // ^^^ if and when we reimpliment the animation
+        height: calc(100% - #{$chatHeight});
+
+        @include mq($until: mobileLandscape) {
+          height: 100%;
+        }
+      }
+
+      .Chat-chatConvoWrap {
+        transform: translateY(0);
+      }
+    }
+  }
+}

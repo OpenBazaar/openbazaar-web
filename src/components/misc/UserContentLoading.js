@@ -130,6 +130,6 @@ export default UserContentLoading;
 UserContentLoading.modalProps = {
   path: 'components/misc/UserContentLoading',
   closeable: false,
-  innerWrapClass: 'pad0',
-  rootClass: 'modalM'
+  rootClass: 'modalM',
+  contentWrapBaseClass: ''
 };

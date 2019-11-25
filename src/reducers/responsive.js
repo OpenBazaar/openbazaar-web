@@ -3,6 +3,7 @@ import { SET_BREAKPOINT } from 'actions/responsive';
 
 const breakpoints = {
   mobile: 0,
+  mobileLandscape: 480,
   tablet: 740,
   desktop: 980,
   pageWidth: 1010,

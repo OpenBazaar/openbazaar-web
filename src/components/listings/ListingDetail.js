@@ -12,7 +12,6 @@ import './ListingDetail.scss';
 class ListingDetail extends Component {
   static modalProps = {
     path: 'components/listings/ListingDetail',
-    transparent: true,
     rootClass: 'modalL'
   };
 

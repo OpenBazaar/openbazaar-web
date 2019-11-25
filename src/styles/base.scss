@@ -7,14 +7,11 @@
 
 html {
   font-size: $baseFontSize;
-
-  // avoid page jump from pages with a scollbar, to one's without and vice
-  // versa
-  overflow-y: scroll;
+  overflow: hidden;
 }
 
 body {
-  background-color: #fff;
+  background-color: $primary;
   color: $text;
   font-size: $tx4;
 }
@@ -76,7 +73,24 @@ ol {
   }
 }
 
+.App-chatContainer {
+  position: fixed;
+  top: $chatTop;
+  right: 0;
+  bottom: 0;
+  @include chatOpenTransition(transform);
+  display: none;
+
+  .Chat-chatVisible & {
+    display: block;
+  }
+}
+
 #OBWEB {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+
   .block {
     display: block;
   }

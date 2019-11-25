@@ -1,0 +1,210 @@
+{
+  "options": {
+    "go_package": "pb"
+  },
+  "nested": {
+    "Message": {
+      "fields": {
+        "messageType": {
+          "type": "MessageType",
+          "id": 1
+        },
+        "payload": {
+          "type": "google.protobuf.Any",
+          "id": 2
+        },
+        "requestId": {
+          "type": "int32",
+          "id": 3
+        },
+        "isResponse": {
+          "type": "bool",
+          "id": 4
+        }
+      },
+      "nested": {
+        "MessageType": {
+          "values": {
+            "PING": 0,
+            "CHAT": 1,
+            "FOLLOW": 2,
+            "UNFOLLOW": 3,
+            "ORDER": 4,
+            "ORDER_REJECT": 5,
+            "ORDER_CANCEL": 6,
+            "ORDER_CONFIRMATION": 7,
+            "ORDER_FULFILLMENT": 8,
+            "ORDER_COMPLETION": 9,
+            "DISPUTE_OPEN": 10,
+            "DISPUTE_UPDATE": 11,
+            "DISPUTE_CLOSE": 12,
+            "REFUND": 13,
+            "OFFLINE_ACK": 14,
+            "OFFLINE_RELAY": 15,
+            "MODERATOR_ADD": 16,
+            "MODERATOR_REMOVE": 17,
+            "STORE": 18,
+            "BLOCK": 19,
+            "VENDOR_FINALIZED_PAYMENT": 20,
+            "ERROR": 500
+          }
+        }
+      }
+    },
+    "Envelope": {
+      "fields": {
+        "message": {
+          "type": "Message",
+          "id": 1
+        },
+        "pubkey": {
+          "type": "bytes",
+          "id": 2
+        },
+        "signature": {
+          "type": "bytes",
+          "id": 3
+        }
+      }
+    },
+    "Chat": {
+      "fields": {
+        "messageId": {
+          "type": "string",
+          "id": 1
+        },
+        "subject": {
+          "type": "string",
+          "id": 2
+        },
+        "message": {
+          "type": "string",
+          "id": 3
+        },
+        "timestamp": {
+          "type": "google.protobuf.Timestamp",
+          "id": 4
+        },
+        "flag": {
+          "type": "Flag",
+          "id": 5
+        }
+      },
+      "nested": {
+        "Flag": {
+          "values": {
+            "MESSAGE": 0,
+            "TYPING": 1,
+            "READ": 2
+          }
+        }
+      }
+    },
+    "SignedData": {
+      "fields": {
+        "senderPubkey": {
+          "type": "bytes",
+          "id": 1
+        },
+        "serializedData": {
+          "type": "bytes",
+          "id": 2
+        },
+        "signature": {
+          "type": "bytes",
+          "id": 3
+        }
+      },
+      "nested": {
+        "Command": {
+          "fields": {
+            "peerID": {
+              "type": "string",
+              "id": 1
+            },
+            "type": {
+              "type": "Message.MessageType",
+              "id": 2
+            },
+            "timestamp": {
+              "type": "google.protobuf.Timestamp",
+              "id": 3
+            }
+          }
+        }
+      }
+    },
+    "CidList": {
+      "fields": {
+        "cids": {
+          "rule": "repeated",
+          "type": "string",
+          "id": 1,
+          "options": {
+            "packed": true
+          }
+        }
+      }
+    },
+    "Block": {
+      "fields": {
+        "rawData": {
+          "type": "bytes",
+          "id": 1
+        },
+        "cid": {
+          "type": "string",
+          "id": 2
+        }
+      }
+    },
+    "Error": {
+      "fields": {
+        "code": {
+          "type": "uint32",
+          "id": 1
+        },
+        "errorMessage": {
+          "type": "string",
+          "id": 2
+        },
+        "orderID": {
+          "type": "string",
+          "id": 3
+        }
+      }
+    },
+    "google": {
+      "nested": {
+        "protobuf": {
+          "nested": {
+            "Any": {
+              "fields": {
+                "type_url": {
+                  "type": "string",
+                  "id": 1
+                },
+                "value": {
+                  "type": "bytes",
+                  "id": 2
+                }
+              }
+            },
+            "Timestamp": {
+              "fields": {
+                "seconds": {
+                  "type": "int64",
+                  "id": 1
+                },
+                "nanos": {
+                  "type": "int32",
+                  "id": 2
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

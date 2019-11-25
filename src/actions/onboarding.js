@@ -16,13 +16,13 @@ export const save = (props = {}) => (dispatch, getState) => {
   let peerID = null;
 
   try {
-    peerID = getState().auth.identity.peerId;
+    peerID = getState().auth.identity.peerID;
   } catch (e) {
     // pass
   }
 
   if (typeof peerID !== 'string') {
-    return Promise.reject(new Error('Unable to obtain the peerId.'));
+    return Promise.reject(new Error('Unable to obtain the peerID.'));
   }
 
   return profileSave({

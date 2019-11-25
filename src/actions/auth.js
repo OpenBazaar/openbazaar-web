@@ -57,10 +57,10 @@ export const login = (props = {}) => (dispatch, getState) => {
       .then(vals => {
         publicKey = fromByteArray(vals[2].publicKey);
         const privateKey = fromByteArray(vals[2].privateKey);
-        const peerId = vals[2].peerIdB58;
+        const peerID = vals[2].peerIDB58;
 
         identity = {
-          peerId,
+          peerID,
           publicKey,
           privateKey
         };
@@ -69,10 +69,10 @@ export const login = (props = {}) => (dispatch, getState) => {
 
         return Promise.all([
           getDb(nameHashHex, fromByteArray(vals[1])),
-          getIpfsNode(peerId, privateKey)
+          getIpfsNode(peerID, privateKey)
         ]);
       })
-      // todo: probably better to explicitly pull profile based on peerId.
+      // todo: probably better to explicitly pull profile based on peerID.
       .then(vals => vals[0].profile.find().exec())
       .then(profiles => {
         const profile = profiles && profiles[0] ? profiles[0] : null;

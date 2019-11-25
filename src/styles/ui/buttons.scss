@@ -86,6 +86,34 @@
   }
 }
 
+.btnTxt {
+  @extend .btn;
+  text-align: left;
+  border: none;
+  background: none;
+}
+
+.btnTxtOnly {
+  @extend .btnTxt;
+  height: auto;
+  display: inline;
+  font-size: inherit;
+  vertical-align: inherit;
+  align-items: inherit;
+  justify-content: inherit;
+  padding: 0;
+}
+
+.btnAsLink {
+  @extend .btnTxtOnly;
+  font-weight: inherit;
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .iconBtn {
   //this button has only an icon in it
   @extend .btn;

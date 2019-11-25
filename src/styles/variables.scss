@@ -73,13 +73,19 @@ $modalWidthL: 957px;
 // This should probably match the breakpoints enumeratd in reducers/responsive.js.
 $mq-breakpoints: (
   mobile: 0px,
+  mobileLandscape: 480px,
   tablet: 740px,
   desktop: 980px,
   pageWidth: 1010px,
   wide: 1300px
 );
 
-$mq-show-breakpoints: (mobile, tablet, desktop, pageWidth, wide);
+// $mq-show-breakpoints: (mobile, tablet, desktop, pageWidth, wide);
 
 // misc
 $listingGridGap: 15px;
+$appHeaderHeight: 62px;
+
+// chat
+$chatTop: 62px;
+$chatHeight: 350px;

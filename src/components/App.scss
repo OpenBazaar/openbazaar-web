@@ -1,10 +1,12 @@
 @import '../styles/base.scss';
+@import '../styles/mixins.scss';
+@import '../styles/variables.scss';
 
 .App {
   .App-header {
     padding: 10px 20px;
     box-shadow: 0 1px 3px 0 rgba(219, 219, 219, 0.75);
-    height: 62px;
+    height: $appHeaderHeight;
 
     nav {
       margin: 0;
@@ -35,5 +37,12 @@
     .App-btnSettings {
       // background-image: url('../img/icon-gear.png');
     }
+  }
+
+  .App-mainContent {
+    @include chatOpenTransition(padding-right);
+    width: 100%;
+    height: calc(100% - #{$appHeaderHeight});
+    overflow-y: scroll;
   }
 }
