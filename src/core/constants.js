@@ -7,6 +7,8 @@ export const SEARCH_BASE = 'https://search.ob1.io/';
 export const SEARCH_URL = `${SEARCH_BASE}listings/search`;
 export const SEARCH_RANDOM_URL = `${SEARCH_BASE}listings/random`;
 export const TICKER_URL = 'https://ticker.openbazaar.org/';
+// export const WEB_RELAY_SOCKET_URL = 'wss://webchat.ob1.io:8080';
+export const WEB_RELAY_SOCKET_URL = 'ws://localhost:8080';
 
 export const CURRENT_LISTING_VERSION = 4;
 export const MIN_SUPPORTED_LISTING_VERSION = 3;

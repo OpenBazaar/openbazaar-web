@@ -13,6 +13,7 @@ import {
   verifyEscrowSignature,
 } from 'core/signatures';
 import { sendRequest, SendRequestError } from 'core/messaging/index';
+import { connect as connectWebRelay } from 'core/messaging/webRelay';
 import {
   generatePbTimestamp,
   convertTimestamps,
@@ -261,9 +262,6 @@ async function createContractWithOrder(data = {}, options = {}) {
     const listingID = await encodeCID(serListing);
     item.listingHash = listingID.toString();
 
-    console.log('the data item is marly');
-    window.marly = dataItem;
-
     item.quantity64 = dataItem.quantity;
 
     const contractTypes = getContractTypes();
@@ -342,7 +340,7 @@ function getWallet(curCode) {
     exchangeRates() {
       return {
         getExchangeRate(cur) {
-          return 55.58;
+          return 147.72197;
         }
       }
     }
@@ -700,7 +698,7 @@ async function sendOrder(contractPB) {
 function processOnlineDirectOrder() {
 }
 
-export async function purchase(data, options = {}) {
+export async function purchase(data) {
   const contractPB = await createContractWithOrder(data);
   const contractRoot = getContractsRoot();
 
@@ -735,31 +733,40 @@ export async function purchase(data, options = {}) {
   contractPB.buyerOrder.payment.amount = total;
   contractPB.signatures.push(await getOrderSignature(contractPB));
 
-  let vendorResponse;
+  // For now, bypassing direct message attempt.
 
-  try {
-    vendorResponse = await sendOrder(contractPB);
-  } catch (e) {
-    if (e instanceof SendRequestError) {
-      // direct message failed - node very likely unreachable
-      // todo: implement offline message flow here
-      console.error('Unable to complete the purchase. The message request to the ' +
-        'vendor failed. They are likely offline. Offline message handling coming soon.');
-    }
+  // let vendorResponse;
 
-    throw e;
-  }
+  // try {
+  //   vendorResponse = await sendOrder(contractPB);
+  // } catch (e) {
+  //   if (e instanceof SendRequestError) {
+  //     // direct message failed - node very likely unreachable
+  //     // todo: implement offline message flow here
+  //     console.error('Unable to complete the purchase. The message request to the ' +
+  //       'vendor failed. They are likely offline. Offline message handling coming soon.');
+  //   }
 
-  console.log('the sizzle is charlie');
-  window.charlie = vendorResponse;
-
-  // type purchaseReturn struct {
-  //  PaymentAddress string              `json:"paymentAddress"`
-  //  Amount         *repo.CurrencyValue `json:"amount"`
-  //  VendorOnline   bool                `json:"vendorOnline"`
-  //  OrderID        string              `json:"orderId"`
+  //   throw e;
   // }
 }
 
 console.log('purchase');
 window.purchase = purchase;
+
+window.webrelay = async (options = {}) => {
+  const identity = options.identity || getIdentity();
+
+  if (!identity) {
+    throw new Error('Unable to get the identity. Ensure you are logged in ' +
+      'or passing in the identity.');
+  }
+  
+  const webRelaySocket = await connectWebRelay(identity.peerID);
+  webRelaySocket.addEventListener('message', e => {
+    console.log('web relay message aroo');
+    window.aroo = window.aroo || [];
+    window.aroo.push(e);
+  });
+  await webRelaySocket.subscribe();  
+}

@@ -6,6 +6,13 @@ import nacl from 'tweetnacl';
 import naclUtil from 'tweetnacl-util';
 import libp2pCrypto from 'libp2p-crypto';
 import ed2curve from 'ed2curve';
+import {
+  fromB58String,
+  toB58String,
+  decode,
+  encode
+} from 'multihashes';
+import BufferShift from 'buffershift';
 
 /*
  * Returns a Uint8Array(64) hash of the given text.
@@ -102,4 +109,19 @@ export function isValidMenmonic(mnemonic) {
   }
 
   return isValid;
+}
+
+export async function generateSubscriptionKey(peerID) {
+  const mh = fromB58String(peerID);
+  const decodedMh = decode(mh);
+  const digest = decodedMh.digest;
+  const prefix = new Buffer(new Uint8Array(digest.slice(0, 8)));
+
+  const shifted = new Buffer(prefix.length);
+  prefix.copy(shifted);
+  BufferShift.shr(shifted, 48);
+
+  const checksum = await crypto.subtle.digest('SHA-256', shifted);
+  const subscriptionKey = encode(Buffer.from(checksum), 'sha2-256');
+  return toB58String(subscriptionKey);
 }

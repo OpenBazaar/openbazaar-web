@@ -24,12 +24,7 @@ import 'styles/ui/buttons.scss';
 import logo from 'img/ob-logo.png';
 import 'core/messaging/index';
 
-
-
-import protobuf from 'protobufjs';
-
-console.log('moo');
-window.moo = protobuf;
+import howdy from 'core/order/contract';
 
 class App extends Component {
   state = {

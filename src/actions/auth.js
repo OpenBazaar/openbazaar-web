@@ -5,6 +5,7 @@ import { login as authLogin, logout as authLogout } from 'util/auth';
 export const AUTH_LOGOUT = 'AUTH_LOGOUT';
 export const AUTH_GENERATING_MNEMONIC = 'AUTH_GENERATING_MNEMONIC';
 export const AUTH_GENERATE_MNEMONIC_SUCCESS = 'AUTH_GENERATE_MNEMONIC_SUCCESS';
+export const AUTH_LOGIN = 'AUTH_LOGIN';
 export const AUTH_GENERATE_MNEMONIC_FAIL = 'AUTH_GENERATE_MNEMONIC_FAIL';
 export const AUTH_LOGGING_IN = 'AUTH_LOGGING_IN';
 export const AUTH_LOGIN_FAIL = 'AUTH_LOGIN_FAIL';
@@ -26,6 +27,11 @@ export const onOwnProfileObtained = (dispatch, profile) => {
     });
   });
 };
+
+// export const login = (payload = {}) => ({
+//   type: AUTH_LOGIN,
+//   payload
+// });
 
 export const login = (props = {}) => async (dispatch, getState) => {
   if (!isValidMenmonic(props.mnemonic)) {

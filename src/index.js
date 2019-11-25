@@ -7,8 +7,6 @@ import 'index.scss';
 import App from 'components/App';
 import * as serviceWorker from 'serviceWorker';
 
-import * as sugar from 'core/order/contract';
-
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>

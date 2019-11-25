@@ -15,7 +15,7 @@ export function getMessageType(name) {
 }
 
 /*
- * Will create a PB encoded message ready to send over the write.
+ * Will create a PB encoded message ready to send over the wire.
  *
  * @param {string} messageType - The string message type corresponding to
  *   the keys in the MessageType enum from the message proto declaration,
